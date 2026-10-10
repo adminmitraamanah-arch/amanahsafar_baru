@@ -10,20 +10,33 @@
         <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-4xl mx-auto space-y-6">
                 
-                <!-- Page Title & Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Profil Saya</h1>
-                        <p class="text-sm text-gray-600 mt-1">Kelola data profil dan pengaturan keamanan kata sandi akun Anda.</p>
+                <!-- Breadcrumbs & Header Section -->
+                <div>
+                    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                        <a href="<?= base_url('/dashboard') ?>" class="hover:text-[#5e0078] transition font-medium flex items-center gap-1.5">
+                            <i class="fas fa-columns text-[11px]"></i> Dashboard
+                        </a>
+                        <span class="text-slate-300">&gt;</span>
+                        <span class="text-slate-800 font-semibold">Profil Saya</span>
+                    </nav>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Profil Saya</h1>
+                            <p class="text-sm text-gray-600 mt-1">Kelola data profil dan pengaturan keamanan kata sandi akun Anda.</p>
+                        </div>
+                        <a href="<?= base_url('/dashboard') ?>" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:border-purple-200 text-slate-700 hover:text-[#5e0078] rounded-xl text-xs font-semibold shadow-sm transition self-start sm:self-auto">
+                            <i class="fas fa-arrow-left text-xs"></i> Kembali ke Dashboard
+                        </a>
                     </div>
                 </div>
 
-                <!-- Main Profile Card -->
+                <!-- Main Profile Form Card -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
                     
-                    <!-- Card Top Banner / Summary -->
-                    <div class="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center gap-5">
-                        <div class="w-16 h-16 rounded-2xl bg-[#5e0078] text-white font-extrabold text-2xl flex items-center justify-center shadow-md ring-4 ring-purple-100 shrink-0">
+                    <!-- Card Top Banner / User Badge -->
+                    <div class="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center gap-5 bg-slate-50/50">
+                        <div class="w-16 h-16 rounded-2xl bg-[#5e0078] text-white font-extrabold text-2xl flex items-center justify-center shadow-md ring-4 ring-purple-100 shrink-0 select-none">
                             <?= strtoupper(substr($user['nama_lengkap'] ?? (session('nama') ?? 'U'), 0, 1)) ?>
                         </div>
                         <div class="space-y-1">
@@ -33,22 +46,24 @@
                                     <?= esc(str_replace('_', ' ', $user['role'] ?? session('role'))) ?>
                                 </span>
                             </div>
-                            <p class="text-xs text-slate-500 font-medium"><?= esc($user['email'] ?? session('email')) ?></p>
+                            <p class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                                <i class="fas fa-envelope text-slate-400 text-xs"></i> <?= esc($user['email'] ?? session('email')) ?>
+                            </p>
                         </div>
                     </div>
 
                     <!-- Form Pengaturan Profil -->
-                    <form action="<?= base_url('/profile/update') ?>" method="POST" class="p-6 sm:p-8 space-y-6">
+                    <form id="profilePageForm" action="<?= base_url('/profile/update') ?>" method="POST" class="p-6 sm:p-8 space-y-6">
                         <?= csrf_field() ?>
 
                         <!-- Grid Informasi Akun (Readonly) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50/70 rounded-xl border border-slate-200/70">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50/80 rounded-xl border border-slate-200/70">
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
                                     <i class="fas fa-envelope text-slate-400 mr-1.5"></i> Alamat Email
                                 </label>
                                 <input type="email" value="<?= esc($user['email'] ?? session('email')) ?>" readonly 
-                                       class="w-full bg-slate-100/90 border border-slate-200 rounded-lg px-3.5 py-2 text-xs text-slate-600 font-medium cursor-not-allowed select-none">
+                                       class="w-full bg-slate-100/90 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-600 font-medium cursor-not-allowed select-none">
                                 <span class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
                                     <i class="fas fa-lock text-[10px]"></i> Email bersifat permanen dan tidak dapat diubah
                                 </span>
@@ -57,7 +72,7 @@
                                 <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
                                     <i class="fas fa-shield-alt text-slate-400 mr-1.5"></i> Hak Akses Akun
                                 </label>
-                                <div class="h-[34px] px-3.5 bg-purple-50/70 border border-purple-100 rounded-lg flex items-center">
+                                <div class="h-[38px] px-3.5 bg-purple-50/70 border border-purple-100 rounded-lg flex items-center">
                                     <span class="text-xs font-bold text-[#5e0078] capitalize">
                                         <?= esc(str_replace('_', ' ', $user['role'] ?? session('role'))) ?>
                                     </span>
@@ -77,7 +92,7 @@
                                 </span>
                                 <input type="text" name="nama_lengkap" id="page_nama_lengkap" required minlength="3" maxlength="100"
                                        value="<?= esc(old('nama_lengkap', $user['nama_lengkap'] ?? session('nama'))) ?>"
-                                       placeholder="Masukkan nama lengkap Anda"
+                                       placeholder="Masukkan nama profil Anda"
                                        class="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:border-transparent focus:outline-none transition">
                             </div>
                             <p class="text-[11px] text-slate-400 mt-1">Nama ini akan ditampilkan pada header dan seluruh navigasi sistem.</p>
@@ -89,7 +104,7 @@
                                 <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
                                     <i class="fas fa-key text-[#5e0078]"></i> Ubah Kata Sandi / Password
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-0.5">Biarkan kolom-kolom password ini kosong jika Anda tidak ingin mengubah password akun.</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Biarkan kolom-kolom password ini kosong jika Anda tidak ingin mengubah password akun saat ini.</p>
                             </div>
 
                             <!-- Password Lama -->
@@ -102,7 +117,7 @@
                                            placeholder="Masukkan password saat ini jika ingin mengganti"
                                            autocomplete="current-password"
                                            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 pr-10 py-2.5 text-xs text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#5e0078] focus:border-transparent focus:outline-none transition">
-                                    <button type="button" onclick="toggleProfilePasswordVisibility('page_current_password', this)" 
+                                    <button type="button" onclick="togglePasswordVisibility('page_current_password', this)" 
                                             class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" tabindex="-1">
                                         <i class="fas fa-eye text-xs"></i>
                                     </button>
@@ -120,7 +135,7 @@
                                                placeholder="Minimal 8 karakter"
                                                autocomplete="new-password"
                                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 pr-10 py-2.5 text-xs text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#5e0078] focus:border-transparent focus:outline-none transition">
-                                        <button type="button" onclick="toggleProfilePasswordVisibility('page_new_password', this)" 
+                                        <button type="button" onclick="togglePasswordVisibility('page_new_password', this)" 
                                                 class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" tabindex="-1">
                                             <i class="fas fa-eye text-xs"></i>
                                         </button>
@@ -135,7 +150,7 @@
                                                placeholder="Ulangi password baru"
                                                autocomplete="new-password"
                                                class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 pr-10 py-2.5 text-xs text-slate-900 focus:bg-white focus:ring-2 focus:ring-[#5e0078] focus:border-transparent focus:outline-none transition">
-                                        <button type="button" onclick="toggleProfilePasswordVisibility('page_confirm_password', this)" 
+                                        <button type="button" onclick="togglePasswordVisibility('page_confirm_password', this)" 
                                                 class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none" tabindex="-1">
                                             <i class="fas fa-eye text-xs"></i>
                                         </button>
@@ -145,7 +160,7 @@
                         </div>
 
                         <!-- Submit Buttons -->
-                        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
                             <a href="<?= base_url('/dashboard') ?>" class="px-5 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
                                 Batal
                             </a>
@@ -160,4 +175,63 @@
         </main>
     </div>
 </div>
+
+<script>
+function togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    } else {
+        input.type = 'password';
+        if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('profilePageForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const currPass = document.getElementById('page_current_password')?.value || '';
+            const newPass = document.getElementById('page_new_password')?.value || '';
+            const confPass = document.getElementById('page_confirm_password')?.value || '';
+
+            if (currPass || newPass || confPass) {
+                if (!currPass) {
+                    e.preventDefault();
+                    if (window.toastNotification) {
+                        window.toastNotification.error('Password lama wajib diisi untuk mengubah password');
+                    }
+                    document.getElementById('page_current_password')?.focus();
+                    return;
+                }
+                if (newPass.length < 8) {
+                    e.preventDefault();
+                    if (window.toastNotification) {
+                        window.toastNotification.error('Password baru minimal 8 karakter');
+                    }
+                    document.getElementById('page_new_password')?.focus();
+                    return;
+                }
+                if (newPass !== confPass) {
+                    e.preventDefault();
+                    if (window.toastNotification) {
+                        window.toastNotification.error('Konfirmasi password baru tidak cocok');
+                    }
+                    document.getElementById('page_confirm_password')?.focus();
+                    return;
+                }
+            }
+        });
+    }
+});
+</script>
 <?= $this->endSection() ?>

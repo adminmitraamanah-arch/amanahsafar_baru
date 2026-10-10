@@ -14,7 +14,7 @@
                 <?= esc($title ?? 'Dashboard') ?>
             </h1>
             <div class="flex items-center gap-1.5 text-[11px] text-slate-400 font-medium mt-0.5">
-                <a href="<?= base_url('/dashboard') ?>" class="hover:text-[#5e0078] transition">Beranda</a>
+                <a href="<?= base_url('/dashboard') ?>" class="hover:text-[#5e0078] transition">Dashboard</a>
                 <span>&gt;</span>
                 <span class="text-slate-600 font-semibold truncate"><?= esc($title ?? 'Overview') ?></span>
             </div>
@@ -56,9 +56,9 @@
                     <a href="<?= base_url('/') ?>" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors">
                         <i class="fas fa-globe text-slate-400 text-xs w-4 text-center"></i> Kunjungi Website
                     </a>
-                    <button type="button" onclick="openProfileModal()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors cursor-pointer">
+                    <a href="<?= base_url('/profile') ?>" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors">
                         <i class="fas fa-user-circle text-slate-400 text-xs w-4 text-center"></i> Profil Saya
-                    </button>
+                    </a>
                     <div class="border-t border-slate-100 my-1"></div>
                     <a href="<?= base_url('/logout') ?>" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors">
                         <i class="fas fa-arrow-right-from-bracket text-xs w-4 text-center"></i> Logout
@@ -75,5 +75,3 @@
         <?php endif; ?>
     </div>
 </header>
-
-<?= $this->include('layouts/profile_modal') ?>
