@@ -428,9 +428,22 @@
                                autoplay muted loop playsinline
                                class="w-full h-full object-cover object-center filter brightness-[0.70]"></video>
                     <?php else: ?>
-                        <img src="<?= esc($slide['image_url']) ?>" 
-                             alt="<?= esc($slide['title']) ?>" 
-                             class="w-full h-full object-cover object-center filter brightness-[0.70] transform scale-100 transition-transform duration-[7000ms]">
+                        <?php 
+                        $slideImg = $slide['image_url'];
+                        $slideWebp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $slideImg);
+                        $slideWebpExists = ($slideWebp !== $slideImg && (str_contains($slideImg, 'uploads/slides/') ? file_exists(FCPATH . 'uploads/slides/' . basename($slideWebp)) : false));
+                        ?>
+                        <picture>
+                            <?php if ($slideWebpExists): ?>
+                                <source srcset="<?= esc($slideWebp) ?>" type="image/webp">
+                            <?php endif; ?>
+                            <img src="<?= esc($slideImg) ?>" 
+                                 alt="<?= esc($slide['title']) ?>" 
+                                 width="1920" height="1080"
+                                 <?= $isFirst ? 'fetchpriority="high"' : 'loading="lazy"' ?>
+                                 decoding="async"
+                                 class="w-full h-full object-cover object-center filter brightness-[0.70] transform scale-100 transition-transform duration-[7000ms]">
+                        </picture>
                     <?php endif; ?>
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-black/30"></div>
                     <div class="absolute inset-0 flex items-center">
@@ -560,6 +573,20 @@
             document.addEventListener('DOMContentLoaded', () => {
                 showHeroSlide(0);
                 startHeroAutoSlide();
+            });
+
+            // Pause slider timer when tab is not active to conserve CPU/RAM, resume when tab is active
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    if (heroSlideInterval) {
+                        clearInterval(heroSlideInterval);
+                        heroSlideInterval = null;
+                    }
+                } else {
+                    if (!heroSlideInterval) {
+                        startHeroAutoSlide();
+                    }
+                }
             });
         </script>
     </section>
@@ -703,10 +730,23 @@
                     <?php foreach ($packages as $pkg): ?>
                         <div class="luxury-card rounded-2xl overflow-hidden flex flex-col">
                             <div class="relative h-56 overflow-hidden bg-slate-900">
-                                <?php if (!empty($pkg['gambar'])): ?>
-                                    <img src="<?= base_url('uploads/packages/' . esc($pkg['gambar'])) ?>" 
-                                         alt="<?= esc($pkg['nama']) ?>" 
-                                         class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                                <?php if (!empty($pkg['gambar'])): 
+                                    $pkgJpg = base_url('uploads/packages/' . esc($pkg['gambar']));
+                                    $pkgWebpName = pathinfo($pkg['gambar'], PATHINFO_FILENAME) . '.webp';
+                                    $hasPkgWebp = file_exists(FCPATH . 'uploads/packages/' . $pkgWebpName);
+                                    $pkgWebp = base_url('uploads/packages/' . $pkgWebpName);
+                                ?>
+                                    <picture>
+                                        <?php if ($hasPkgWebp): ?>
+                                            <source srcset="<?= esc($pkgWebp) ?>" type="image/webp">
+                                        <?php endif; ?>
+                                        <img src="<?= esc($pkgJpg) ?>" 
+                                             alt="<?= esc($pkg['nama']) ?>" 
+                                             width="1000" height="1250"
+                                             loading="lazy"
+                                             decoding="async"
+                                             class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                                    </picture>
                                 <?php else: ?>
                                     <div class="w-full h-full bg-gradient-to-br from-[#5e0078] via-[#4a0060] to-[#30003e] flex flex-col items-center justify-center text-center p-6 text-white select-none">
                                         <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mb-2 border border-white/15 shadow-inner">
@@ -884,11 +924,22 @@
             <div class="testi-card w-[310px] sm:w-[340px] md:w-[350px] shrink-0 bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:shadow-purple-950/10 transition-all duration-300 hover:-translate-y-2 flex flex-col overflow-hidden group select-none">
                 <!-- Top: Portrait Photo Container with Pills -->
                 <div class="h-72 sm:h-80 w-full relative overflow-hidden bg-slate-900">
-                    <?php if (!empty($t['foto'])): ?>
-                        <img src="<?= esc($t['foto']) ?>" 
-                             alt="<?= esc($t['nama_jamaah']) ?>" 
-                             loading="lazy"
-                             class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out">
+                    <?php if (!empty($t['foto'])): 
+                        $tFoto = $t['foto'];
+                        $tWebp = preg_replace('/\.(jpe?g|png)$/i', '.webp', $tFoto);
+                        $hasTWebp = ($tWebp !== $tFoto && (str_contains($tFoto, 'uploads/testimonials/') ? file_exists(FCPATH . 'uploads/testimonials/' . basename($tWebp)) : false));
+                    ?>
+                        <picture>
+                            <?php if ($hasTWebp): ?>
+                                <source srcset="<?= esc($tWebp) ?>" type="image/webp">
+                            <?php endif; ?>
+                            <img src="<?= esc($tFoto) ?>" 
+                                 alt="<?= esc($t['nama_jamaah']) ?>" 
+                                 width="800" height="1058"
+                                 loading="lazy"
+                                 decoding="async"
+                                 class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out">
+                        </picture>
                         <!-- Gradient Overlay to keep pills legible -->
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent"></div>
                     <?php else: ?>

@@ -39,6 +39,8 @@ public/uploads/proofs/*
 !public/uploads/proofs/.gitkeep
 public/uploads/documents/*
 !public/uploads/documents/.gitkeep
+public/uploads/_backup_originals/
+public/uploads/_backup_originals/*
 public/null/
 
 # --------------------------------------------------------------------

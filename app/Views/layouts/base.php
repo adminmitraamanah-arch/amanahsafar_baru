@@ -8,65 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            DEFAULT: '#5e0078',
-                            50: '#fbf5fd',
-                            100: '#f6eafb',
-                            200: '#edd5f7',
-                            300: '#dfb2f1',
-                            400: '#ca82e6',
-                            500: '#8f20ad',
-                            600: '#5e0078', // Warna dominan #5e0078
-                            700: '#4c0062',
-                            800: '#3b004c',
-                            900: '#280034',
-                            950: '#17001e',
-                        },
-                        blue: {
-                            50: '#fbf5fd',
-                            100: '#f6eafb',
-                            200: '#edd5f7',
-                            300: '#dfb2f1',
-                            400: '#ca82e6',
-                            500: '#8f20ad',
-                            600: '#5e0078', // Warna dominan #5e0078
-                            700: '#4c0062',
-                            800: '#3b004c',
-                            900: '#280034',
-                            950: '#17001e',
-                        },
-                        indigo: {
-                            50: '#faf3fc',
-                            100: '#f5e4fa',
-                            200: '#ebcaf5',
-                            300: '#dda5ee',
-                            400: '#c876e2',
-                            500: '#8f20ad',
-                            600: '#73139b',
-                            700: '#5e0078', // Warna dominan #5e0078
-                            800: '#450059',
-                            900: '#320040',
-                            950: '#1f0028',
-                        },
-                        slate: {
-                            700: '#3f0452',
-                            800: '#290035',
-                            900: '#1b0024',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Compiled Static Tailwind CSS -->
+    <link rel="stylesheet" href="<?= base_url('assets/css/app.min.css') ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {

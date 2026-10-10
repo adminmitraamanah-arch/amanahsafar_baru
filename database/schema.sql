@@ -228,7 +228,8 @@ CREATE TABLE IF NOT EXISTS hero_slides (
   order_num INT DEFAULT 0,
   status ENUM('aktif','nonaktif') DEFAULT 'aktif',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY idx_status_order (status, order_num)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS testimonials (
@@ -243,5 +244,6 @@ CREATE TABLE IF NOT EXISTS testimonials (
   order_num INT DEFAULT 1,
   status ENUM('aktif','nonaktif') DEFAULT 'aktif',
   created_at DATETIME NULL,
-  updated_at DATETIME NULL
+  updated_at DATETIME NULL,
+  KEY idx_status_order (status, order_num)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
