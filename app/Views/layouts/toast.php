@@ -1,4 +1,4 @@
-<!-- GLOBAL MINIMALIST FLOATING TOAST NOTIFICATION (Bottom-Right) -->
+<!-- GLOBAL FLOATING TOAST NOTIFICATION COMPONENT (Bottom-Right) -->
 <div id="toastContainer" 
      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99999] flex flex-col items-end gap-2.5 pointer-events-none w-[calc(100vw-2rem)] sm:w-auto max-w-sm sm:max-w-md"
      aria-live="polite" 
@@ -6,7 +6,7 @@
 </div>
 
 <style>
-/* Modern Minimalist Toast Animations & Styles */
+/* Modern Minimalist Toast Animations & Styles Matching Reference Screenshot */
 .toast-item {
     pointer-events: auto;
     transform: translate3d(24px, 0, 0);
@@ -15,7 +15,7 @@
                 opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
                 max-height 260ms cubic-bezier(0.16, 1, 0.3, 1),
                 margin 260ms cubic-bezier(0.16, 1, 0.3, 1);
-    max-height: 140px;
+    max-height: 160px;
 }
 
 .toast-item.toast-visible {
@@ -52,20 +52,33 @@
 
     const recentToastHashes = new Map();
 
-    // Exactly Two Primary Color Palettes: Hijau (Green) and Merah (Red)
+    // Palet Warna: Hijau (Success), Kuning (Warning / Role Mismatch), Merah (Error / Logout / Deletion)
     const TOAST_TYPES = {
         green: {
-            border: 'border-emerald-200/90',
-            bg: 'bg-white/95',
-            iconBg: 'bg-emerald-50 text-emerald-600 border border-emerald-100',
-            textColor: 'text-slate-800',
+            leftBorder: 'border-l-4 border-l-emerald-500',
+            border: 'border border-emerald-200/80',
+            bg: 'bg-emerald-50/95',
+            iconBg: 'bg-emerald-500',
+            icon: 'fas fa-check',
+            defaultTitle: 'Berhasil',
             progressBg: 'bg-emerald-500'
         },
+        warning: {
+            leftBorder: 'border-l-4 border-l-amber-500',
+            border: 'border border-amber-200/80',
+            bg: 'bg-amber-50/95',
+            iconBg: 'bg-amber-500',
+            icon: 'fas fa-info',
+            defaultTitle: 'Peringatan',
+            progressBg: 'bg-amber-500'
+        },
         red: {
-            border: 'border-rose-200/90',
-            bg: 'bg-white/95',
-            iconBg: 'bg-rose-50 text-rose-600 border border-rose-100',
-            textColor: 'text-slate-800',
+            leftBorder: 'border-l-4 border-l-rose-500',
+            border: 'border border-rose-200/80',
+            bg: 'bg-rose-50/95',
+            iconBg: 'bg-rose-500',
+            icon: 'fas fa-exclamation',
+            defaultTitle: 'Terjadi Kesalahan',
             progressBg: 'bg-rose-500'
         }
     };
@@ -80,88 +93,97 @@
             .replace(/'/g, '&#039;');
     }
 
-    // Determine strict 2-color mapping: either 'green' or 'red'
-    function resolveColorType(type, message) {
-        const lowerType = String(type || '').toLowerCase();
-        const lowerMsg = String(message || '').toLowerCase();
+    // Resolusi tipe warna dan judul kontekstual
+    function resolveToastDetails(options) {
+        let type = String(options.type || 'green').toLowerCase();
+        const msg = String(options.message || '').trim();
+        const lowerMsg = msg.toLowerCase();
+        let title = options.title || '';
 
-        // Merah: logout, penghapusan data, dan kegagalan aksi / nonaktif
-        if (
-            lowerType === 'red' ||
-            lowerType === 'error' ||
-            lowerType === 'danger' ||
-            lowerType === 'logout' ||
-            lowerType === 'deleted' ||
-            lowerType === 'deactivated' ||
-            lowerType === 'warning' ||
-            lowerMsg.includes('logout') ||
-            lowerMsg.includes('dihapus') ||
-            lowerMsg.includes('hapus') ||
-            lowerMsg.includes('dinonaktifkan') ||
-            lowerMsg.includes('nonaktif') ||
-            lowerMsg.includes('gagal') ||
-            lowerMsg.includes('kesalahan') ||
-            lowerMsg.includes('tidak valid') ||
-            lowerMsg.includes('tidak sesuai') ||
-            lowerMsg.includes('ditolak') ||
+        // Deteksi Tipe Kuning (Warning / Role Mismatch)
+        if (type === 'warning' || type === 'amber' || type === 'yellow' || lowerMsg.includes('role tidak sesuai') || lowerMsg.includes('pemilihan role') || lowerMsg.includes('role yang dipilih')) {
+            type = 'warning';
+            if (!title) {
+                title = (lowerMsg.includes('role')) ? 'Role Tidak Sesuai' : 'Peringatan';
+            }
+        } 
+        // Deteksi Tipe Merah (Error / Logout / Deletion / Failure)
+        else if (
+            type === 'red' || 
+            type === 'error' || 
+            type === 'danger' || 
+            type === 'logout' || 
+            type === 'deleted' || 
+            type === 'deactivated' || 
+            lowerMsg.includes('logout') || 
+            lowerMsg.includes('dihapus') || 
+            lowerMsg.includes('hapus') || 
+            lowerMsg.includes('dinonaktifkan') || 
+            lowerMsg.includes('nonaktif') || 
+            lowerMsg.includes('gagal') || 
+            lowerMsg.includes('kesalahan') || 
+            lowerMsg.includes('tidak sesuai') || 
+            lowerMsg.includes('tidak valid') || 
+            lowerMsg.includes('ditolak') || 
             lowerMsg.includes('tidak ditemukan')
         ) {
-            return 'red';
+            type = 'red';
+            if (!title) {
+                if (lowerMsg.includes('logout')) title = 'Logout';
+                else if (lowerMsg.includes('hapus') || lowerMsg.includes('dihapus')) title = 'Data Dihapus';
+                else if (lowerMsg.includes('nonaktif')) title = 'Akun Dinonaktifkan';
+                else title = 'Terjadi Kesalahan';
+            }
+        } 
+        // Deteksi Tipe Hijau (Success / Login / Add / Save / Activate)
+        else {
+            type = 'green';
+            if (!title) {
+                if (lowerMsg.includes('login') || lowerMsg.includes('masuk')) title = 'Login Berhasil';
+                else if (lowerMsg.includes('tambah') || lowerMsg.includes('ditambahkan') || lowerMsg.includes('dibuat')) title = 'Data Ditambahkan';
+                else if (lowerMsg.includes('tersimpan') || lowerMsg.includes('perubahan') || lowerMsg.includes('disimpan')) title = 'Perubahan Tersimpan';
+                else if (lowerMsg.includes('diaktifkan')) title = 'Akun Diaktifkan';
+                else title = 'Berhasil';
+            }
         }
 
-        // Hijau: login berhasil dan penambahan data berhasil, tersimpan, diaktifkan
-        return 'green';
-    }
-
-    // Contextual icon matching
-    function getContextualIcon(colorType, message) {
-        const lowerMsg = String(message || '').toLowerCase();
-
-        if (colorType === 'red') {
-            if (lowerMsg.includes('logout') || lowerMsg.includes('keluar')) {
-                return 'fas fa-arrow-right-from-bracket';
-            }
-            if (lowerMsg.includes('hapus') || lowerMsg.includes('dihapus')) {
-                return 'fas fa-trash-alt';
-            }
-            if (lowerMsg.includes('nonaktif')) {
-                return 'fas fa-user-slash';
-            }
-            return 'fas fa-circle-exclamation';
-        } else {
-            if (lowerMsg.includes('login') || lowerMsg.includes('masuk')) {
-                return 'fas fa-right-to-bracket';
-            }
-            if (lowerMsg.includes('tambah') || lowerMsg.includes('ditambahkan') || lowerMsg.includes('buat') || lowerMsg.includes('dibuat')) {
-                return 'fas fa-plus';
-            }
-            if (lowerMsg.includes('simpan') || lowerMsg.includes('tersimpan') || lowerMsg.includes('perbarui')) {
-                return 'fas fa-check-double';
-            }
-            return 'fas fa-check';
+        const palette = TOAST_TYPES[type] || TOAST_TYPES.green;
+        let icon = palette.icon;
+        if (type === 'red') {
+            if (lowerMsg.includes('logout')) icon = 'fas fa-arrow-right-from-bracket';
+            else if (lowerMsg.includes('hapus')) icon = 'fas fa-trash-alt';
+            else if (lowerMsg.includes('nonaktif')) icon = 'fas fa-user-slash';
+        } else if (type === 'green') {
+            if (lowerMsg.includes('login') || lowerMsg.includes('masuk')) icon = 'fas fa-right-to-bracket';
+            else if (lowerMsg.includes('tambah') || lowerMsg.includes('buat')) icon = 'fas fa-plus';
+            else if (lowerMsg.includes('tersimpan') || lowerMsg.includes('perubahan')) icon = 'fas fa-check-double';
         }
+
+        return {
+            type,
+            title,
+            message: msg,
+            palette,
+            icon
+        };
     }
 
-    function createToastElement(options) {
-        const rawType = options.type || 'green';
-        const rawMessage = options.message || '';
-        const colorType = resolveColorType(rawType, rawMessage);
-        const palette = TOAST_TYPES[colorType];
-        const iconClass = getContextualIcon(colorType, rawMessage);
-        const safeMessage = escapeHtml(rawMessage);
+    function createToastElement(details) {
+        const { palette, title, message, icon } = details;
 
         const toast = document.createElement('div');
-        toast.className = `toast-item relative w-full overflow-hidden rounded-xl border ${palette.border} ${palette.bg} backdrop-blur-md shadow-lg shadow-slate-900/5 flex flex-col select-none`;
+        toast.className = `toast-item relative w-full overflow-hidden rounded-xl ${palette.border} ${palette.leftBorder} ${palette.bg} backdrop-blur-md shadow-lg shadow-slate-900/5 flex flex-col select-none`;
         toast.setAttribute('role', 'alert');
 
-        // Modern, clean, minimal layout without manual close button
+        // Layout persis screenshot referensi: tanpa tombol close manual
         toast.innerHTML = `
-            <div class="px-4 py-3 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg ${palette.iconBg} flex items-center justify-center flex-shrink-0 text-xs shadow-none">
-                    <i class="${iconClass}"></i>
+            <div class="p-3.5 sm:p-4 flex items-start gap-3">
+                <div class="w-6 h-6 rounded-full ${palette.iconBg} text-white flex items-center justify-center text-[11px] flex-shrink-0 shadow-sm mt-0.5">
+                    <i class="${icon}"></i>
                 </div>
                 <div class="flex-1 min-w-0 pr-1">
-                    <p class="text-xs sm:text-sm font-semibold ${palette.textColor} leading-snug break-words">${safeMessage}</p>
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-800 leading-snug tracking-tight">${escapeHtml(title)}</h4>
+                    <p class="text-xs text-slate-600 font-normal mt-0.5 leading-snug break-words">${escapeHtml(message)}</p>
                 </div>
             </div>
             <div class="h-0.5 w-full bg-slate-100 overflow-hidden">
@@ -194,12 +216,11 @@
         }
         if (!options || !options.message) return;
 
-        const message = String(options.message).trim();
+        const details = resolveToastDetails(options);
         const duration = options.duration || TOAST_DURATION_MS;
-        const colorType = resolveColorType(options.type, message);
 
         // Deduplikasi: cegah pesan yang sama persis muncul dalam DEDUPE_WINDOW_MS
-        const dedupeKey = `${colorType}:${message}`;
+        const dedupeKey = `${details.type}:${details.message}`;
         const now = Date.now();
         if (recentToastHashes.has(dedupeKey)) {
             const lastSeen = recentToastHashes.get(dedupeKey);
@@ -222,7 +243,7 @@
             dismissToast(activeToasts[0]);
         }
 
-        const toastEl = createToastElement({ ...options, message, type: colorType });
+        const toastEl = createToastElement(details);
         container.appendChild(toastEl);
 
         // Trigger smooth enter animation on next frame
@@ -278,12 +299,13 @@
     // Expose global Toast API
     window.showToast = showToast;
     window.toast = {
-        green: (msg) => showToast({ message: msg, type: 'green' }),
-        red: (msg) => showToast({ message: msg, type: 'red' }),
-        success: (msg) => showToast({ message: msg, type: 'green' }),
-        error: (msg) => showToast({ message: msg, type: 'red' }),
-        warning: (msg) => showToast({ message: msg, type: 'red' }),
-        info: (msg) => showToast({ message: msg, type: 'green' })
+        green: (msg, title) => showToast({ message: msg, title, type: 'green' }),
+        success: (msg, title) => showToast({ message: msg, title, type: 'green' }),
+        warning: (msg, title) => showToast({ message: msg, title, type: 'warning' }),
+        amber: (msg, title) => showToast({ message: msg, title, type: 'warning' }),
+        red: (msg, title) => showToast({ message: msg, title, type: 'red' }),
+        error: (msg, title) => showToast({ message: msg, title, type: 'red' }),
+        info: (msg, title) => showToast({ message: msg, title, type: 'warning' })
     };
 
     // Listen to custom DOM event for decoupled notifications
@@ -306,31 +328,44 @@
             ];
         }
 
-        // 2. Logout flash -> Merah (Red)
+        // 2. Warning flash -> Kuning (Yellow / Amber)
+        if (session()->getFlashdata('warning')) {
+            $msg = session()->getFlashdata('warning');
+            $flashes[] = [
+                'type' => 'warning',
+                'title' => (stripos($msg, 'role') !== false) ? 'Role Tidak Sesuai' : 'Peringatan',
+                'message' => $msg
+            ];
+        }
+
+        // 3. Logout flash -> Merah (Red)
         if (session()->getFlashdata('logout')) {
             $flashes[] = [
                 'type' => 'red',
+                'title' => 'Logout',
                 'message' => session()->getFlashdata('logout')
             ];
         }
 
-        // 3. Deletion flash -> Merah (Red)
+        // 4. Deletion flash -> Merah (Red)
         if (session()->getFlashdata('deleted')) {
             $flashes[] = [
                 'type' => 'red',
+                'title' => 'Data Dihapus',
                 'message' => session()->getFlashdata('deleted')
             ];
         }
 
-        // 4. Deactivation flash -> Merah (Red)
+        // 5. Deactivation flash -> Merah (Red)
         if (session()->getFlashdata('deactivated')) {
             $flashes[] = [
                 'type' => 'red',
+                'title' => 'Akun Dinonaktifkan',
                 'message' => session()->getFlashdata('deactivated')
             ];
         }
 
-        // 5. Error flash (string or array) -> Merah (Red)
+        // 6. Error flash (string or array) -> Merah (Red)
         if (session()->getFlashdata('error')) {
             $err = session()->getFlashdata('error');
             if (is_array($err)) {
@@ -342,26 +377,24 @@
             }
         }
 
-        // 6. Validation errors array -> Merah (Red)
+        // 7. Validation errors array -> Merah (Red)
         if (session()->getFlashdata('errors')) {
             $errs = session()->getFlashdata('errors');
             if (is_array($errs)) {
                 foreach ($errs as $msg) {
-                    $flashes[] = ['type' => 'red', 'message' => $msg];
+                    $flashes[] = ['type' => 'red', 'title' => 'Validasi Form', 'message' => $msg];
                 }
             } else {
-                $flashes[] = ['type' => 'red', 'message' => $errs];
+                $flashes[] = ['type' => 'red', 'title' => 'Validasi Form', 'message' => $errs];
             }
         }
 
-        // 7. Danger or Warning flash -> Merah (Red)
+        // 8. Danger flash -> Merah (Red)
         if (session()->getFlashdata('danger')) {
             $flashes[] = ['type' => 'red', 'message' => session()->getFlashdata('danger')];
-        } elseif (session()->getFlashdata('warning')) {
-            $flashes[] = ['type' => 'red', 'message' => session()->getFlashdata('warning')];
         }
 
-        // 8. Info / General message flash
+        // 9. Info / General message flash
         if (session()->getFlashdata('info')) {
             $flashes[] = [
                 'type' => 'green',

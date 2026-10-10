@@ -29,11 +29,11 @@ class Auth extends BaseController
             $user = $this->userModel->findByEmail($email);
 
             if (!$user || !password_verify($password, $user['password_hash'])) {
-                return redirect()->back()->with('error', 'Email, password, atau akses tidak sesuai');
+                return redirect()->back()->with('error', 'Email atau password tidak sesuai');
             }
 
             if ($user['role'] !== $role) {
-                return redirect()->back()->with('error', 'Email, password, atau akses tidak sesuai');
+                return redirect()->back()->with('warning', 'Role yang dipilih tidak sesuai dengan data login');
             }
 
             if ($user['status'] === 'nonaktif') {
