@@ -51,7 +51,7 @@ class Voucher extends BaseController
             ]);
         }
 
-        return redirect()->back()->with('success', "$qty voucher berhasil dibuat");
+        return redirect()->back()->with('success', "{$qty} voucher baru dibuat");
     }
 
     public function disable($id)
@@ -62,6 +62,6 @@ class Voucher extends BaseController
         }
 
         $this->voucherModel->update($id, ['status' => 'dinonaktifkan']);
-        return redirect()->back()->with('success', 'Voucher berhasil dinonaktifkan');
+        return redirect()->back()->with('deleted', 'Voucher dinonaktifkan');
     }
 }

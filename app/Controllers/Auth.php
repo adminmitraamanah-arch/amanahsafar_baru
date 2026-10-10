@@ -69,7 +69,7 @@ class Auth extends BaseController
                 $targetUrl = '/admin';
             }
 
-            return redirect()->to($targetUrl)->with('success', 'Berhasil login ke sistem');
+            return redirect()->to($targetUrl)->with('success', 'Berhasil masuk ke akun');
         }
 
         return view('auth/login');
@@ -222,6 +222,6 @@ class Auth extends BaseController
     {
         session()->remove(['user_id', 'email', 'nama', 'role', 'logged_in']);
         session()->regenerate(true);
-        return redirect()->to('/login')->with('success', 'Akun berhasil logout');
+        return redirect()->to('/login')->with('logout', 'Anda telah logout');
     }
 }

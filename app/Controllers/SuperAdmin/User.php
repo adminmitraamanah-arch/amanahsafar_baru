@@ -163,7 +163,7 @@ class User extends BaseController
             ]);
         }
 
-        return redirect()->back()->with('success', "Data pengguna {$namaLengkap} berhasil diperbarui");
+        return redirect()->back()->with('success', 'Perubahan data tersimpan');
     }
 
     public function deactivate($id)
@@ -200,7 +200,7 @@ class User extends BaseController
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
-        return redirect()->back()->with('success', "Akun pengguna {$user['nama_lengkap']} telah dinonaktifkan");
+        return redirect()->back()->with('deactivated', "Akun {$user['nama_lengkap']} dinonaktifkan");
     }
 
     public function activate($id)
@@ -220,7 +220,7 @@ class User extends BaseController
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
-        return redirect()->back()->with('success', "Akun pengguna {$user['nama_lengkap']} berhasil diaktifkan kembali");
+        return redirect()->back()->with('success', "Akun {$user['nama_lengkap']} diaktifkan kembali");
     }
 
     /**

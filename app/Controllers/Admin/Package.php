@@ -61,7 +61,7 @@ class Package extends BaseController
             'created_by' => session('user_id')
         ]);
 
-        return redirect()->to('/admin/packages')->with('success', 'Paket berhasil dibuat');
+        return redirect()->to('/admin/packages')->with('success', 'Data paket ditambahkan');
     }
 
     public function edit($id)
@@ -105,6 +105,6 @@ class Package extends BaseController
 
         $this->packageModel->update($id, $dataUpdate);
 
-        return redirect()->to('/admin/packages')->with('success', 'Paket berhasil diupdate');
+        return redirect()->to('/admin/packages')->with('success', 'Perubahan data tersimpan');
     }
 }

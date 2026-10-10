@@ -43,6 +43,6 @@ class Task extends BaseController
             'created_by' => session('user_id')
         ]);
 
-        return redirect()->back()->with('success', 'Tugas berhasil dibuat');
+        return redirect()->back()->with('success', 'Tugas baru ditambahkan');
     }
 }

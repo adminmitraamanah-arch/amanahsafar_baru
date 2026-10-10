@@ -1,4 +1,4 @@
-<!-- GLOBAL FLOATING TOAST NOTIFICATION COMPONENT (Bottom-Right) -->
+<!-- GLOBAL MINIMALIST FLOATING TOAST NOTIFICATION (Bottom-Right) -->
 <div id="toastContainer" 
      class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99999] flex flex-col items-end gap-2.5 pointer-events-none w-[calc(100vw-2rem)] sm:w-auto max-w-sm sm:max-w-md"
      aria-live="polite" 
@@ -6,25 +6,25 @@
 </div>
 
 <style>
-/* Toast Animations & Styles */
+/* Modern Minimalist Toast Animations & Styles */
 .toast-item {
     pointer-events: auto;
-    transform: translate3d(24px, 12px, 0) scale(0.96);
+    transform: translate3d(24px, 0, 0);
     opacity: 0;
-    transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 280ms cubic-bezier(0.16, 1, 0.3, 1),
-                max-height 280ms cubic-bezier(0.16, 1, 0.3, 1),
-                margin 280ms cubic-bezier(0.16, 1, 0.3, 1);
-    max-height: 200px;
+    transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 240ms cubic-bezier(0.16, 1, 0.3, 1),
+                max-height 260ms cubic-bezier(0.16, 1, 0.3, 1),
+                margin 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 140px;
 }
 
 .toast-item.toast-visible {
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
     opacity: 1;
 }
 
 .toast-item.toast-leaving {
-    transform: translate3d(32px, 0, 0) scale(0.95);
+    transform: translate3d(24px, 0, 0);
     opacity: 0;
     max-height: 0;
     margin-bottom: -10px;
@@ -46,52 +46,27 @@
 <script>
 (function() {
     // Toast Configuration
-    const TOAST_DURATION_MS = 4000; // 4 seconds (within 3-5s requirement)
+    const TOAST_DURATION_MS = 3800; // 3.8 seconds (within 3-5s requirement)
     const MAX_VISIBLE_TOASTS = 3;
     const DEDUPE_WINDOW_MS = 3000;
 
     const recentToastHashes = new Map();
 
+    // Exactly Two Primary Color Palettes: Hijau (Green) and Merah (Red)
     const TOAST_TYPES = {
-        success: {
-            title: 'Berhasil',
-            icon: 'fas fa-check-circle',
-            border: 'border-emerald-200',
+        green: {
+            border: 'border-emerald-200/90',
             bg: 'bg-white/95',
-            iconBg: 'bg-emerald-100 text-emerald-600',
+            iconBg: 'bg-emerald-50 text-emerald-600 border border-emerald-100',
             textColor: 'text-slate-800',
-            titleColor: 'text-emerald-900',
             progressBg: 'bg-emerald-500'
         },
-        error: {
-            title: 'Terjadi Kesalahan',
-            icon: 'fas fa-exclamation-circle',
-            border: 'border-rose-200',
+        red: {
+            border: 'border-rose-200/90',
             bg: 'bg-white/95',
-            iconBg: 'bg-rose-100 text-rose-600',
+            iconBg: 'bg-rose-50 text-rose-600 border border-rose-100',
             textColor: 'text-slate-800',
-            titleColor: 'text-rose-900',
             progressBg: 'bg-rose-500'
-        },
-        warning: {
-            title: 'Peringatan',
-            icon: 'fas fa-exclamation-triangle',
-            border: 'border-amber-200',
-            bg: 'bg-white/95',
-            iconBg: 'bg-amber-100 text-amber-600',
-            textColor: 'text-slate-800',
-            titleColor: 'text-amber-900',
-            progressBg: 'bg-amber-500'
-        },
-        info: {
-            title: 'Informasi',
-            icon: 'fas fa-info-circle',
-            border: 'border-sky-200',
-            bg: 'bg-white/95',
-            iconBg: 'bg-sky-100 text-sky-600',
-            textColor: 'text-slate-800',
-            titleColor: 'text-sky-900',
-            progressBg: 'bg-sky-500'
         }
     };
 
@@ -105,30 +80,92 @@
             .replace(/'/g, '&#039;');
     }
 
+    // Determine strict 2-color mapping: either 'green' or 'red'
+    function resolveColorType(type, message) {
+        const lowerType = String(type || '').toLowerCase();
+        const lowerMsg = String(message || '').toLowerCase();
+
+        // Merah: logout, penghapusan data, dan kegagalan aksi / nonaktif
+        if (
+            lowerType === 'red' ||
+            lowerType === 'error' ||
+            lowerType === 'danger' ||
+            lowerType === 'logout' ||
+            lowerType === 'deleted' ||
+            lowerType === 'deactivated' ||
+            lowerType === 'warning' ||
+            lowerMsg.includes('logout') ||
+            lowerMsg.includes('dihapus') ||
+            lowerMsg.includes('hapus') ||
+            lowerMsg.includes('dinonaktifkan') ||
+            lowerMsg.includes('nonaktif') ||
+            lowerMsg.includes('gagal') ||
+            lowerMsg.includes('kesalahan') ||
+            lowerMsg.includes('tidak valid') ||
+            lowerMsg.includes('tidak sesuai') ||
+            lowerMsg.includes('ditolak') ||
+            lowerMsg.includes('tidak ditemukan')
+        ) {
+            return 'red';
+        }
+
+        // Hijau: login berhasil dan penambahan data berhasil, tersimpan, diaktifkan
+        return 'green';
+    }
+
+    // Contextual icon matching
+    function getContextualIcon(colorType, message) {
+        const lowerMsg = String(message || '').toLowerCase();
+
+        if (colorType === 'red') {
+            if (lowerMsg.includes('logout') || lowerMsg.includes('keluar')) {
+                return 'fas fa-arrow-right-from-bracket';
+            }
+            if (lowerMsg.includes('hapus') || lowerMsg.includes('dihapus')) {
+                return 'fas fa-trash-alt';
+            }
+            if (lowerMsg.includes('nonaktif')) {
+                return 'fas fa-user-slash';
+            }
+            return 'fas fa-circle-exclamation';
+        } else {
+            if (lowerMsg.includes('login') || lowerMsg.includes('masuk')) {
+                return 'fas fa-right-to-bracket';
+            }
+            if (lowerMsg.includes('tambah') || lowerMsg.includes('ditambahkan') || lowerMsg.includes('buat') || lowerMsg.includes('dibuat')) {
+                return 'fas fa-plus';
+            }
+            if (lowerMsg.includes('simpan') || lowerMsg.includes('tersimpan') || lowerMsg.includes('perbarui')) {
+                return 'fas fa-check-double';
+            }
+            return 'fas fa-check';
+        }
+    }
+
     function createToastElement(options) {
-        const type = TOAST_TYPES[options.type] || TOAST_TYPES.info;
-        const title = options.title || type.title;
-        const message = escapeHtml(options.message);
+        const rawType = options.type || 'green';
+        const rawMessage = options.message || '';
+        const colorType = resolveColorType(rawType, rawMessage);
+        const palette = TOAST_TYPES[colorType];
+        const iconClass = getContextualIcon(colorType, rawMessage);
+        const safeMessage = escapeHtml(rawMessage);
 
         const toast = document.createElement('div');
-        toast.className = `toast-item relative w-full overflow-hidden rounded-2xl border ${type.border} ${type.bg} backdrop-blur-md shadow-xl shadow-slate-900/10 flex flex-col select-none`;
+        toast.className = `toast-item relative w-full overflow-hidden rounded-xl border ${palette.border} ${palette.bg} backdrop-blur-md shadow-lg shadow-slate-900/5 flex flex-col select-none`;
         toast.setAttribute('role', 'alert');
 
+        // Modern, clean, minimal layout without manual close button
         toast.innerHTML = `
-            <div class="p-3.5 sm:p-4 flex items-start gap-3">
-                <div class="w-9 h-9 rounded-xl ${type.iconBg} flex items-center justify-center flex-shrink-0 text-base shadow-sm">
-                    <i class="${type.icon}"></i>
+            <div class="px-4 py-3 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg ${palette.iconBg} flex items-center justify-center flex-shrink-0 text-xs shadow-none">
+                    <i class="${iconClass}"></i>
                 </div>
                 <div class="flex-1 min-w-0 pr-1">
-                    <h4 class="text-xs font-bold uppercase tracking-wider ${type.titleColor} leading-tight">${escapeHtml(title)}</h4>
-                    <p class="text-xs sm:text-sm font-medium ${type.textColor} mt-0.5 leading-snug break-words">${message}</p>
+                    <p class="text-xs sm:text-sm font-semibold ${palette.textColor} leading-snug break-words">${safeMessage}</p>
                 </div>
-                <button type="button" class="toast-close-btn w-6 h-6 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100/80 flex items-center justify-center text-xs transition cursor-pointer flex-shrink-0 focus:outline-none" aria-label="Tutup notifikasi">
-                    <i class="fas fa-times"></i>
-                </button>
             </div>
-            <div class="h-1 w-full bg-gray-100 overflow-hidden">
-                <div class="toast-progress-bar h-full ${type.progressBg}" style="width: 100%;"></div>
+            <div class="h-0.5 w-full bg-slate-100 overflow-hidden">
+                <div class="toast-progress-bar h-full ${palette.progressBg}" style="width: 100%;"></div>
             </div>
         `;
 
@@ -144,7 +181,7 @@
             if (toast.parentNode) {
                 toast.parentNode.removeChild(toast);
             }
-        }, 290);
+        }, 270);
     }
 
     function showToast(options) {
@@ -153,16 +190,16 @@
 
         // Normalisasi input
         if (typeof options === 'string') {
-            options = { message: options, type: 'info' };
+            options = { message: options, type: 'green' };
         }
         if (!options || !options.message) return;
 
-        const type = options.type || 'info';
         const message = String(options.message).trim();
         const duration = options.duration || TOAST_DURATION_MS;
+        const colorType = resolveColorType(options.type, message);
 
         // Deduplikasi: cegah pesan yang sama persis muncul dalam DEDUPE_WINDOW_MS
-        const dedupeKey = `${type}:${message}`;
+        const dedupeKey = `${colorType}:${message}`;
         const now = Date.now();
         if (recentToastHashes.has(dedupeKey)) {
             const lastSeen = recentToastHashes.get(dedupeKey);
@@ -185,7 +222,7 @@
             dismissToast(activeToasts[0]);
         }
 
-        const toastEl = createToastElement({ ...options, type, message });
+        const toastEl = createToastElement({ ...options, message, type: colorType });
         container.appendChild(toastEl);
 
         // Trigger smooth enter animation on next frame
@@ -194,15 +231,6 @@
                 toastEl.classList.add('toast-visible');
             });
         });
-
-        // Close button click handler
-        const closeBtn = toastEl.querySelector('.toast-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dismissToast(toastEl);
-            });
-        }
 
         // Auto dismiss & Progress bar logic
         const progressBar = toastEl.querySelector('.toast-progress-bar');
@@ -250,10 +278,12 @@
     // Expose global Toast API
     window.showToast = showToast;
     window.toast = {
-        success: (msg, title) => showToast({ message: msg, title: title || 'Berhasil', type: 'success' }),
-        error: (msg, title) => showToast({ message: msg, title: title || 'Terjadi Kesalahan', type: 'error' }),
-        warning: (msg, title) => showToast({ message: msg, title: title || 'Peringatan', type: 'warning' }),
-        info: (msg, title) => showToast({ message: msg, title: title || 'Informasi', type: 'info' })
+        green: (msg) => showToast({ message: msg, type: 'green' }),
+        red: (msg) => showToast({ message: msg, type: 'red' }),
+        success: (msg) => showToast({ message: msg, type: 'green' }),
+        error: (msg) => showToast({ message: msg, type: 'red' }),
+        warning: (msg) => showToast({ message: msg, type: 'red' }),
+        info: (msg) => showToast({ message: msg, type: 'green' })
     };
 
     // Listen to custom DOM event for decoupled notifications
@@ -268,60 +298,83 @@
         <?php
         $flashes = [];
 
-        // Success flash
+        // 1. Success flash -> Hijau (Green)
         if (session()->getFlashdata('success')) {
             $flashes[] = [
-                'type' => 'success',
+                'type' => 'green',
                 'message' => session()->getFlashdata('success')
             ];
         }
 
-        // Error flash (string or array)
+        // 2. Logout flash -> Merah (Red)
+        if (session()->getFlashdata('logout')) {
+            $flashes[] = [
+                'type' => 'red',
+                'message' => session()->getFlashdata('logout')
+            ];
+        }
+
+        // 3. Deletion flash -> Merah (Red)
+        if (session()->getFlashdata('deleted')) {
+            $flashes[] = [
+                'type' => 'red',
+                'message' => session()->getFlashdata('deleted')
+            ];
+        }
+
+        // 4. Deactivation flash -> Merah (Red)
+        if (session()->getFlashdata('deactivated')) {
+            $flashes[] = [
+                'type' => 'red',
+                'message' => session()->getFlashdata('deactivated')
+            ];
+        }
+
+        // 5. Error flash (string or array) -> Merah (Red)
         if (session()->getFlashdata('error')) {
             $err = session()->getFlashdata('error');
             if (is_array($err)) {
                 foreach ($err as $msg) {
-                    $flashes[] = ['type' => 'error', 'message' => $msg];
+                    $flashes[] = ['type' => 'red', 'message' => $msg];
                 }
             } else {
-                $flashes[] = ['type' => 'error', 'message' => $err];
+                $flashes[] = ['type' => 'red', 'message' => $err];
             }
         }
 
-        // Errors array flash
+        // 6. Validation errors array -> Merah (Red)
         if (session()->getFlashdata('errors')) {
             $errs = session()->getFlashdata('errors');
             if (is_array($errs)) {
                 foreach ($errs as $msg) {
-                    $flashes[] = ['type' => 'error', 'message' => $msg];
+                    $flashes[] = ['type' => 'red', 'message' => $msg];
                 }
             } else {
-                $flashes[] = ['type' => 'error', 'message' => $errs];
+                $flashes[] = ['type' => 'red', 'message' => $errs];
             }
         }
 
-        // Warning flash
-        if (session()->getFlashdata('warning')) {
-            $flashes[] = [
-                'type' => 'warning',
-                'message' => session()->getFlashdata('warning')
-            ];
+        // 7. Danger or Warning flash -> Merah (Red)
+        if (session()->getFlashdata('danger')) {
+            $flashes[] = ['type' => 'red', 'message' => session()->getFlashdata('danger')];
+        } elseif (session()->getFlashdata('warning')) {
+            $flashes[] = ['type' => 'red', 'message' => session()->getFlashdata('warning')];
         }
 
-        // Info / General message flash
+        // 8. Info / General message flash
         if (session()->getFlashdata('info')) {
             $flashes[] = [
-                'type' => 'info',
+                'type' => 'green',
                 'message' => session()->getFlashdata('info')
             ];
         } elseif (session()->getFlashdata('message')) {
             $flashes[] = [
-                'type' => 'info',
+                'type' => 'green',
                 'message' => session()->getFlashdata('message')
             ];
         } elseif (session()->getFlashdata('status')) {
             $flashes[] = [
-                'type' => 'info',
+                'type' => 'green',
                 'message' => session()->getFlashdata('status')
             ];
         }

@@ -61,7 +61,7 @@ class Package extends BaseController
             'created_by' => session('user_id')
         ]);
 
-        return redirect()->to('/superadmin/packages')->with('success', 'Paket berhasil dibuat');
+        return redirect()->to('/superadmin/packages')->with('success', 'Data paket ditambahkan');
     }
 
     public function edit($id)
@@ -106,12 +106,12 @@ class Package extends BaseController
 
         $this->packageModel->update($id, $dataUpdate);
 
-        return redirect()->to('/superadmin/packages')->with('success', 'Paket berhasil diupdate');
+        return redirect()->to('/superadmin/packages')->with('success', 'Perubahan data tersimpan');
     }
 
     public function delete($id)
     {
         $this->packageModel->delete($id);
-        return redirect()->back()->with('success', 'Paket berhasil dihapus');
+        return redirect()->back()->with('deleted', 'Data paket dihapus');
     }
 }

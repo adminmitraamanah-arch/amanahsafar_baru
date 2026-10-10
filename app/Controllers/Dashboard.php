@@ -22,14 +22,16 @@ class Dashboard extends BaseController
         $role = session('role');
         if ($role === 'super_admin' || $role === 'superadmin') {
             $redirect = redirect()->to('/superadmin');
-            if ($s = session()->getFlashdata('success')) $redirect = $redirect->with('success', $s);
-            if ($e = session()->getFlashdata('error')) $redirect = $redirect->with('error', $e);
+            foreach (['success', 'logout', 'deleted', 'deactivated', 'error', 'errors', 'warning', 'info'] as $k) {
+                if ($v = session()->getFlashdata($k)) $redirect = $redirect->with($k, $v);
+            }
             return $redirect;
         }
         if ($role === 'admin') {
             $redirect = redirect()->to('/admin');
-            if ($s = session()->getFlashdata('success')) $redirect = $redirect->with('success', $s);
-            if ($e = session()->getFlashdata('error')) $redirect = $redirect->with('error', $e);
+            foreach (['success', 'logout', 'deleted', 'deactivated', 'error', 'errors', 'warning', 'info'] as $k) {
+                if ($v = session()->getFlashdata($k)) $redirect = $redirect->with($k, $v);
+            }
             return $redirect;
         }
 

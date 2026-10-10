@@ -94,7 +94,7 @@ class LandingContent extends BaseController
             $targetBlank = $this->request->getPost('announcement_link_target_blank') ? '1' : '0';
             LandingSettingModel::setVal('announcement_link_target_blank', $targetBlank);
 
-            return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan Announcement Bar berhasil disimpan!');
+            return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan Announcement Bar tersimpan');
         }
 
         // Pengaturan Durasi Slide & Kontak Umum
@@ -134,7 +134,7 @@ class LandingContent extends BaseController
             LandingSettingModel::setVal('whatsapp_cs_url', trim($waCsUrl));
         }
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan umum landing page berhasil disimpan!');
+        return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan landing page tersimpan');
     }
 
     public function storeSlide()
@@ -194,7 +194,7 @@ class LandingContent extends BaseController
 
         $this->slideModel->insert($data);
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Slide baru berhasil ditambahkan!');
+        return redirect()->to('/superadmin/landing')->with('success', 'Data slide ditambahkan');
     }
 
     public function updateSlide($id)
@@ -264,7 +264,7 @@ class LandingContent extends BaseController
 
         $this->slideModel->update($id, $data);
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Slide berhasil diperbarui!');
+        return redirect()->to('/superadmin/landing')->with('success', 'Perubahan slide tersimpan');
     }
 
     public function deleteSlide($id)
@@ -289,7 +289,7 @@ class LandingContent extends BaseController
 
         $this->slideModel->delete($id);
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Slide berhasil dihapus!');
+        return redirect()->to('/superadmin/landing')->with('deleted', 'Data slide dihapus');
     }
 
     public function storeTestimonial()
@@ -329,7 +329,7 @@ class LandingContent extends BaseController
 
         $this->testimonialModel->insert($data);
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Testimoni jamaah berhasil ditambahkan!');
+        return redirect()->to('/superadmin/landing')->with('success', 'Data testimoni ditambahkan');
     }
 
     public function updateTestimonial($id)
@@ -382,7 +382,7 @@ class LandingContent extends BaseController
 
         $this->testimonialModel->update($id, $data);
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Testimoni jamaah berhasil diperbarui!');
+        return redirect()->to('/superadmin/landing')->with('success', 'Perubahan testimoni tersimpan');
     }
 
     public function deleteTestimonial($id)
@@ -406,6 +406,6 @@ class LandingContent extends BaseController
 
         $this->testimonialModel->delete($id);
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Testimoni jamaah berhasil dihapus!');
+        return redirect()->to('/superadmin/landing')->with('deleted', 'Data testimoni dihapus');
     }
 }
