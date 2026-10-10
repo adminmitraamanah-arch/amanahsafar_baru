@@ -30,7 +30,7 @@
                 </div>
 
                 <!-- 6 Stat Cards Row (Modern Minimalist Grid matching screenshot) -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
                     
                     <!-- Card 1: Total Pengguna -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">

@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    /* Responsive Dashboard Sidebar Layout Guarantees */
+    @media (min-width: 768px) {
+        #sidebarContainer {
+            position: static !important;
+            transform: translateX(0) !important;
+            width: 16rem !important;
+            flex-shrink: 0 !important;
+            height: 100vh !important;
+        }
+        #sidebarBackdrop {
+            display: none !important;
+        }
+        #mobileSidebarToggle {
+            display: none !important;
+        }
+        #closeSidebarBtn {
+            display: none !important;
+        }
+    }
+}

@@ -1,9 +1,9 @@
 <!-- DASHBOARD SIDEBAR (White background, Solid Purple Active, Modern & Minimalist) -->
 <!-- Mobile Backdrop -->
-<div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 lg:hidden hidden transition-opacity duration-200"></div>
+<div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden hidden transition-opacity duration-200"></div>
 
-<!-- Sidebar Container -->
-<aside id="sidebarContainer" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between shrink-0 select-none transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-in-out">
+<!-- Sidebar Container (Fixed drawer on mobile, permanently docked flex column on desktop/laptop) -->
+<aside id="sidebarContainer" class="fixed md:static inset-y-0 left-0 z-50 md:z-auto h-screen w-64 shrink-0 bg-white border-r border-slate-200/80 flex flex-col justify-between select-none transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
     
     <!-- Top Brand Header -->
     <div>
@@ -17,7 +17,7 @@
                     <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Management</span>
                 </div>
             </a>
-            <button id="closeSidebarBtn" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 focus:outline-none" aria-label="Tutup menu">
+            <button id="closeSidebarBtn" class="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 focus:outline-none" aria-label="Tutup menu">
                 <i class="fas fa-times text-sm"></i>
             </button>
         </div>
@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (sidebarContainer && sidebarBackdrop) {
             sidebarContainer.classList.remove('-translate-x-full');
             sidebarBackdrop.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
     }
 
@@ -119,11 +120,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (sidebarContainer && sidebarBackdrop) {
             sidebarContainer.classList.add('-translate-x-full');
             sidebarBackdrop.classList.add('hidden');
+            document.body.style.overflow = '';
         }
     }
 
     if (mobileToggleBtn) mobileToggleBtn.addEventListener('click', openSidebar);
     if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
     if (sidebarBackdrop) sidebarBackdrop.addEventListener('click', closeSidebar);
+
+    // Close on Escape key
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && window.innerWidth < 768) {
+            closeSidebar();
+        }
+    });
+
+    // Auto cleanup when window is resized to desktop/laptop (>= 768px)
+    window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+            if (sidebarBackdrop) sidebarBackdrop.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    });
 });
 </script>

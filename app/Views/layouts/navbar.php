@@ -4,7 +4,7 @@
     <!-- Left: Mobile Toggle & Page Title/Breadcrumb -->
     <div class="flex items-center gap-3 min-w-0">
         <!-- Mobile Sidebar Toggle -->
-        <button id="mobileSidebarToggle" type="button" class="lg:hidden p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition focus:outline-none" aria-label="Buka menu navigasi">
+        <button id="mobileSidebarToggle" type="button" class="md:hidden p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition focus:outline-none" aria-label="Buka menu navigasi">
             <i class="fas fa-bars text-base"></i>
         </button>
 

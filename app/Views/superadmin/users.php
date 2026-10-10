@@ -48,7 +48,7 @@
                     else $kycUnverified++;
                 }
                 ?>
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
                     
                     <!-- Card 1: Active Users -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
@@ -170,7 +170,7 @@
 
                     <!-- Table Data -->
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse" id="usersTable">
+                        <table class="w-full text-left border-collapse min-w-[760px]" id="usersTable">
                             <thead>
                                 <tr class="bg-slate-50/70 border-b border-slate-200/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                                     <th class="px-5 py-3.5 w-16 text-center">#</th>
@@ -286,8 +286,8 @@
                                             </td>
 
                                             <!-- Aksi -->
-                                            <td class="px-5 py-4 text-right">
-                                                <div class="flex items-center justify-end gap-1.5">
+                                            <td class="px-5 py-4 text-right whitespace-nowrap">
+                                                <div class="flex items-center justify-end gap-1.5 whitespace-nowrap">
                                                     <!-- Edit Button -->
                                                     <button type="button" 
                                                             onclick='openEditModal(<?= htmlspecialchars(json_encode($user), ENT_QUOTES, "UTF-8") ?>)' 
