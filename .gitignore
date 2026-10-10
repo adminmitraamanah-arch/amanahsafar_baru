@@ -13,6 +13,8 @@ test_db.php
 *.dump.sql
 *.bak
 db_mitra_amanah_backup.sql
+database/backup/
+database/backup/*
 
 # --------------------------------------------------------------------
 # CodeIgniter 4 Writable Directory (Sessions, Logs, Caches, Debugbar)
