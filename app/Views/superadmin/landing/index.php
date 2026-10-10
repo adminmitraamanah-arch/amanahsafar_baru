@@ -1,13 +1,13 @@
 <?= $this->extend('layouts/base') ?>
 
 <?= $this->section('content') ?>
-<div class="flex h-screen bg-gray-100">
+<div class="min-h-screen bg-[#f8fafc]">
     <?= $this->include('layouts/sidebar') ?>
     
-    <div class="flex-1 flex flex-col overflow-hidden">
+    <div class="sidebar-main-content md:ml-64 flex flex-col min-h-screen min-w-0 transition-all duration-200">
         <?= $this->include('layouts/navbar') ?>
         
-        <div class="flex-1 overflow-auto p-6 lg:p-8">
+        <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-7xl mx-auto space-y-8">
                 
                 <!-- Page Title & Header -->
@@ -510,7 +510,7 @@
                 </div>
 
             </div>
-        </div>
+        </main>
     </div>
 </div>
 
