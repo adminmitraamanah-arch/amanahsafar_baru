@@ -1,126 +1,160 @@
 <?= $this->extend('layouts/base') ?>
 
 <?= $this->section('content') ?>
-<div class="flex h-screen bg-gray-100">
+<div class="flex h-screen bg-[#f8fafc]">
     <?= $this->include('layouts/sidebar') ?>
     
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
         <?= $this->include('layouts/navbar') ?>
         
-        <div class="flex-1 overflow-auto p-8">
-            <div class="max-w-7xl">
-                <h1 class="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="max-w-7xl mx-auto space-y-6">
                 
-                <!-- Stats Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="card-interactive group bg-white rounded-2xl shadow-sm border border-purple-100/60 p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Total Pesanan</p>
-                                <p class="text-3xl font-extrabold text-gray-900 mt-1"><?= $total_orders ?? 0 ?></p>
+                <!-- Breadcrumb & Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium mb-1">
+                            <span class="text-slate-400">Dashboard</span>
+                            <span>&gt;</span>
+                            <span class="text-slate-600 font-semibold">Overview</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Mitra</h1>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="<?= base_url('/app/orders') ?>" 
+                           class="btn-interactive inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs sm:text-sm font-bold shadow-sm transition">
+                            <i class="fas fa-shopping-cart text-xs"></i>
+                            <span>Lihat Pesanan</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Stats Grid (DevzeMart 4-card grid) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center text-base transition-transform group-hover:scale-105">
+                                <i class="fas fa-shopping-cart"></i>
                             </div>
-                            <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-[#5e0078] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#5e0078] group-hover:text-white">
-                                <i class="fas fa-shopping-cart text-xl"></i>
-                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Total Pesanan</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= $total_orders ?? 0 ?></span>
                         </div>
                     </div>
 
-                    <div class="card-interactive group bg-white rounded-2xl shadow-sm border border-purple-100/60 p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Komisi Pending</p>
-                                <p class="text-2xl font-extrabold text-gray-900 mt-1">Rp 0</p>
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base transition-transform group-hover:scale-105">
+                                <i class="fas fa-wallet"></i>
                             </div>
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white">
-                                <i class="fas fa-wallet text-xl"></i>
-                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Komisi Pending</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-emerald-600">Rp 0</span>
                         </div>
                     </div>
 
-                    <div class="card-interactive group bg-white rounded-2xl shadow-sm border border-purple-100/60 p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Total Binaan</p>
-                                <p class="text-3xl font-extrabold text-gray-900 mt-1">0</p>
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base transition-transform group-hover:scale-105">
+                                <i class="fas fa-users"></i>
                             </div>
-                            <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-purple-600 group-hover:text-white">
-                                <i class="fas fa-users text-xl"></i>
-                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Total Binaan</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= $total_binaan ?? 0 ?></span>
                         </div>
                     </div>
 
-                    <div class="card-interactive group bg-white rounded-2xl shadow-sm border border-purple-100/60 p-6">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Status Akun</p>
-                                <p class="text-sm font-bold text-emerald-600 mt-1 flex items-center gap-1.5">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Aktif
-                                </p>
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base transition-transform group-hover:scale-105">
+                                <i class="fas fa-check-circle"></i>
                             </div>
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 transition-all duration-300 group-hover:scale-110 group-hover:bg-emerald-600 group-hover:text-white">
-                                <i class="fas fa-check-circle text-xl"></i>
-                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Status Akun</span>
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mt-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Orders -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="p-6 border-b border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900">Pesanan Terbaru</h2>
+                <!-- Recent Orders Table Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-900">Pesanan Terbaru</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Daftar transaksi pemesanan paket umroh jaringan Anda.</p>
+                        </div>
+                        <a href="<?= base_url('/app/orders') ?>" class="text-xs font-semibold text-[#5e0078] hover:underline">Lihat Semua</a>
                     </div>
+
                     <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead class="bg-gray-50/80 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500">
-                                <tr>
-                                    <th class="px-6 py-3.5 text-left font-bold">No. Pesanan</th>
-                                    <th class="px-6 py-3.5 text-left font-bold">Tanggal</th>
-                                    <th class="px-6 py-3.5 text-left font-bold">Total</th>
-                                    <th class="px-6 py-3.5 text-left font-bold">Status</th>
-                                    <th class="px-6 py-3.5 text-left font-bold">Aksi</th>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50/70 border-b border-slate-200/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                    <th class="px-5 py-3.5">No. Pesanan</th>
+                                    <th class="px-5 py-3.5">Tanggal</th>
+                                    <th class="px-5 py-3.5">Total Biaya</th>
+                                    <th class="px-5 py-3.5">Status</th>
+                                    <th class="px-5 py-3.5 text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100 text-sm">
-                                <?php foreach ($recent_orders ?? [] as $order): ?>
-                                    <tr class="table-row-interactive hover:bg-purple-50/40 transition-colors duration-150">
-                                        <td class="px-6 py-4 text-sm text-gray-900"><?= $order['no_order'] ?></td>
-                                        <td class="px-6 py-4 text-sm text-gray-600"><?= date('d M Y', strtotime($order['created_at'])) ?></td>
-                                        <td class="px-6 py-4 text-sm font-medium text-gray-900">Rp <?= number_format($order['total'], 0, ',', '.') ?></td>
-                                        <td class="px-6 py-4 text-sm">
-                                            <span class="px-3 py-1 rounded-full text-xs font-medium 
-                                                <?php 
-                                                    $statusColor = match($order['status']) {
-                                                        'menunggu_pembayaran' => 'bg-yellow-100 text-yellow-800',
-                                                        'dibayar' => 'bg-blue-100 text-blue-800',
-                                                        'diproses' => 'bg-purple-100 text-purple-800',
-                                                        'selesai' => 'bg-green-100 text-green-800',
-                                                        'dibatalkan' => 'bg-red-100 text-red-800',
-                                                        default => 'bg-gray-100 text-gray-800'
-                                                    };
-                                                    echo $statusColor;
-                                                ?>">
-                                                <?= ucfirst(str_replace('_', ' ', $order['status'])) ?>
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm">
-                                            <a href="/app/orders/<?= $order['id'] ?>" class="text-blue-600 hover:underline">Lihat</a>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
+                            <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
                                 <?php if (empty($recent_orders)): ?>
                                     <tr>
-                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">
-                                            <i class="fas fa-inbox text-4xl opacity-30 mb-2"></i>
-                                            <p>Belum ada pesanan</p>
+                                        <td colspan="5" class="px-6 py-12 text-center text-slate-400 text-xs">
+                                            <i class="fas fa-inbox text-3xl opacity-40 mb-2 block"></i>
+                                            Belum ada pesanan terbaru.
                                         </td>
                                     </tr>
+                                <?php else: ?>
+                                    <?php foreach ($recent_orders as $order): ?>
+                                        <tr class="hover:bg-purple-50/30 transition-colors">
+                                            <td class="px-5 py-4 font-mono font-semibold text-slate-900 text-xs">
+                                                <?= esc($order['no_order']) ?>
+                                            </td>
+                                            <td class="px-5 py-4 text-slate-500 text-xs">
+                                                <?= date('d M Y', strtotime($order['created_at'])) ?>
+                                            </td>
+                                            <td class="px-5 py-4 font-bold text-[#5e0078]">
+                                                Rp <?= number_format($order['total'], 0, ',', '.') ?>
+                                            </td>
+                                            <td class="px-5 py-4">
+                                                <?php 
+                                                    $statusBadge = match($order['status']) {
+                                                        'menunggu_pembayaran' => ['class' => 'bg-amber-50 text-amber-700 border-amber-200', 'label' => 'Menunggu Pembayaran'],
+                                                        'dibayar' => ['class' => 'bg-blue-50 text-blue-700 border-blue-200', 'label' => 'Dibayar'],
+                                                        'diproses' => ['class' => 'bg-purple-50 text-[#5e0078] border-purple-200', 'label' => 'Diproses'],
+                                                        'selesai' => ['class' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'label' => 'Selesai'],
+                                                        'dibatalkan' => ['class' => 'bg-rose-50 text-rose-700 border-rose-200', 'label' => 'Dibatalkan'],
+                                                        default => ['class' => 'bg-slate-100 text-slate-600 border-slate-200', 'label' => ucfirst($order['status'])]
+                                                    };
+                                                ?>
+                                                <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium border <?= $statusBadge['class'] ?>">
+                                                    <?= $statusBadge['label'] ?>
+                                                </span>
+                                            </td>
+                                            <td class="px-5 py-4 text-right">
+                                                <a href="<?= base_url('/app/orders/' . $order['id']) ?>" 
+                                                   class="btn-interactive inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200 transition">
+                                                    <span>Detail</span>
+                                                    <i class="fas fa-chevron-right text-[10px]"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
+
             </div>
-        </div>
+        </main>
     </div>
 </div>
 <?= $this->endSection() ?>

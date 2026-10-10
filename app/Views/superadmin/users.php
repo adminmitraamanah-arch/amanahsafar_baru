@@ -1,7 +1,7 @@
 <?= $this->extend('layouts/base') ?>
 
 <?= $this->section('content') ?>
-<div class="flex h-screen bg-gray-50/50">
+<div class="flex h-screen bg-[#f8fafc]">
     <?= $this->include('layouts/sidebar') ?>
     
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
@@ -10,216 +10,347 @@
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <div class="max-w-7xl mx-auto space-y-6">
                 
-                <!-- Page Header -->
+                <!-- Page Breadcrumb & Title Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Kelola Pengguna</h1>
-                        <p class="text-sm text-gray-500 mt-1">Kelola data seluruh role pengguna, status akun, dan hak akses.</p>
+                        <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium mb-1">
+                            <span class="text-slate-400">Members</span>
+                            <span>&gt;</span>
+                            <span class="text-slate-600 font-semibold">Users</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Kelola Pengguna</h1>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-slate-500 font-medium bg-white px-3 py-1.5 rounded-xl border border-slate-200/80 shadow-2xs">
+                            <i class="fas fa-database text-slate-400 mr-1.5"></i> Total: <strong class="text-slate-900"><?= count($users ?? []) ?></strong> Akun
+                        </span>
                     </div>
                 </div>
 
-                <!-- Stat Summary Cards -->
+                <!-- Stat Summary Row (6 Cards Grid - DevzeMart Reference) -->
                 <?php
                 $totalUsers = count($users ?? []);
                 $activeUsers = 0;
                 $inactiveUsers = 0;
+                $kycVerified = 0;
+                $kycReview = 0;
+                $kycUnverified = 0;
+
                 foreach ($users ?? [] as $u) {
-                    if (($u['status'] ?? '') === 'aktif') $activeUsers++;
-                    if (($u['status'] ?? '') === 'nonaktif') $inactiveUsers++;
+                    $st = $u['status'] ?? '';
+                    $vst = $u['verification_status'] ?? '';
+
+                    if ($st === 'aktif') $activeUsers++;
+                    if ($st === 'nonaktif') $inactiveUsers++;
+
+                    if ($vst === 'terverifikasi') $kycVerified++;
+                    elseif ($vst === 'menunggu_review') $kycReview++;
+                    else $kycUnverified++;
                 }
                 ?>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Total Pengguna</span>
-                            <span class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1 block"><?= $totalUsers ?></span>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+                    
+                    <!-- Card 1: Active Users -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center text-sm transition-transform group-hover:scale-105">
+                                <i class="fas fa-user-check"></i>
+                            </div>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center text-xl">
-                            <i class="fas fa-users"></i>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Active Users</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= number_format($activeUsers, 0, ',', '.') ?></span>
                         </div>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Akun Aktif</span>
-                            <span class="text-2xl sm:text-3xl font-bold text-emerald-600 mt-1 block"><?= $activeUsers ?></span>
+
+                    <!-- Card 2: Banned / Nonaktif -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
+                                <i class="fas fa-user-slash"></i>
+                            </div>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-                            <i class="fas fa-user-check"></i>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Banned / Nonaktif</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-rose-600"><?= number_format($inactiveUsers, 0, ',', '.') ?></span>
                         </div>
                     </div>
-                    <div class="bg-white p-5 rounded-2xl border border-gray-200/80 shadow-sm flex items-center justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider block">Akun Nonaktif</span>
-                            <span class="text-2xl sm:text-3xl font-bold text-rose-600 mt-1 block"><?= $inactiveUsers ?></span>
+
+                    <!-- Card 3: KYC Verified -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
-                            <i class="fas fa-user-slash"></i>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Verified</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-emerald-600"><?= number_format($kycVerified, 0, ',', '.') ?></span>
                         </div>
                     </div>
+
+                    <!-- Card 4: KYC In Review -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Review</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-amber-600"><?= number_format($kycReview, 0, ',', '.') ?></span>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: KYC Unverified -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
+                                <i class="fas fa-id-badge"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Unverified</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-slate-700"><?= number_format($kycUnverified, 0, ',', '.') ?></span>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: Total Users -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-9 h-9 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center text-sm transition-transform group-hover:scale-105">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Total Users</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= number_format($totalUsers, 0, ',', '.') ?></span>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- Table Card -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden">
-                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                        <h2 class="text-base font-bold text-gray-900">Daftar Pengguna Sistem</h2>
-                        <span class="text-xs font-medium text-gray-500">Total: <?= count($users ?? []) ?> Akun</span>
+                <!-- Table Card Container (DevzeMart Minimalist Style) -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+                    
+                    <!-- Toolbar (Search bar & Filter controls) -->
+                    <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row items-center justify-between gap-3 bg-white">
+                        <div class="relative w-full md:w-80">
+                            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="usersSearchInput" placeholder="Cari pengguna... (nama, email, wa, role)" 
+                                   class="w-full pl-9 pr-12 py-2 bg-slate-50 border border-slate-200/90 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5e0078] focus:bg-white transition">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200/80 rounded px-1.5 py-0.5 pointer-events-none">⌘K</span>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
+                            <!-- Filter Status -->
+                            <select id="statusFilter" class="px-3 py-2 bg-slate-50 border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="all">Semua Status Akun</option>
+                                <option value="aktif">Status: Aktif</option>
+                                <option value="nonaktif">Status: Nonaktif</option>
+                            </select>
+
+                            <!-- Filter Role -->
+                            <select id="roleFilter" class="px-3 py-2 bg-slate-50 border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="all">Semua Role</option>
+                                <option value="super_admin">Super Admin</option>
+                                <option value="admin">Admin</option>
+                                <option value="pusat">Pusat</option>
+                                <option value="cabang">Cabang</option>
+                                <option value="manager_mitra">Manager Mitra</option>
+                                <option value="mitra">Mitra</option>
+                            </select>
+
+                            <!-- Reset Button -->
+                            <button type="button" id="resetFiltersBtn" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition text-xs" title="Reset Filter">
+                                <i class="fas fa-redo-alt"></i>
+                            </button>
+                        </div>
                     </div>
 
+                    <!-- Table Data -->
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse" id="usersTable">
                             <thead>
-                                <tr class="bg-gray-50/75 border-b border-gray-200/70 text-xs font-bold uppercase tracking-wider text-gray-600">
-                                    <th class="px-6 py-3.5">Nama &amp; Domisili</th>
-                                    <th class="px-6 py-3.5">Kontak</th>
-                                    <th class="px-6 py-3.5">Role</th>
-                                    <th class="px-6 py-3.5">Pembina</th>
-                                    <th class="px-6 py-3.5">Status Akun</th>
-                                    <th class="px-6 py-3.5">Verifikasi</th>
-                                    <th class="px-6 py-3.5 text-right">Aksi</th>
+                                <tr class="bg-slate-50/70 border-b border-slate-200/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                    <th class="px-5 py-3.5 w-16 text-center">#</th>
+                                    <th class="px-5 py-3.5">Detail Pengguna</th>
+                                    <th class="px-5 py-3.5">Kontak &amp; Domisili</th>
+                                    <th class="px-5 py-3.5">Role</th>
+                                    <th class="px-5 py-3.5">Pembina</th>
+                                    <th class="px-5 py-3.5">Status Akun</th>
+                                    <th class="px-5 py-3.5">KYC Status</th>
+                                    <th class="px-5 py-3.5 text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100 text-sm">
+                            <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
                                 <?php if (empty($users)): ?>
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-12 text-center text-gray-500 text-sm">
-                                            Belum ada pengguna terdaftar.
+                                    <tr id="emptyRow">
+                                        <td colspan="8" class="px-6 py-12 text-center text-slate-400 text-xs">
+                                            Belum ada pengguna terdaftar di sistem.
                                         </td>
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($users as $user): 
                                         $isSelf = ((int)$user['id'] === (int)($current_user_id ?? 0));
+                                        $initial = strtoupper(substr($user['nama_lengkap'] ?? 'U', 0, 1));
                                     ?>
-                                        <tr class="hover:bg-purple-50/20 transition-colors">
-                                            <!-- Nama & Domisili -->
-                                            <td class="px-6 py-4">
-                                                <div class="font-bold text-gray-900 flex items-center gap-2">
-                                                    <span><?= esc($user['nama_lengkap']) ?></span>
-                                                    <?php if ($isSelf): ?>
-                                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-[#5e0078]">Anda</span>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="text-xs text-gray-500 mt-0.5">
-                                                    <i class="fas fa-map-marker-alt text-gray-400 mr-1 text-[11px]"></i>
-                                                    <?= esc($user['domisili'] ?: 'Belum diisi') ?>
+                                        <tr class="hover:bg-purple-50/30 transition-colors user-table-row" 
+                                            data-status="<?= esc($user['status']) ?>" 
+                                            data-role="<?= esc($user['role']) ?>"
+                                            data-search="<?= strtolower(esc($user['nama_lengkap'] . ' ' . $user['email'] . ' ' . $user['no_wa'] . ' ' . $user['domisili'] . ' ' . $user['role'])) ?>">
+                                            
+                                            <!-- ID -->
+                                            <td class="px-5 py-4 text-center text-xs font-semibold text-slate-400">
+                                                #<?= esc($user['id']) ?>
+                                            </td>
+
+                                            <!-- User Details (Avatar, Name, Email) -->
+                                            <td class="px-5 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-9 h-9 rounded-full bg-purple-100 text-[#5e0078] font-bold text-xs flex items-center justify-center shrink-0">
+                                                        <?= $initial ?>
+                                                    </div>
+                                                    <div class="min-w-0">
+                                                        <div class="font-bold text-slate-900 flex items-center gap-1.5 leading-tight text-xs sm:text-sm">
+                                                            <span><?= esc($user['nama_lengkap']) ?></span>
+                                                            <?php if ($isSelf): ?>
+                                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-[#5e0078]">Anda</span>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                        <p class="text-[11px] text-slate-400 truncate mt-0.5"><?= esc($user['email']) ?></p>
+                                                    </div>
                                                 </div>
                                             </td>
 
-                                            <!-- Kontak -->
-                                            <td class="px-6 py-4">
-                                                <div class="text-xs text-gray-700 font-medium">
-                                                    <i class="far fa-envelope text-gray-400 mr-1"></i>
-                                                    <?= esc($user['email']) ?>
+                                            <!-- Kontak & Domisili -->
+                                            <td class="px-5 py-4">
+                                                <div class="text-xs text-slate-700 font-medium flex items-center gap-1.5">
+                                                    <i class="fab fa-whatsapp text-emerald-500 text-xs"></i>
+                                                    <span><?= esc($user['no_wa'] ?: '-') ?></span>
                                                 </div>
-                                                <div class="text-xs text-gray-500 mt-1">
-                                                    <i class="fab fa-whatsapp text-emerald-500 mr-1"></i>
-                                                    <?= esc($user['no_wa']) ?>
+                                                <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                                                    <i class="fas fa-map-marker-alt text-slate-300 text-[10px]"></i>
+                                                    <span><?= esc($user['domisili'] ?: 'Belum diisi') ?></span>
                                                 </div>
                                             </td>
 
                                             <!-- Role -->
-                                            <td class="px-6 py-4">
-                                                <?php
-                                                $roleConfig = match($user['role']) {
-                                                    'super_admin' => ['bg' => 'bg-purple-100 text-purple-800 border-purple-200', 'label' => 'Super Admin'],
-                                                    'admin' => ['bg' => 'bg-blue-100 text-blue-800 border-blue-200', 'label' => 'Admin'],
-                                                    'pusat' => ['bg' => 'bg-indigo-100 text-indigo-800 border-indigo-200', 'label' => 'Pusat'],
-                                                    'cabang' => ['bg' => 'bg-cyan-100 text-cyan-800 border-cyan-200', 'label' => 'Cabang'],
-                                                    'manager_mitra' => ['bg' => 'bg-amber-100 text-amber-800 border-amber-200', 'label' => 'Manager Mitra'],
-                                                    'mitra' => ['bg' => 'bg-emerald-100 text-emerald-800 border-emerald-200', 'label' => 'Mitra'],
-                                                    default => ['bg' => 'bg-gray-100 text-gray-800 border-gray-200', 'label' => ucfirst($user['role'])]
-                                                };
-                                                ?>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border <?= $roleConfig['bg'] ?>">
-                                                    <?= $roleConfig['label'] ?>
+                                            <td class="px-5 py-4">
+                                                <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                                    <?= ucfirst(str_replace('_', ' ', $user['role'])) ?>
                                                 </span>
                                             </td>
 
                                             <!-- Pembina -->
-                                            <td class="px-6 py-4 text-xs text-gray-600">
+                                            <td class="px-5 py-4 text-xs text-slate-600">
                                                 <?php if (!empty($user['nama_pembina'])): ?>
-                                                    <span class="font-medium text-gray-800"><?= esc($user['nama_pembina']) ?></span>
+                                                    <span class="font-semibold text-slate-800"><?= esc($user['nama_pembina']) ?></span>
                                                 <?php else: ?>
-                                                    <span class="text-gray-400 italic">-</span>
+                                                    <span class="text-slate-400 italic">-</span>
                                                 <?php endif; ?>
                                             </td>
 
-                                            <!-- Status Akun -->
-                                            <td class="px-6 py-4">
+                                            <!-- Status Akun (Soft Pill Badge) -->
+                                            <td class="px-5 py-4">
                                                 <?php if ($user['status'] === 'aktif'): ?>
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
                                                     </span>
                                                 <?php elseif ($user['status'] === 'nonaktif'): ?>
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
                                                         <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif
                                                     </span>
                                                 <?php else: ?>
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                                                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pending
                                                     </span>
                                                 <?php endif; ?>
                                             </td>
 
-                                            <!-- Verifikasi -->
-                                            <td class="px-6 py-4">
-                                                <?php 
-                                                $verifBadge = match($user['verification_status']) {
-                                                    'terverifikasi' => ['class' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'label' => 'Terverifikasi'],
-                                                    'menunggu_review' => ['class' => 'bg-amber-50 text-amber-700 border-amber-200', 'label' => 'Review'],
-                                                    'ditolak' => ['class' => 'bg-rose-50 text-rose-700 border-rose-200', 'label' => 'Ditolak'],
-                                                    default => ['class' => 'bg-gray-50 text-gray-600 border-gray-200', 'label' => 'Belum Verif']
-                                                };
-                                                ?>
-                                                <span class="inline-block px-2.5 py-0.5 rounded-md text-xs font-medium border <?= $verifBadge['class'] ?>">
-                                                    <?= $verifBadge['label'] ?>
-                                                </span>
+                                            <!-- KYC Status -->
+                                            <td class="px-5 py-4">
+                                                <?php if ($user['verification_status'] === 'terverifikasi'): ?>
+                                                    <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                        Verified
+                                                    </span>
+                                                <?php elseif ($user['verification_status'] === 'menunggu_review'): ?>
+                                                    <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                                        Review
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                                        Unverified
+                                                    </span>
+                                                <?php endif; ?>
                                             </td>
 
                                             <!-- Aksi -->
-                                            <td class="px-6 py-4 text-right">
-                                                <div class="flex items-center justify-end gap-2">
-                                                    <!-- Tombol Edit -->
+                                            <td class="px-5 py-4 text-right">
+                                                <div class="flex items-center justify-end gap-1.5">
+                                                    <!-- Edit Button -->
                                                     <button type="button" 
                                                             onclick='openEditModal(<?= htmlspecialchars(json_encode($user), ENT_QUOTES, "UTF-8") ?>)' 
-                                                            class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200 transition">
+                                                            class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200 transition"
+                                                            title="Edit Pengguna">
                                                         <i class="fas fa-edit text-xs"></i>
                                                         <span>Edit</span>
                                                     </button>
 
-                                                    <!-- Tombol Nonaktifkan / Aktifkan Kembali -->
+                                                    <!-- Nonaktifkan / Aktifkan Button -->
                                                     <?php if ($user['status'] === 'aktif'): ?>
                                                         <?php if ($isSelf): ?>
                                                             <button type="button" disabled 
                                                                     title="Tidak dapat menonaktifkan akun sendiri"
-                                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200">
+                                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
                                                                 <i class="fas fa-ban text-xs"></i>
-                                                                <span>Nonaktifkan</span>
+                                                                <span>Nonaktif</span>
                                                             </button>
                                                         <?php else: ?>
                                                             <button type="button" 
                                                                     onclick="openDeactivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
-                                                                    class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition">
+                                                                    class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition"
+                                                                    title="Nonaktifkan Akun">
                                                                 <i class="fas fa-user-slash text-xs"></i>
-                                                                <span>Nonaktifkan</span>
+                                                                <span>Nonaktif</span>
                                                             </button>
                                                         <?php endif; ?>
                                                     <?php else: ?>
                                                         <!-- Aktifkan Kembali -->
                                                         <button type="button" 
                                                                 onclick="openActivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
-                                                                class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition">
+                                                                class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition"
+                                                                title="Aktifkan Kembali">
                                                             <i class="fas fa-user-check text-xs"></i>
-                                                            <span>Aktifkan Kembali</span>
+                                                            <span>Aktifkan</span>
                                                         </button>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>
+
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Table Pagination Footer (matching screenshot pattern) -->
+                    <div class="px-5 py-3.5 border-t border-slate-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                        <span id="userCountSummary">Menampilkan <?= count($users ?? []) ?> pengguna</span>
+                        <div class="flex items-center gap-1 select-none" id="paginationControls">
+                            <button type="button" id="prevPageBtn" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs flex items-center gap-1 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i class="fas fa-arrow-left text-[10px]"></i> Previous
+                            </button>
+                            <div id="paginationNumbers" class="flex items-center gap-1">
+                                <!-- Generated by JS -->
+                            </div>
+                            <button type="button" id="nextPageBtn" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs flex items-center gap-1 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                Next <i class="fas fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
@@ -230,15 +361,15 @@
 <!-- ========================================================
      MODAL 1: EDIT DATA PENGGUNA
      ======================================================== -->
-<div id="editUserModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden relative my-8 transform transition-all">
+<div id="editUserModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-xl w-full overflow-hidden relative my-8 transform transition-all border border-slate-100">
         <!-- Modal Header -->
-        <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+        <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div>
-                <h3 class="text-lg font-bold text-gray-900">Edit Data Pengguna</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Perbarui informasi profil, role, dan pembinaan tanpa mengubah password.</p>
+                <h3 class="text-lg font-bold text-slate-900">Edit Data Pengguna</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Perbarui informasi profil, role, dan pembinaan tanpa mengubah password.</p>
             </div>
-            <button type="button" onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-gray-200/60 hover:bg-gray-200 text-gray-600 flex items-center justify-center text-sm transition">
+            <button type="button" onclick="closeEditModal()" class="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm transition">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -249,40 +380,40 @@
 
             <!-- Nama Lengkap -->
             <div>
-                <label for="edit_nama_lengkap" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Nama Lengkap</label>
+                <label for="edit_nama_lengkap" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nama Lengkap</label>
                 <input type="text" id="edit_nama_lengkap" name="nama_lengkap" required 
-                       class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Email -->
                 <div>
-                    <label for="edit_email" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Email</label>
+                    <label for="edit_email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Email</label>
                     <input type="email" id="edit_email" name="email" required 
-                           class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
                 </div>
 
                 <!-- WhatsApp -->
                 <div>
-                    <label for="edit_no_wa" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Nomor WhatsApp</label>
+                    <label for="edit_no_wa" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nomor WhatsApp</label>
                     <input type="text" id="edit_no_wa" name="no_wa" required 
-                           class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
                 </div>
             </div>
 
             <!-- Domisili -->
             <div>
-                <label for="edit_domisili" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Domisili / Kota</label>
+                <label for="edit_domisili" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Domisili / Kota</label>
                 <input type="text" id="edit_domisili" name="domisili" required 
-                       class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Role -->
                 <div>
-                    <label for="edit_role" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Role Akun</label>
+                    <label for="edit_role" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Role Akun</label>
                     <select id="edit_role" name="role" required 
-                            class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
                         <option value="super_admin">Super Admin</option>
                         <option value="admin">Admin</option>
                         <option value="pusat">Pusat</option>
@@ -294,9 +425,9 @@
 
                 <!-- Status Verifikasi -->
                 <div>
-                    <label for="edit_verification_status" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Status Verifikasi</label>
+                    <label for="edit_verification_status" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Status Verifikasi</label>
                     <select id="edit_verification_status" name="verification_status" required 
-                            class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
                         <option value="terverifikasi">Terverifikasi</option>
                         <option value="menunggu_review">Menunggu Review</option>
                         <option value="belum_verifikasi">Belum Verifikasi</option>
@@ -307,9 +438,9 @@
 
             <!-- Pembina -->
             <div>
-                <label for="edit_pembina_id" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Pembina / Atasan Langsung</label>
+                <label for="edit_pembina_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Pembina / Atasan Langsung</label>
                 <select id="edit_pembina_id" name="pembina_id" 
-                        class="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm text-gray-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
                     <option value="">-- Tanpa Pembina (Tingkat Tertinggi) --</option>
                     <?php foreach ($pembinas ?? [] as $pem): ?>
                         <option value="<?= $pem['id'] ?>">
@@ -317,17 +448,17 @@
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <p class="text-[11px] text-gray-400 mt-1">Pembina menentukan hierarki jaringan dan pembagian komisi binaan.</p>
+                <p class="text-[11px] text-slate-400 mt-1">Pembina menentukan hierarki jaringan dan pembagian komisi binaan.</p>
             </div>
 
             <!-- Footer Buttons -->
-            <div class="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
                 <button type="button" onclick="closeEditModal()" 
-                        class="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 text-xs font-bold hover:bg-gray-50 transition">
+                        class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
                     Batal
                 </button>
                 <button type="submit" 
-                        class="btn-interactive px-5 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs font-bold shadow-md transition">
+                        class="btn-interactive px-5 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs font-bold shadow-sm transition">
                     <i class="fas fa-save mr-1.5"></i> Simpan Perubahan
                 </button>
             </div>
@@ -338,16 +469,16 @@
 <!-- ========================================================
      MODAL 2: KONFIRMASI NONAKTIFKAN AKUN
      ======================================================== -->
-<div id="deactivateUserModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative p-6 space-y-4">
+<div id="deactivateUserModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative p-6 space-y-4 border border-slate-100">
         <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl mx-auto">
             <i class="fas fa-user-slash"></i>
         </div>
 
         <div class="text-center space-y-2">
-            <h3 class="text-lg font-bold text-gray-900">Nonaktifkan Akun Pengguna?</h3>
-            <p class="text-xs text-gray-600 leading-relaxed">
-                Apakah Anda yakin ingin menonaktifkan akun <strong id="deactivateUserName" class="text-gray-900 font-bold"></strong>?
+            <h3 class="text-lg font-bold text-slate-900">Nonaktifkan Akun Pengguna?</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Apakah Anda yakin ingin menonaktifkan akun <strong id="deactivateUserName" class="text-slate-900 font-bold"></strong>?
             </p>
             <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-left text-xs text-amber-800 space-y-1">
                 <div class="font-bold flex items-center gap-1.5">
@@ -365,11 +496,11 @@
         <form id="deactivateUserForm" method="POST" action="" class="flex items-center justify-end gap-3 pt-2">
             <?= csrf_field() ?>
             <button type="button" onclick="closeDeactivateModal()" 
-                    class="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 text-xs font-bold hover:bg-gray-50 transition">
+                    class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
                 Batal
             </button>
             <button type="submit" 
-                    class="btn-interactive px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md transition">
+                    class="btn-interactive px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition">
                 <i class="fas fa-ban mr-1.5"></i> Ya, Nonaktifkan Akun
             </button>
         </form>
@@ -379,16 +510,16 @@
 <!-- ========================================================
      MODAL 3: KONFIRMASI AKTIFKAN KEMBALI AKUN
      ======================================================== -->
-<div id="activateUserModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative p-6 space-y-4">
+<div id="activateUserModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative p-6 space-y-4 border border-slate-100">
         <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mx-auto">
             <i class="fas fa-user-check"></i>
         </div>
 
         <div class="text-center space-y-2">
-            <h3 class="text-lg font-bold text-gray-900">Aktifkan Kembali Akun?</h3>
-            <p class="text-xs text-gray-600 leading-relaxed">
-                Apakah Anda ingin mengaktifkan kembali akun <strong id="activateUserName" class="text-gray-900 font-bold"></strong>?
+            <h3 class="text-lg font-bold text-slate-900">Aktifkan Kembali Akun?</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Apakah Anda ingin mengaktifkan kembali akun <strong id="activateUserName" class="text-slate-900 font-bold"></strong>?
             </p>
             <p class="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl p-3">
                 Setelah diaktifkan, pengguna akan dapat langsung login kembali ke dalam sistem menggunakan email dan password mereka.
@@ -398,11 +529,11 @@
         <form id="activateUserForm" method="POST" action="" class="flex items-center justify-end gap-3 pt-2">
             <?= csrf_field() ?>
             <button type="button" onclick="closeActivateModal()" 
-                    class="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 text-xs font-bold hover:bg-gray-50 transition">
+                    class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
                 Batal
             </button>
             <button type="submit" 
-                    class="btn-interactive px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md transition">
+                    class="btn-interactive px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
                 <i class="fas fa-check mr-1.5"></i> Aktifkan Akun
             </button>
         </form>
@@ -496,6 +627,132 @@
                 }
             });
         }
+    });
+
+    // 4. Client-side Search, Filtering, and Pagination
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('usersSearchInput');
+        const statusFilter = document.getElementById('statusFilter');
+        const roleFilter = document.getElementById('roleFilter');
+        const resetBtn = document.getElementById('resetFiltersBtn');
+        const rows = Array.from(document.querySelectorAll('.user-table-row'));
+        const summaryEl = document.getElementById('userCountSummary');
+        const paginationNumbers = document.getElementById('paginationNumbers');
+        const prevBtn = document.getElementById('prevPageBtn');
+        const nextBtn = document.getElementById('nextPageBtn');
+
+        const pageSize = 10;
+        let currentPage = 1;
+        let filteredRows = [...rows];
+
+        function applyFilters() {
+            const query = (searchInput.value || '').toLowerCase().trim();
+            const status = statusFilter.value;
+            const role = roleFilter.value;
+
+            filteredRows = rows.filter(row => {
+                const rowSearch = row.getAttribute('data-search') || '';
+                const rowStatus = row.getAttribute('data-status') || '';
+                const rowRole = row.getAttribute('data-role') || '';
+
+                const matchesSearch = !query || rowSearch.includes(query);
+                const matchesStatus = (status === 'all') || (rowStatus === status);
+                const matchesRole = (role === 'all') || (rowRole === role);
+
+                return matchesSearch && matchesStatus && matchesRole;
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        function renderTable() {
+            const total = filteredRows.length;
+            const totalPages = Math.ceil(total / pageSize) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            // Hide all rows first
+            rows.forEach(r => r.style.display = 'none');
+
+            // Show paginated rows
+            const startIdx = (currentPage - 1) * pageSize;
+            const endIdx = startIdx + pageSize;
+            const currentSlice = filteredRows.slice(startIdx, endIdx);
+
+            currentSlice.forEach(r => r.style.display = '');
+
+            // Summary text
+            if (summaryEl) {
+                summaryEl.textContent = `Menampilkan ${currentSlice.length} dari ${total} pengguna (Total: ${rows.length})`;
+            }
+
+            // Pagination Controls
+            if (prevBtn) prevBtn.disabled = (currentPage <= 1);
+            if (nextBtn) nextBtn.disabled = (currentPage >= totalPages);
+
+            if (paginationNumbers) {
+                paginationNumbers.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.type = 'button';
+                    pageBtn.textContent = i;
+                    if (i === currentPage) {
+                        pageBtn.className = 'w-8 h-8 rounded-lg bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center';
+                    } else {
+                        pageBtn.className = 'w-8 h-8 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs flex items-center justify-center transition';
+                    }
+                    pageBtn.addEventListener('click', () => {
+                        currentPage = i;
+                        renderTable();
+                    });
+                    paginationNumbers.appendChild(pageBtn);
+                }
+            }
+        }
+
+        if (searchInput) searchInput.addEventListener('input', applyFilters);
+        if (statusFilter) statusFilter.addEventListener('change', applyFilters);
+        if (roleFilter) roleFilter.addEventListener('change', applyFilters);
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                if (searchInput) searchInput.value = '';
+                if (statusFilter) statusFilter.value = 'all';
+                if (roleFilter) roleFilter.value = 'all';
+                applyFilters();
+            });
+        }
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                const totalPages = Math.ceil(filteredRows.length / pageSize) || 1;
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+        }
+
+        // ⌘K or Ctrl+K shortcut
+        window.addEventListener('keydown', function(e) {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                if (searchInput) searchInput.focus();
+            }
+        });
+
+        // Initial render
+        applyFilters();
     });
 </script>
 

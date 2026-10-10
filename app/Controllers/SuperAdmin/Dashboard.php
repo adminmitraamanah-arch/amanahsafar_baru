@@ -23,11 +23,17 @@ class Dashboard extends BaseController
             return redirect()->to('/login');
         }
 
+        $packageModel = new \App\Models\PackageModel();
+
         $data = [
-            'title' => 'Super Admin Dashboard',
+            'title' => 'Dashboard',
             'total_users' => $this->userModel->countAllResults(),
+            'active_users' => $this->userModel->where('status', 'aktif')->countAllResults(),
+            'inactive_users' => $this->userModel->where('status', 'nonaktif')->countAllResults(),
+            'verified_users' => $this->userModel->where('verification_status', 'terverifikasi')->countAllResults(),
+            'total_packages' => $packageModel->countAllResults(),
             'total_orders' => $this->orderModel->countAllResults(),
-            'recent_users' => $this->userModel->orderBy('created_at', 'DESC')->limit(5)->findAll(),
+            'recent_users' => $this->userModel->orderBy('created_at', 'DESC')->limit(8)->findAll(),
         ];
 
         return view('superadmin/dashboard', $data);
