@@ -10,16 +10,8 @@
         <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-4xl mx-auto space-y-6">
                 
-                <!-- Breadcrumbs & Header Section -->
+                <!-- Header Section -->
                 <div>
-                    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                        <a href="<?= base_url('/dashboard') ?>" class="hover:text-[#5e0078] transition font-medium flex items-center gap-1.5">
-                            <i class="fas fa-columns text-[11px]"></i> Dashboard
-                        </a>
-                        <span class="text-slate-300">&gt;</span>
-                        <span class="text-slate-800 font-semibold">Profil Saya</span>
-                    </nav>
-
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">Profil Saya</h1>

@@ -10,14 +10,9 @@
         <main class="flex-1 p-4 sm:p-6 lg:p-8">
             <div class="max-w-7xl mx-auto space-y-6">
                 
-                <!-- Breadcrumb & Header -->
+                <!-- Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <div class="flex items-center gap-1.5 text-xs text-slate-400 font-medium mb-1">
-                            <span class="text-slate-400">Dashboard</span>
-                            <span>&gt;</span>
-                            <span class="text-slate-600 font-semibold">Overview</span>
-                        </div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Admin Dashboard</h1>
                     </div>
                     <div class="flex items-center gap-2">
