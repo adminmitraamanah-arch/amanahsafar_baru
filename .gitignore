@@ -1,0 +1,63 @@
+# --------------------------------------------------------------------
+# Security & Environment Configuration
+# --------------------------------------------------------------------
+.env
+.env.*
+.env.backup
+test_db.php
+
+# --------------------------------------------------------------------
+# Sensitive Database Dumps (Contain PII, Passwords, Real User Data)
+# --------------------------------------------------------------------
+*_backup.sql
+*.dump.sql
+*.bak
+db_mitra_amanah_backup.sql
+
+# --------------------------------------------------------------------
+# CodeIgniter 4 Writable Directory (Sessions, Logs, Caches, Debugbar)
+# --------------------------------------------------------------------
+writable/cache/*
+!writable/cache/.gitkeep
+writable/debugbar/*
+!writable/debugbar/index.html
+writable/logs/*
+!writable/logs/index.html
+writable/session/*
+!writable/session/.gitkeep
+writable/uploads/*
+!writable/uploads/index.html
+
+# --------------------------------------------------------------------
+# User Uploads Security (KTP, Proofs, Private Customer Documents)
+# --------------------------------------------------------------------
+public/uploads/ktp/*
+!public/uploads/ktp/.gitkeep
+public/uploads/proofs/*
+!public/uploads/proofs/.gitkeep
+public/uploads/documents/*
+!public/uploads/documents/.gitkeep
+public/null/
+
+# --------------------------------------------------------------------
+# Dependencies & Package Managers
+# --------------------------------------------------------------------
+/vendor/
+node_modules/
+
+# --------------------------------------------------------------------
+# IDE, OS & System Files
+# --------------------------------------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --------------------------------------------------------------------
+# Test Artifacts
+# --------------------------------------------------------------------
+.phpunit.result.cache
