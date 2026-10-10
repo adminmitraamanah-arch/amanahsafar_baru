@@ -21,6 +21,10 @@ $routes->post('/agreement', 'Auth::agreement');
 // Dashboard
 $routes->get('/dashboard', 'Dashboard::index');
 
+// Profil Saya
+$routes->get('/profile', 'Profile::index', ['filter' => 'roleFilter']);
+$routes->post('/profile/update', 'Profile::update', ['filter' => 'roleFilter']);
+
 // Katalog & Order
 $routes->get('/catalog', 'Catalog::index');
 $routes->get('/catalog/(:num)', 'Catalog::detail/$1');

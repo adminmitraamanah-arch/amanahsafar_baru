@@ -56,6 +56,9 @@
                     <a href="<?= base_url('/') ?>" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors">
                         <i class="fas fa-globe text-slate-400 text-xs w-4 text-center"></i> Kunjungi Website
                     </a>
+                    <button type="button" onclick="openProfileModal()" class="w-full text-left flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors cursor-pointer">
+                        <i class="fas fa-user-circle text-slate-400 text-xs w-4 text-center"></i> Profil Saya
+                    </button>
                     <div class="border-t border-slate-100 my-1"></div>
                     <a href="<?= base_url('/logout') ?>" class="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors">
                         <i class="fas fa-arrow-right-from-bracket text-xs w-4 text-center"></i> Logout
@@ -72,3 +75,5 @@
         <?php endif; ?>
     </div>
 </header>
+
+<?= $this->include('layouts/profile_modal') ?>
