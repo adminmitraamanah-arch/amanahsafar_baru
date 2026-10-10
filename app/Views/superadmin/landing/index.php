@@ -58,7 +58,7 @@
                                 <i class="fas fa-bullhorn text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-bold text-gray-900">Announcement Bar (Top Bar Header)</h2>
+                                <h2 class="text-lg font-bold text-gray-900">Announcement Bar</h2>
                                 <p class="text-xs text-gray-500">Kelola pesan promosi bar paling atas, badge resmi, tautan aksi, dan pratinjau langsung.</p>
                             </div>
                         </div>
@@ -199,10 +199,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-                            <span class="text-xs text-gray-500">
-                                <i class="fas fa-shield-alt text-[#5e0078] mr-1"></i> Perubahan tersimpan aman secara persisten di database.
-                            </span>
+                        <div class="mt-6 pt-4 border-t border-gray-100 flex justify-end">
                             <button type="submit" class="btn-interactive w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#5e0078] hover:bg-[#4c0062] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition">
                                 <i class="fas fa-save"></i> Simpan Pengaturan Announcement Bar
                             </button>
