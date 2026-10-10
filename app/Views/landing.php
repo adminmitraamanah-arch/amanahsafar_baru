@@ -11,15 +11,40 @@
 
 
     <!-- Top Announcement Bar (Dinamis dari Pengaturan Super Admin) -->
-    <div class="bg-[#3e004f] text-purple-100 text-xs py-2 px-4 text-center font-medium border-b border-purple-900/50">
-        <div class="max-w-7xl mx-auto flex items-center justify-center gap-3">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#5e0078] text-white text-[11px] font-semibold">
-                <i class="fas fa-star text-amber-300 text-[10px]"></i> Resmi &amp; Terpercaya
+    <?php 
+    $announcementActive = ($settings['announcement_active'] ?? '1') === '1';
+    $showBadge = ($settings['announcement_show_badge'] ?? '1') === '1';
+    $showLink = ($settings['announcement_show_link'] ?? '1') === '1';
+    $badgeText = $settings['announcement_badge_text'] ?? 'Resmi & Terpercaya';
+    $announcementText = $settings['announcement_text'] ?? ($settings['site_announcement'] ?? 'Pendaftaran Umroh & Haji Musim 1448 H Telah Dibuka. Kuota Terbatas!');
+    $linkText = $settings['announcement_link_text'] ?? 'Lihat Jadwal →';
+    $linkUrl = $settings['announcement_link_url'] ?? base_url('/catalog');
+    if (empty($linkUrl)) {
+        $linkUrl = base_url('/catalog');
+    }
+    $targetBlank = ($settings['announcement_link_target_blank'] ?? '0') === '1';
+    ?>
+    <?php if ($announcementActive && (!empty($announcementText) || ($showBadge && !empty($badgeText)))): ?>
+    <div id="topAnnouncementBar" class="bg-[#3e004f] text-purple-100 text-xs py-2 px-4 text-center font-medium border-b border-purple-900/50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            <?php if ($showBadge && !empty($badgeText)): ?>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#5e0078] text-white text-[11px] font-semibold tracking-wide shadow-xs">
+                <i class="fas fa-star text-amber-300 text-[10px]"></i> <?= esc($badgeText) ?>
             </span>
-            <span><?= esc($settings['site_announcement'] ?? 'Pendaftaran Umroh & Haji Musim 1448 H Telah Dibuka. Kuota Terbatas!') ?></span>
-            <a href="<?= base_url('/catalog') ?>" class="underline hover:text-white font-semibold ml-1">Lihat Jadwal →</a>
+            <?php endif; ?>
+
+            <?php if (!empty($announcementText)): ?>
+            <span class="leading-relaxed"><?= esc($announcementText) ?></span>
+            <?php endif; ?>
+
+            <?php if ($showLink && !empty($linkText) && !empty($linkUrl)): ?>
+            <a href="<?= esc($linkUrl, 'attr') ?>" <?= $targetBlank ? 'target="_blank" rel="noopener noreferrer"' : '' ?> class="underline hover:text-white font-semibold ml-1 transition-colors">
+                <?= esc($linkText) ?>
+            </a>
+            <?php endif; ?>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- Navigation Header (Smooth Animations & Micro-Interactions) -->
     <header id="mainHeader" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-purple-100/80 shadow-xs transition-all duration-300">

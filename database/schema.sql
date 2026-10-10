@@ -204,3 +204,44 @@ CREATE TABLE IF NOT EXISTS audit_logs (
   KEY idx_entitas (entitas),
   KEY idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS landing_settings (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  setting_key VARCHAR(50) NOT NULL UNIQUE,
+  setting_value TEXT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS hero_slides (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  subtitle VARCHAR(255) NULL,
+  badge_text VARCHAR(100) NULL,
+  description TEXT NULL,
+  image_url TEXT NOT NULL,
+  media_type ENUM('image','video') DEFAULT 'image',
+  cta_primary_text VARCHAR(100) NULL,
+  cta_primary_url VARCHAR(255) NULL,
+  cta_secondary_text VARCHAR(100) NULL,
+  cta_secondary_url VARCHAR(255) NULL,
+  order_num INT DEFAULT 0,
+  status ENUM('aktif','nonaktif') DEFAULT 'aktif',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS testimonials (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nama_jamaah VARCHAR(255) NOT NULL,
+  foto VARCHAR(255) NULL,
+  program_paket VARCHAR(255) NOT NULL,
+  tahun_keberangkatan VARCHAR(50) NULL,
+  kota_asal VARCHAR(100) NULL,
+  testimoni TEXT NOT NULL,
+  rating INT DEFAULT 5,
+  order_num INT DEFAULT 1,
+  status ENUM('aktif','nonaktif') DEFAULT 'aktif',
+  created_at DATETIME NULL,
+  updated_at DATETIME NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

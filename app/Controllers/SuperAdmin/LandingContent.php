@@ -46,6 +46,58 @@ class LandingContent extends BaseController
             return redirect()->to('/login');
         }
 
+        $formType = $this->request->getPost('form_type');
+
+        if ($formType === 'announcement') {
+            // 1. Status Aktif / Nonaktif Announcement Bar
+            $active = $this->request->getPost('announcement_active') ? '1' : '0';
+            LandingSettingModel::setVal('announcement_active', $active);
+
+            // 2. Teks Badge
+            $badgeText = $this->request->getPost('announcement_badge_text');
+            if ($badgeText !== null) {
+                LandingSettingModel::setVal('announcement_badge_text', trim($badgeText));
+            }
+
+            // 3. Visibilitas Badge
+            $showBadge = $this->request->getPost('announcement_show_badge') ? '1' : '0';
+            LandingSettingModel::setVal('announcement_show_badge', $showBadge);
+
+            // 4. Isi Pengumuman
+            $text = $this->request->getPost('announcement_text');
+            if ($text !== null) {
+                $trimmedText = trim($text);
+                LandingSettingModel::setVal('announcement_text', $trimmedText);
+                LandingSettingModel::setVal('site_announcement', $trimmedText);
+            }
+
+            // 5. Teks Link
+            $linkText = $this->request->getPost('announcement_link_text');
+            if ($linkText !== null) {
+                LandingSettingModel::setVal('announcement_link_text', trim($linkText));
+            }
+
+            // 6. URL Tujuan Link (dengan validasi keamanan protokol)
+            $linkUrl = trim((string)$this->request->getPost('announcement_link_url'));
+            if ($linkUrl !== '') {
+                if (preg_match('/^\s*(javascript|data|vbscript):/i', $linkUrl)) {
+                    return redirect()->to('/superadmin/landing')->with('error', 'URL tujuan mengandung protokol tidak diizinkan demi keamanan sistem.');
+                }
+            }
+            LandingSettingModel::setVal('announcement_link_url', $linkUrl);
+
+            // 7. Visibilitas Link
+            $showLink = $this->request->getPost('announcement_show_link') ? '1' : '0';
+            LandingSettingModel::setVal('announcement_show_link', $showLink);
+
+            // 8. Buka di Tab Baru
+            $targetBlank = $this->request->getPost('announcement_link_target_blank') ? '1' : '0';
+            LandingSettingModel::setVal('announcement_link_target_blank', $targetBlank);
+
+            return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan Announcement Bar berhasil disimpan!');
+        }
+
+        // Pengaturan Durasi Slide & Kontak Umum
         $seconds = $this->request->getPost('slide_interval_seconds');
         if (is_numeric($seconds) && (int)$seconds >= 1) {
             LandingSettingModel::setVal('slide_interval_seconds', (string)(int)$seconds);
@@ -54,6 +106,7 @@ class LandingContent extends BaseController
         $announcement = $this->request->getPost('site_announcement');
         if ($announcement !== null) {
             LandingSettingModel::setVal('site_announcement', trim($announcement));
+            LandingSettingModel::setVal('announcement_text', trim($announcement));
         }
 
         $whatsapp = $this->request->getPost('contact_whatsapp');
@@ -81,7 +134,7 @@ class LandingContent extends BaseController
             LandingSettingModel::setVal('whatsapp_cs_url', trim($waCsUrl));
         }
 
-        return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan landing page berhasil disimpan!');
+        return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan umum landing page berhasil disimpan!');
     }
 
     public function storeSlide()

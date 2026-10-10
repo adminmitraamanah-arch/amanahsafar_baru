@@ -50,7 +50,167 @@
                     </div>
                 <?php endif; ?>
 
-                <!-- CARD 1: PENGATURAN DURASI SLIDE & KONTEN GLOBAL -->
+                <!-- CARD 1: PENGATURAN ANNOUNCEMENT BAR (HEADER ATAS) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-purple-50 text-[#5e0078] flex items-center justify-center font-bold">
+                                <i class="fas fa-bullhorn text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-900">Announcement Bar (Top Bar Header)</h2>
+                                <p class="text-xs text-gray-500">Kelola pesan promosi bar paling atas, badge resmi, tautan aksi, dan pratinjau langsung.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span id="previewStatusBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold <?= (($settings['announcement_active'] ?? '1') === '1') ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-600 border border-gray-200' ?>">
+                                <span class="w-2 h-2 rounded-full <?= (($settings['announcement_active'] ?? '1') === '1') ? 'bg-emerald-500 animate-pulse' : 'bg-gray-400' ?>"></span>
+                                <span id="previewStatusText"><?= (($settings['announcement_active'] ?? '1') === '1') ? 'Status: Aktif' : 'Status: Nonaktif' ?></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- LIVE PREVIEW CONTAINER -->
+                    <div class="p-6 bg-slate-50/70 border-b border-gray-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fas fa-eye text-[#5e0078]"></i> Live Preview (Tampilan Publik Real-time)
+                            </label>
+                            <span class="text-[11px] text-gray-400">Pratinjau otomatis berubah saat formulir diedit</span>
+                        </div>
+                        
+                        <div class="rounded-xl overflow-hidden shadow-sm border border-purple-900/30">
+                            <!-- Public Appearance Simulated Bar -->
+                            <div id="liveAnnouncementBar" class="bg-[#3e004f] text-purple-100 text-xs py-2.5 px-4 text-center font-medium border-b border-purple-900/50 transition-all duration-300 <?= (($settings['announcement_active'] ?? '1') === '0') ? 'opacity-40 grayscale-[50%]' : '' ?>">
+                                <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+                                    <span id="previewBadgeEl" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#5e0078] text-white text-[11px] font-semibold tracking-wide <?= (($settings['announcement_show_badge'] ?? '1') === '0') ? 'hidden' : '' ?>">
+                                        <i class="fas fa-star text-amber-300 text-[10px]"></i> <span id="previewBadgeText"><?= esc($settings['announcement_badge_text'] ?? 'Resmi & Terpercaya') ?></span>
+                                    </span>
+                                    <span id="previewMessageEl" class="leading-relaxed"><?= esc($settings['announcement_text'] ?? ($settings['site_announcement'] ?? 'Pendaftaran Umroh & Haji Musim 1448 H Telah Dibuka. Kuota Terbatas!')) ?></span>
+                                    <a id="previewLinkEl" href="#" onclick="return false;" class="underline hover:text-white font-semibold ml-1 transition-colors <?= (($settings['announcement_show_link'] ?? '1') === '0') ? 'hidden' : '' ?>">
+                                        <span id="previewLinkText"><?= esc($settings['announcement_link_text'] ?? 'Lihat Jadwal →') ?></span>
+                                        <i id="previewExternalIcon" class="fas fa-external-link-alt text-[9px] ml-1 <?= (($settings['announcement_link_target_blank'] ?? '0') === '1') ? '' : 'hidden' ?>"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="previewDisabledNotice" class="bg-amber-50 px-4 py-2 border-t border-amber-200 text-amber-800 text-xs flex items-center gap-2 <?= (($settings['announcement_active'] ?? '1') === '1') ? 'hidden' : '' ?>">
+                                <i class="fas fa-info-circle text-amber-600"></i>
+                                <span><strong>Pemberitahuan:</strong> Announcement bar saat ini dalam status <strong>Nonaktif</strong> dan tidak akan ditampilkan pada landing page publik.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FORM SETTINGS -->
+                    <form action="<?= base_url('/superadmin/landing/settings') ?>" method="POST" class="p-6">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="form_type" value="announcement">
+
+                        <div class="space-y-6">
+                            <!-- Toggle Utama: Aktifkan / Nonaktifkan -->
+                            <div class="flex items-center justify-between p-4 bg-purple-50/50 rounded-xl border border-purple-100">
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-900">Aktifkan Announcement Bar</h4>
+                                    <p class="text-xs text-gray-500 mt-0.5">Tampilkan bar pengumuman pada posisi paling atas di landing page publik.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="inputAnnouncementActive" name="announcement_active" value="1" 
+                                           <?= (($settings['announcement_active'] ?? '1') === '1') ? 'checked' : '' ?> 
+                                           class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#5e0078] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#5e0078]"></div>
+                                </label>
+                            </div>
+
+                            <!-- Grid Input Konten -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                
+                                <!-- Isi Pesan Pengumuman -->
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                        Isi Pengumuman <span class="text-rose-500">*</span>
+                                    </label>
+                                    <textarea id="inputAnnouncementText" name="announcement_text" rows="2" required
+                                              placeholder="Contoh: Pendaftaran Umroh & Haji Musim 1448 H Telah Dibuka. Kuota Terbatas!"
+                                              class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:bg-white focus:ring-2 focus:ring-[#5e0078] focus:outline-none"><?= esc($settings['announcement_text'] ?? ($settings['site_announcement'] ?? 'Pendaftaran Umroh & Haji Musim 1448 H Telah Dibuka. Kuota Terbatas!')) ?></textarea>
+                                    <p class="text-[11px] text-gray-500 mt-1">Pesan teks utama yang ditampilkan di tengah announcement bar.</p>
+                                </div>
+
+                                <!-- Pengaturan Badge Pill -->
+                                <div class="p-4 bg-gray-50/70 rounded-xl border border-gray-200 space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                                            <i class="fas fa-tag text-[#5e0078]"></i> Badge Promosi
+                                        </h4>
+                                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="inputShowBadge" name="announcement_show_badge" value="1"
+                                                   <?= (($settings['announcement_show_badge'] ?? '1') === '1') ? 'checked' : '' ?>
+                                                   class="rounded border-gray-300 text-[#5e0078] focus:ring-[#5e0078]">
+                                            <span class="text-xs font-semibold text-gray-700">Tampilkan Badge</span>
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1.5">Teks Badge</label>
+                                        <input type="text" id="inputBadgeText" name="announcement_badge_text"
+                                               value="<?= esc($settings['announcement_badge_text'] ?? 'Resmi & Terpercaya') ?>"
+                                               placeholder="Contoh: Resmi & Terpercaya"
+                                               class="w-full bg-white border border-gray-300 rounded-lg px-3.5 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#5e0078] focus:outline-none">
+                                        <p class="text-[11px] text-gray-400 mt-1">Disertai ikon bintang kuning secara otomatis.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Pengaturan Link Aksi -->
+                                <div class="p-4 bg-gray-50/70 rounded-xl border border-gray-200 space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-xs font-bold text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                                            <i class="fas fa-link text-[#5e0078]"></i> Tautan / Link Aksi
+                                        </h4>
+                                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="inputShowLink" name="announcement_show_link" value="1"
+                                                   <?= (($settings['announcement_show_link'] ?? '1') === '1') ? 'checked' : '' ?>
+                                                   class="rounded border-gray-300 text-[#5e0078] focus:ring-[#5e0078]">
+                                            <span class="text-xs font-semibold text-gray-700">Tampilkan Link</span>
+                                        </label>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1.5">Teks Link</label>
+                                            <input type="text" id="inputLinkText" name="announcement_link_text"
+                                                   value="<?= esc($settings['announcement_link_text'] ?? 'Lihat Jadwal →') ?>"
+                                                   placeholder="Contoh: Lihat Jadwal →"
+                                                   class="w-full bg-white border border-gray-300 rounded-lg px-3.5 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#5e0078] focus:outline-none">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1.5">URL Tujuan Link</label>
+                                            <input type="text" id="inputLinkUrl" name="announcement_link_url"
+                                                   value="<?= esc($settings['announcement_link_url'] ?? '/catalog') ?>"
+                                                   placeholder="Contoh: /catalog atau https://..."
+                                                   class="w-full bg-white border border-gray-300 rounded-lg px-3.5 py-2 text-sm text-gray-900 focus:ring-2 focus:ring-[#5e0078] focus:outline-none">
+                                        </div>
+                                    </div>
+                                    <div class="pt-1">
+                                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" id="inputTargetBlank" name="announcement_link_target_blank" value="1"
+                                                   <?= (($settings['announcement_link_target_blank'] ?? '0') === '1') ? 'checked' : '' ?>
+                                                   class="rounded border-gray-300 text-[#5e0078] focus:ring-[#5e0078]">
+                                            <span class="text-xs font-medium text-gray-700">Buka link di tab baru (<code class="text-[11px] bg-gray-200 px-1 py-0.5 rounded">target="_blank"</code>)</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <span class="text-xs text-gray-500">
+                                <i class="fas fa-shield-alt text-[#5e0078] mr-1"></i> Perubahan tersimpan aman secara persisten di database.
+                            </span>
+                            <button type="submit" class="btn-interactive w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#5e0078] hover:bg-[#4c0062] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition">
+                                <i class="fas fa-save"></i> Simpan Pengaturan Announcement Bar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- CARD 2: PENGATURAN DURASI SLIDE & KONTEN GLOBAL -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="p-6 border-b border-gray-100 flex items-center justify-between">
                         <div class="flex items-center gap-3">
@@ -59,13 +219,14 @@
                             </div>
                             <div>
                                 <h2 class="text-lg font-bold text-gray-900">Durasi Slide &amp; Pengaturan Umum</h2>
-                                <p class="text-xs text-gray-500">Super Admin dapat menentukan kecepatan transisi slide (detik).</p>
+                                <p class="text-xs text-gray-500">Super Admin dapat menentukan kecepatan transisi slide dan kontak resmi.</p>
                             </div>
                         </div>
                     </div>
 
                     <form action="<?= base_url('/superadmin/landing/settings') ?>" method="POST" class="p-6">
                         <?= csrf_field() ?>
+                        <input type="hidden" name="form_type" value="general">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             
                             <!-- Durasi Detik Slide -->
@@ -597,6 +758,94 @@ function openEditTestimonialModal(t) {
 
     document.getElementById('modalEditTestimonial').classList.remove('hidden');
 }
+
+// Announcement Bar Live Preview Sync Controller
+(function() {
+    const inputActive = document.getElementById('inputAnnouncementActive');
+    const inputShowBadge = document.getElementById('inputShowBadge');
+    const inputBadgeText = document.getElementById('inputBadgeText');
+    const inputAnnouncementText = document.getElementById('inputAnnouncementText');
+    const inputShowLink = document.getElementById('inputShowLink');
+    const inputLinkText = document.getElementById('inputLinkText');
+    const inputLinkUrl = document.getElementById('inputLinkUrl');
+    const inputTargetBlank = document.getElementById('inputTargetBlank');
+
+    const liveBar = document.getElementById('liveAnnouncementBar');
+    const previewBadgeEl = document.getElementById('previewBadgeEl');
+    const previewBadgeText = document.getElementById('previewBadgeText');
+    const previewMessageEl = document.getElementById('previewMessageEl');
+    const previewLinkEl = document.getElementById('previewLinkEl');
+    const previewLinkText = document.getElementById('previewLinkText');
+    const previewExternalIcon = document.getElementById('previewExternalIcon');
+    const previewDisabledNotice = document.getElementById('previewDisabledNotice');
+    const previewStatusBadge = document.getElementById('previewStatusBadge');
+    const previewStatusText = document.getElementById('previewStatusText');
+
+    if (!liveBar) return;
+
+    function updatePreview() {
+        // 1. Status Aktif
+        const isActive = inputActive ? inputActive.checked : true;
+        if (isActive) {
+            liveBar.classList.remove('opacity-40', 'grayscale-[50%]');
+            if (previewDisabledNotice) previewDisabledNotice.classList.add('hidden');
+            if (previewStatusBadge) {
+                previewStatusBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200';
+                previewStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span>Status: Aktif</span>';
+            }
+        } else {
+            liveBar.classList.add('opacity-40', 'grayscale-[50%]');
+            if (previewDisabledNotice) previewDisabledNotice.classList.remove('hidden');
+            if (previewStatusBadge) {
+                previewStatusBadge.className = 'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200';
+                previewStatusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400"></span><span>Status: Nonaktif</span>';
+            }
+        }
+
+        // 2. Badge Promosi
+        const showBadge = inputShowBadge ? inputShowBadge.checked : true;
+        const badgeVal = inputBadgeText ? inputBadgeText.value.trim() : '';
+        if (showBadge && badgeVal.length > 0) {
+            if (previewBadgeEl) previewBadgeEl.classList.remove('hidden');
+            if (previewBadgeText) previewBadgeText.textContent = badgeVal;
+        } else {
+            if (previewBadgeEl) previewBadgeEl.classList.add('hidden');
+        }
+
+        // 3. Teks Pesan Pengumuman
+        const msgVal = inputAnnouncementText ? inputAnnouncementText.value : '';
+        if (previewMessageEl) previewMessageEl.textContent = msgVal;
+
+        // 4. Link Aksi
+        const showLink = inputShowLink ? inputShowLink.checked : true;
+        const linkVal = inputLinkText ? inputLinkText.value.trim() : '';
+        if (showLink && linkVal.length > 0) {
+            if (previewLinkEl) previewLinkEl.classList.remove('hidden');
+            if (previewLinkText) previewLinkText.textContent = linkVal;
+        } else {
+            if (previewLinkEl) previewLinkEl.classList.add('hidden');
+        }
+
+        // 5. Ikon Tab Baru
+        const isTargetBlank = inputTargetBlank ? inputTargetBlank.checked : false;
+        if (previewExternalIcon) {
+            if (isTargetBlank) {
+                previewExternalIcon.classList.remove('hidden');
+            } else {
+                previewExternalIcon.classList.add('hidden');
+            }
+        }
+    }
+
+    // Pasang listener pada seluruh elemen input
+    [inputActive, inputShowBadge, inputBadgeText, inputAnnouncementText, inputShowLink, inputLinkText, inputLinkUrl, inputTargetBlank].forEach(el => {
+        if (!el) return;
+        el.addEventListener('input', updatePreview);
+        el.addEventListener('change', updatePreview);
+    });
+
+    updatePreview();
+})();
 </script>
 
 <!-- MODAL TAMBAH TESTIMONI -->
