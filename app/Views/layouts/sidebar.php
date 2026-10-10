@@ -2,8 +2,8 @@
 <!-- Mobile Backdrop -->
 <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden hidden transition-opacity duration-200"></div>
 
-<!-- Sidebar Container (Fixed drawer on mobile, permanently docked flex column on desktop/laptop) -->
-<aside id="sidebarContainer" class="fixed md:static inset-y-0 left-0 z-50 md:z-auto h-screen w-64 shrink-0 bg-white border-r border-slate-200/80 flex flex-col justify-between select-none transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out">
+<!-- Sidebar Container (Fixed on left with 16rem width on desktop, modal drawer on mobile) -->
+<aside id="sidebarContainer" class="fixed inset-y-0 left-0 z-50 md:z-30 h-screen w-64 shrink-0 bg-white border-r border-slate-200/80 flex flex-col justify-between select-none transition-transform duration-200 ease-in-out -translate-x-full md:translate-x-0">
     
     <!-- Top Brand Header -->
     <div>
@@ -110,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function openSidebar() {
         if (sidebarContainer && sidebarBackdrop) {
+            sidebarContainer.classList.add('mobile-open');
             sidebarContainer.classList.remove('-translate-x-full');
             sidebarBackdrop.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
@@ -118,6 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function closeSidebar() {
         if (sidebarContainer && sidebarBackdrop) {
+            sidebarContainer.classList.remove('mobile-open');
             sidebarContainer.classList.add('-translate-x-full');
             sidebarBackdrop.classList.add('hidden');
             document.body.style.overflow = '';

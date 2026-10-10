@@ -8,10 +8,59 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Compiled Static Tailwind CSS -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/app.min.css') ?>">
+    <!-- Compiled Static Tailwind CSS with cache-busting -->
+    <link rel="stylesheet" href="<?= base_url('assets/css/app.min.css') ?>?v=<?= file_exists(FCPATH . 'assets/css/app.min.css') ? filemtime(FCPATH . 'assets/css/app.min.css') : time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Dashboard Layout - Sidebar & Main Content Space Guarantees */
+        @media (min-width: 768px) {
+            #sidebarContainer {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                width: 16rem !important;
+                height: 100vh !important;
+                transform: translateX(0) !important;
+                z-index: 30 !important;
+            }
+            .sidebar-main-content {
+                margin-left: 16rem !important;
+                width: calc(100% - 16rem) !important;
+                min-width: 0 !important;
+            }
+            #sidebarBackdrop {
+                display: none !important;
+            }
+            #mobileSidebarToggle {
+                display: none !important;
+            }
+            #closeSidebarBtn {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #sidebarContainer {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                width: 16rem !important;
+                height: 100vh !important;
+                z-index: 50 !important;
+                transform: translateX(-100%);
+                transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            #sidebarContainer.mobile-open {
+                transform: translateX(0) !important;
+            }
+            .sidebar-main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+        }
+
         :root {
             --ease-out: cubic-bezier(0, 0, 0.2, 1);
             --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
