@@ -35,6 +35,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'roleFilter'    => \App\Filters\RoleFilter::class,
+        'activeUser'    => \App\Filters\ActiveUserFilter::class,
     ];
 
     /**
@@ -76,6 +77,16 @@ class Filters extends BaseFilters
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',
+            'activeUser' => [
+                'except' => [
+                    '/',
+                    'login*',
+                    'register*',
+                    'logout*',
+                    'assets/*',
+                    'uploads/*',
+                ]
+            ],
         ],
         'after' => [
             // 'honeypot',

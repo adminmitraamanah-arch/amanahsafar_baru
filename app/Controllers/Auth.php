@@ -37,7 +37,7 @@ class Auth extends BaseController
             }
 
             if ($user['status'] === 'nonaktif') {
-                return redirect()->back()->with('error', 'Akun Anda telah dinonaktifkan');
+                return redirect()->back()->with('error', 'Akun anda di nonaktifkan');
             }
 
             // Check onboarding

@@ -14,6 +14,18 @@ class RoleFilter implements FilterInterface
             return redirect()->to('/login');
         }
 
+        $userId = session('user_id');
+        if ($userId) {
+            $userModel = new \App\Models\UserModel();
+            $user = $userModel->find($userId);
+
+            if (!$user || $user['status'] === 'nonaktif') {
+                session()->remove(['user_id', 'email', 'nama', 'role', 'logged_in']);
+                session()->regenerate(true);
+                return redirect()->to('/login')->with('error', 'Akun anda di nonaktifkan');
+            }
+        }
+
         $userRole = session('role');
         
         if ($arguments) {

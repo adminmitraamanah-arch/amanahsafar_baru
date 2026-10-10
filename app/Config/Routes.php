@@ -41,6 +41,9 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
     $routes->post('packages/(:num)/update', 'SuperAdmin\Package::update/$1');
     $routes->post('packages/(:num)/delete', 'SuperAdmin\Package::delete/$1');
     $routes->get('users', 'SuperAdmin\User::index');
+    $routes->post('users/update/(:num)', 'SuperAdmin\User::update/$1');
+    $routes->post('users/deactivate/(:num)', 'SuperAdmin\User::deactivate/$1');
+    $routes->post('users/activate/(:num)', 'SuperAdmin\User::activate/$1');
     $routes->get('commissions', 'SuperAdmin\Commission::index');
     $routes->get('tasks', 'SuperAdmin\Task::index');
     $routes->post('tasks/store', 'SuperAdmin\Task::store');
