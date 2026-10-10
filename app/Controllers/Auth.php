@@ -62,7 +62,14 @@ class Auth extends BaseController
                 'logged_in' => true
             ]);
 
-            return redirect()->to('/dashboard');
+            $targetUrl = '/dashboard';
+            if ($user['role'] === 'super_admin' || $user['role'] === 'superadmin') {
+                $targetUrl = '/superadmin';
+            } elseif ($user['role'] === 'admin') {
+                $targetUrl = '/admin';
+            }
+
+            return redirect()->to($targetUrl)->with('success', 'Berhasil login ke sistem');
         }
 
         return view('auth/login');
@@ -213,7 +220,8 @@ class Auth extends BaseController
 
     public function logout()
     {
-        session()->destroy();
-        return redirect()->to('/');
+        session()->remove(['user_id', 'email', 'nama', 'role', 'logged_in']);
+        session()->regenerate(true);
+        return redirect()->to('/login')->with('success', 'Akun berhasil logout');
     }
 }

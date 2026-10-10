@@ -1,6 +1,6 @@
 <!-- GLOBAL FLOATING TOAST NOTIFICATION COMPONENT (Bottom-Right) -->
 <div id="toastContainer" 
-     class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-[99999] flex flex-col items-end gap-2.5 pointer-events-none max-w-sm sm:max-w-md w-full px-4 sm:px-0"
+     class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99999] flex flex-col items-end gap-2.5 pointer-events-none w-[calc(100vw-2rem)] sm:w-auto max-w-sm sm:max-w-md"
      aria-live="polite" 
      aria-atomic="true">
 </div>
@@ -86,12 +86,12 @@
         info: {
             title: 'Informasi',
             icon: 'fas fa-info-circle',
-            border: 'border-purple-200',
+            border: 'border-sky-200',
             bg: 'bg-white/95',
-            iconBg: 'bg-purple-100 text-[#5e0078]',
+            iconBg: 'bg-sky-100 text-sky-600',
             textColor: 'text-slate-800',
-            titleColor: 'text-purple-900',
-            progressBg: 'bg-[#5e0078]'
+            titleColor: 'text-sky-900',
+            progressBg: 'bg-sky-500'
         }
     };
 
@@ -111,7 +111,7 @@
         const message = escapeHtml(options.message);
 
         const toast = document.createElement('div');
-        toast.className = `toast-item relative w-full overflow-hidden rounded-2xl border ${type.border} ${type.bg} backdrop-blur-md shadow-xl shadow-purple-950/10 flex flex-col select-none`;
+        toast.className = `toast-item relative w-full overflow-hidden rounded-2xl border ${type.border} ${type.bg} backdrop-blur-md shadow-xl shadow-slate-900/10 flex flex-col select-none`;
         toast.setAttribute('role', 'alert');
 
         toast.innerHTML = `
@@ -250,11 +250,18 @@
     // Expose global Toast API
     window.showToast = showToast;
     window.toast = {
-        success: (msg, title) => showToast({ message: msg, title, type: 'success' }),
-        error: (msg, title) => showToast({ message: msg, title, type: 'error' }),
-        warning: (msg, title) => showToast({ message: msg, title, type: 'warning' }),
-        info: (msg, title) => showToast({ message: msg, title, type: 'info' })
+        success: (msg, title) => showToast({ message: msg, title: title || 'Berhasil', type: 'success' }),
+        error: (msg, title) => showToast({ message: msg, title: title || 'Terjadi Kesalahan', type: 'error' }),
+        warning: (msg, title) => showToast({ message: msg, title: title || 'Peringatan', type: 'warning' }),
+        info: (msg, title) => showToast({ message: msg, title: title || 'Informasi', type: 'info' })
     };
+
+    // Listen to custom DOM event for decoupled notifications
+    window.addEventListener('app:toast', function(e) {
+        if (e.detail) {
+            showToast(e.detail);
+        }
+    });
 
     // Auto-display flashdata messages injected by backend PHP
     document.addEventListener('DOMContentLoaded', function() {
@@ -311,6 +318,11 @@
             $flashes[] = [
                 'type' => 'info',
                 'message' => session()->getFlashdata('message')
+            ];
+        } elseif (session()->getFlashdata('status')) {
+            $flashes[] = [
+                'type' => 'info',
+                'message' => session()->getFlashdata('status')
             ];
         }
         ?>

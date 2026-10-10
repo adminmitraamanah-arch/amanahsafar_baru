@@ -29,27 +29,6 @@
                     </div>
                 </div>
 
-                <!-- Flash Messages -->
-                <?php if (session()->getFlashdata('success')): ?>
-                    <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 text-sm rounded-r-lg flex items-center justify-between shadow-sm">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-check-circle text-emerald-500"></i>
-                            <span><?= session()->getFlashdata('success') ?></span>
-                        </div>
-                        <button onclick="this.parentElement.remove()" class="text-emerald-600 hover:text-emerald-900">&times;</button>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (session()->getFlashdata('error')): ?>
-                    <div class="p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-800 text-sm rounded-r-lg flex items-center justify-between shadow-sm">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-exclamation-circle text-rose-500"></i>
-                            <span><?= session()->getFlashdata('error') ?></span>
-                        </div>
-                        <button onclick="this.parentElement.remove()" class="text-rose-600 hover:text-rose-900">&times;</button>
-                    </div>
-                <?php endif; ?>
-
                 <!-- CARD 1: PENGATURAN ANNOUNCEMENT BAR (HEADER ATAS) -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

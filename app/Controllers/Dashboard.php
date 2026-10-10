@@ -21,10 +21,16 @@ class Dashboard extends BaseController
 
         $role = session('role');
         if ($role === 'super_admin' || $role === 'superadmin') {
-            return redirect()->to('/superadmin');
+            $redirect = redirect()->to('/superadmin');
+            if ($s = session()->getFlashdata('success')) $redirect = $redirect->with('success', $s);
+            if ($e = session()->getFlashdata('error')) $redirect = $redirect->with('error', $e);
+            return $redirect;
         }
         if ($role === 'admin') {
-            return redirect()->to('/admin');
+            $redirect = redirect()->to('/admin');
+            if ($s = session()->getFlashdata('success')) $redirect = $redirect->with('success', $s);
+            if ($e = session()->getFlashdata('error')) $redirect = $redirect->with('error', $e);
+            return $redirect;
         }
 
         $data = [
