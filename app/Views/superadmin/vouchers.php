@@ -17,13 +17,6 @@
                     </button>
                 </div>
 
-                <?php if (session()->getFlashdata('success')): ?>
-                    <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        <?= session()->getFlashdata('success') ?>
-                    </div>
-                <?php endif; ?>
-
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full">

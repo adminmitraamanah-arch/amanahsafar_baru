@@ -117,5 +117,8 @@
 </head>
 <body class="bg-[#faf7fb] text-slate-900 antialiased page-fade-in">
     <?= $this->renderSection('content') ?>
+
+    <!-- Global Floating Toast Notification Container -->
+    <?= $this->include('layouts/toast') ?>
 </body>
 </html>

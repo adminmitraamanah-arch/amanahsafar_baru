@@ -9,13 +9,6 @@
         </div>
 
         <div class="p-8">
-            <?php if (session()->getFlashdata('error')): ?>
-                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                    <i class="fas fa-exclamation-circle mr-2"></i>
-                    <?= session()->getFlashdata('error') ?>
-                </div>
-            <?php endif; ?>
-
             <form method="POST" class="space-y-4">
                 <?= csrf_field() ?>
                 

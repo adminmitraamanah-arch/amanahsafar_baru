@@ -18,21 +18,6 @@
                     </div>
                 </div>
 
-                <!-- Flash Messages -->
-                <?php if (session()->getFlashdata('success')): ?>
-                    <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm flex items-center gap-3 shadow-sm">
-                        <i class="fas fa-check-circle text-emerald-600 text-lg flex-shrink-0"></i>
-                        <span class="font-medium"><?= esc(session()->getFlashdata('success')) ?></span>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (session()->getFlashdata('error')): ?>
-                    <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-sm flex items-center gap-3 shadow-sm">
-                        <i class="fas fa-exclamation-circle text-rose-600 text-lg flex-shrink-0"></i>
-                        <span class="font-medium"><?= esc(session()->getFlashdata('error')) ?></span>
-                    </div>
-                <?php endif; ?>
-
                 <!-- Stat Summary Cards -->
                 <?php
                 $totalUsers = count($users ?? []);
