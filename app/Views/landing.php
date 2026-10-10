@@ -263,6 +263,50 @@
             outline-offset: 2px;
         }
 
+        /* FAQ Accordion Smooth Motion */
+        .faq-item {
+            transition: border-color 200ms ease, box-shadow 200ms ease;
+        }
+
+        .faq-panel {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 280ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .faq-panel > div {
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .faq-content-inner {
+            opacity: 0;
+            transition: opacity 180ms ease-out;
+        }
+
+        .faq-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), opacity 200ms ease;
+            transform-origin: center;
+        }
+
+        /* FAQ Open State */
+        .faq-item.is-open .faq-panel {
+            grid-template-rows: 1fr;
+            transition: grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .faq-item.is-open .faq-content-inner {
+            opacity: 1;
+            transition: opacity 220ms ease-out 40ms;
+        }
+
+        .faq-item.is-open .faq-icon {
+            transform: rotate(180deg);
+        }
+
         /* Accessibility: Respect Reduced Motion Preferences */
         @media (prefers-reduced-motion: reduce) {
             html {
@@ -272,7 +316,11 @@
             .nav-link-item::after,
             .btn-nav-login,
             .btn-nav-register,
-            #mainHeader {
+            #mainHeader,
+            .faq-panel,
+            .faq-content-inner,
+            .faq-icon,
+            .faq-item {
                 transition: none !important;
                 animation: none !important;
             }
@@ -1063,35 +1111,74 @@
             </div>
 
             <div class="space-y-4">
-                <details class="group bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm transition">
-                    <summary class="flex justify-between items-center font-bold text-slate-900 cursor-pointer text-sm sm:text-base">
-                        <span>Apakah tiket dan visa sudah termasuk dalam paket?</span>
-                        <span class="text-[#5e0078] group-open:rotate-180 transition transform"><i class="fas fa-chevron-down"></i></span>
-                    </summary>
-                    <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                        Ya, seluruh paket yang kami tampilkan sudah termasuk tiket pesawat internasional pulang-pergi, visa umroh resmi, hotel di Madinah &amp; Makkah, transportasi bus full AC, serta makan 3x sehari.
-                    </p>
-                </details>
+                <!-- FAQ Item 1 -->
+                <div class="faq-item bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm transition hover:border-slate-300">
+                    <button type="button" 
+                            class="faq-trigger w-full flex justify-between items-center text-left font-bold text-slate-900 cursor-pointer text-sm sm:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078]/40 focus-visible:ring-offset-2 rounded-lg group select-none"
+                            aria-expanded="false" 
+                            aria-controls="faq-ans-1" 
+                            id="faq-btn-1">
+                        <span class="group-hover:text-[#5e0078] transition-colors duration-200">Apakah tiket dan visa sudah termasuk dalam paket?</span>
+                        <span class="faq-icon text-[#5e0078] group-hover:opacity-80 transition shrink-0 ml-4">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </button>
+                    <div id="faq-ans-1" class="faq-panel" role="region" aria-labelledby="faq-btn-1">
+                        <div>
+                            <div class="faq-content-inner pt-3 mt-3 border-t border-slate-100">
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                    Ya, seluruh paket yang kami tampilkan sudah termasuk tiket pesawat internasional pulang-pergi, visa umroh resmi, hotel di Madinah &amp; Makkah, transportasi bus full AC, serta makan 3x sehari.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <details class="group bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm transition">
-                    <summary class="flex justify-between items-center font-bold text-slate-900 cursor-pointer text-sm sm:text-base">
-                        <span>Berapa minimal DP untuk mengunci tempat keberangkatan?</span>
-                        <span class="text-[#5e0078] group-open:rotate-180 transition transform"><i class="fas fa-chevron-down"></i></span>
-                    </summary>
-                    <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                        Minimal uang muka (DP) adalah Rp 5.000.000 per jamaah. Pelunasan dapat dilakukan paling lambat 30 hari sebelum tanggal keberangkatan.
-                    </p>
-                </details>
+                <!-- FAQ Item 2 -->
+                <div class="faq-item bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm transition hover:border-slate-300">
+                    <button type="button" 
+                            class="faq-trigger w-full flex justify-between items-center text-left font-bold text-slate-900 cursor-pointer text-sm sm:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078]/40 focus-visible:ring-offset-2 rounded-lg group select-none"
+                            aria-expanded="false" 
+                            aria-controls="faq-ans-2" 
+                            id="faq-btn-2">
+                        <span class="group-hover:text-[#5e0078] transition-colors duration-200">Berapa minimal DP untuk mengunci tempat keberangkatan?</span>
+                        <span class="faq-icon text-[#5e0078] group-hover:opacity-80 transition shrink-0 ml-4">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </button>
+                    <div id="faq-ans-2" class="faq-panel" role="region" aria-labelledby="faq-btn-2">
+                        <div>
+                            <div class="faq-content-inner pt-3 mt-3 border-t border-slate-100">
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                    Minimal uang muka (DP) adalah Rp 5.000.000 per jamaah. Pelunasan dapat dilakukan paling lambat 30 hari sebelum tanggal keberangkatan.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <details class="group bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm transition">
-                    <summary class="flex justify-between items-center font-bold text-slate-900 cursor-pointer text-sm sm:text-base">
-                        <span>Bagaimana jika jamaah lansia membutuhkan kursi roda?</span>
-                        <span class="text-[#5e0078] group-open:rotate-180 transition transform"><i class="fas fa-chevron-down"></i></span>
-                    </summary>
-                    <p class="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                        Tim kami menyediakan fasilitas pendampingan dan penyediaan kursi roda di tanah suci dengan koordinasi muthowif khusus agar ibadah tetap lancar dan khusyuk.
-                    </p>
-                </details>
+                <!-- FAQ Item 3 -->
+                <div class="faq-item bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm transition hover:border-slate-300">
+                    <button type="button" 
+                            class="faq-trigger w-full flex justify-between items-center text-left font-bold text-slate-900 cursor-pointer text-sm sm:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078]/40 focus-visible:ring-offset-2 rounded-lg group select-none"
+                            aria-expanded="false" 
+                            aria-controls="faq-ans-3" 
+                            id="faq-btn-3">
+                        <span class="group-hover:text-[#5e0078] transition-colors duration-200">Bagaimana jika jamaah lansia membutuhkan kursi roda?</span>
+                        <span class="faq-icon text-[#5e0078] group-hover:opacity-80 transition shrink-0 ml-4">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </button>
+                    <div id="faq-ans-3" class="faq-panel" role="region" aria-labelledby="faq-btn-3">
+                        <div>
+                            <div class="faq-content-inner pt-3 mt-3 border-t border-slate-100">
+                                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                    Tim kami menyediakan fasilitas pendampingan dan penyediaan kursi roda di tanah suci dengan koordinasi muthowif khusus agar ibadah tetap lancar dan khusyuk.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1358,6 +1445,24 @@ if (empty($waCsUrl)) {
     if (mobileBtn) {
         mobileBtn.addEventListener('click', () => toggleMobileMenu());
     }
+
+    // 6. FAQ Accordion Smooth Motion Controller
+    const faqTriggers = document.querySelectorAll('.faq-trigger');
+    faqTriggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const item = trigger.closest('.faq-item');
+            if (!item) return;
+            const isOpen = item.classList.contains('is-open');
+
+            if (isOpen) {
+                item.classList.remove('is-open');
+                trigger.setAttribute('aria-expanded', 'false');
+            } else {
+                item.classList.add('is-open');
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
 })();
 </script>
 
