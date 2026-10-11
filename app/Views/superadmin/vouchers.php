@@ -124,16 +124,16 @@
                                                     <?php if ($voucher['status'] === 'tersedia'): ?>
                                                         <form method="POST" action="<?= base_url('/superadmin/vouchers/disable/' . $voucher['id']) ?>" class="inline-block" onsubmit="return confirm('Nonaktifkan voucher <?= esc($voucher['kode']) ?>? Voucher tidak akan dapat digunakan lagi.')">
                                                             <?= csrf_field() ?>
-                                                            <button type="submit" class="btn-interactive inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition" title="Nonaktifkan Voucher">
-                                                                <i class="fas fa-ban text-[10px]"></i> Nonaktifkan
+                                                            <button type="submit" class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 border border-amber-200 transition shadow-xs" title="Nonaktifkan Voucher" aria-label="Nonaktifkan Voucher">
+                                                                <i class="fas fa-ban text-xs"></i>
                                                             </button>
                                                         </form>
                                                     <?php endif; ?>
 
                                                     <form method="POST" action="<?= base_url('/superadmin/vouchers/delete/' . $voucher['id']) ?>" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus voucher <?= esc($voucher['kode']) ?> secara permanen? Tindakan ini tidak dapat dibatalkan.')">
                                                         <?= csrf_field() ?>
-                                                        <button type="submit" class="btn-interactive inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition" title="Hapus Voucher">
-                                                            <i class="fas fa-trash-alt text-[10px]"></i> Hapus
+                                                        <button type="submit" class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs" title="Hapus Voucher" aria-label="Hapus Voucher">
+                                                            <i class="fas fa-trash-alt text-xs"></i>
                                                         </button>
                                                     </form>
                                                 </div>
