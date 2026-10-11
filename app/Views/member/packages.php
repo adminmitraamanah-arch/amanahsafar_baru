@@ -15,10 +15,8 @@
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Katalog Paket</h1>
                         <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                            <?php if ($userRole === 'mitra'): ?>
+                            <?php if (in_array($userRole, ['mitra', 'manager_mitra', 'cabang'])): ?>
                                 Pilih dan pesan paket perjalanan umroh & haji resmi untuk jamaah Anda.
-                            <?php elseif ($userRole === 'manager_mitra'): ?>
-                                Katalog paket acuan untuk pembinaan jaringan kemitraan Anda.
                             <?php else: ?>
                                 Katalog paket perjalanan umroh & haji resmi Amanah Safar.
                             <?php endif; ?>
@@ -27,9 +25,9 @@
 
                     <!-- Role Badge Indicator -->
                     <div class="flex items-center gap-2">
-                        <?php if ($userRole === 'mitra'): ?>
+                        <?php if (in_array($userRole, ['mitra', 'manager_mitra', 'cabang'])): ?>
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 text-[#5e0078] border border-purple-200 text-xs font-bold">
-                                <i class="fas fa-shopping-bag text-xs"></i> Mode Pemesanan Mitra
+                                <i class="fas fa-shopping-bag text-xs"></i> Mode Pemesanan Paket
                             </span>
                         <?php else: ?>
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 border border-slate-200 text-xs font-semibold">
@@ -99,8 +97,8 @@
                                             <i class="fas fa-info-circle mr-1"></i> Detail
                                         </button>
 
-                                        <!-- Order Button (Only for Mitra) -->
-                                        <?php if ($userRole === 'mitra'): ?>
+                                        <!-- Order Button (For Mitra, Manager Mitra, and Cabang) -->
+                                        <?php if (in_array($userRole, ['mitra', 'manager_mitra', 'cabang'])): ?>
                                             <button type="button" 
                                                     onclick="openOrderModal(<?= htmlspecialchars(json_encode([
                                                         'id' => $pkg['id'],
@@ -112,8 +110,8 @@
                                                 <i class="fas fa-shopping-cart mr-1"></i> Pesan
                                             </button>
                                         <?php else: ?>
-                                            <span class="flex-1 inline-flex items-center justify-center text-center bg-slate-100 text-slate-400 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-not-allowed border border-slate-200" title="Pemesanan paket hanya dapat dilakukan oleh akun Mitra">
-                                                <i class="fas fa-lock mr-1 text-[10px]"></i> Khusus Mitra
+                                            <span class="flex-1 inline-flex items-center justify-center text-center bg-slate-100 text-slate-400 px-3 py-2.5 rounded-xl text-xs font-semibold cursor-not-allowed border border-slate-200" title="Pemesanan paket dibuka untuk akun Mitra, Manager Mitra, dan Cabang">
+                                                <i class="fas fa-lock mr-1 text-[10px]"></i> Mode Referensi
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -165,8 +163,8 @@
     </div>
 </div>
 
-<!-- Modal Form Pemesanan Paket (Hanya untuk Mitra) -->
-<?php if ($userRole === 'mitra'): ?>
+<!-- Modal Form Pemesanan Paket (Untuk Mitra, Manager Mitra, dan Cabang) -->
+<?php if (in_array($userRole, ['mitra', 'manager_mitra', 'cabang'])): ?>
 <div id="orderModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
     <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeOrderModal()"></div>
     <div class="flex min-h-full items-center justify-center p-4">

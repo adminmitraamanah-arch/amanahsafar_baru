@@ -49,9 +49,10 @@ class Package extends BaseController
             return redirect()->to('/login');
         }
 
-        // Strict RBAC: Only Mitra role can create orders
-        if (session('role') !== 'mitra') {
-            return redirect()->to('/app/packages')->with('error', 'Akses ditolak: Hanya role Mitra yang memiliki hak untuk melakukan pemesanan paket.');
+        // Strict RBAC: Mitra, Manager Mitra, and Cabang can create orders
+        $allowedOrderRoles = ['mitra', 'manager_mitra', 'cabang'];
+        if (!in_array(session('role'), $allowedOrderRoles)) {
+            return redirect()->to('/app/packages')->with('error', 'Akses ditolak: Akun Anda tidak memiliki hak akses untuk melakukan pemesanan paket.');
         }
 
         if (!$this->request->is('post')) {
