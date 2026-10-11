@@ -38,6 +38,8 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
     $routes->get('vouchers', 'SuperAdmin\Voucher::index');
     $routes->post('vouchers/generate', 'SuperAdmin\Voucher::generate');
     $routes->post('vouchers/disable/(:num)', 'SuperAdmin\Voucher::disable/$1');
+    $routes->post('vouchers/delete/(:num)', 'SuperAdmin\Voucher::delete/$1');
+    $routes->get('vouchers/delete/(:num)', 'SuperAdmin\Voucher::delete/$1');
     $routes->get('packages', 'SuperAdmin\Package::index');
     $routes->get('packages/create', 'SuperAdmin\Package::create');
     $routes->post('packages/store', 'SuperAdmin\Package::store');

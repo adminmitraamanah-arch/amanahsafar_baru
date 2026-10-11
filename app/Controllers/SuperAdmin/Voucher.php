@@ -177,4 +177,21 @@ class Voucher extends BaseController
         $this->voucherModel->update($id, ['status' => 'dinonaktifkan']);
         return redirect()->back()->with('deleted', 'Voucher berhasil dinonaktifkan');
     }
+
+    public function delete($id)
+    {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
+            return redirect()->to('/login');
+        }
+
+        $voucher = $this->voucherModel->find($id);
+        if (!$voucher) {
+            return redirect()->back()->with('error', 'Voucher tidak ditemukan');
+        }
+
+        $kode = $voucher['kode'];
+        $this->voucherModel->delete($id);
+
+        return redirect()->back()->with('deleted', "Voucher [{$kode}] berhasil dihapus");
+    }
 }

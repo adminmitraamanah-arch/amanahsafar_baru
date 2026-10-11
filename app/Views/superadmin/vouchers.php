@@ -120,16 +120,23 @@
                                                 <?= date('d M Y, H:i', strtotime($voucher['created_at'])) ?>
                                             </td>
                                             <td class="px-5 py-4 text-right">
-                                                <?php if ($voucher['status'] === 'tersedia'): ?>
-                                                    <form method="POST" action="<?= base_url('/superadmin/vouchers/disable/' . $voucher['id']) ?>" class="inline-block" onsubmit="return confirm('Nonaktifkan voucher ini? Voucher tidak akan dapat digunakan lagi.')">
+                                                <div class="flex items-center justify-end gap-1.5 whitespace-nowrap">
+                                                    <?php if ($voucher['status'] === 'tersedia'): ?>
+                                                        <form method="POST" action="<?= base_url('/superadmin/vouchers/disable/' . $voucher['id']) ?>" class="inline-block" onsubmit="return confirm('Nonaktifkan voucher <?= esc($voucher['kode']) ?>? Voucher tidak akan dapat digunakan lagi.')">
+                                                            <?= csrf_field() ?>
+                                                            <button type="submit" class="btn-interactive inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 transition" title="Nonaktifkan Voucher">
+                                                                <i class="fas fa-ban text-[10px]"></i> Nonaktifkan
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+
+                                                    <form method="POST" action="<?= base_url('/superadmin/vouchers/delete/' . $voucher['id']) ?>" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus voucher <?= esc($voucher['kode']) ?> secara permanen? Tindakan ini tidak dapat dibatalkan.')">
                                                         <?= csrf_field() ?>
-                                                        <button type="submit" class="btn-interactive inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition">
-                                                            <i class="fas fa-ban text-[10px]"></i> Nonaktifkan
+                                                        <button type="submit" class="btn-interactive inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition" title="Hapus Voucher">
+                                                            <i class="fas fa-trash-alt text-[10px]"></i> Hapus
                                                         </button>
                                                     </form>
-                                                <?php else: ?>
-                                                    <span class="text-xs text-slate-300 italic">-</span>
-                                                <?php endif; ?>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
