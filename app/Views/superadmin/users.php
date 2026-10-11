@@ -286,10 +286,10 @@
                                                     <!-- Edit Button -->
                                                     <button type="button" 
                                                             onclick='openEditModal(<?= htmlspecialchars(json_encode($user), ENT_QUOTES, "UTF-8") ?>)' 
-                                                            class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200 transition"
-                                                            title="Edit Pengguna">
+                                                            class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 hover:text-[#4c0062] border border-purple-200 transition shadow-xs"
+                                                            title="Edit Pengguna"
+                                                            aria-label="Edit Pengguna">
                                                         <i class="fas fa-edit text-xs"></i>
-                                                        <span>Edit</span>
                                                     </button>
 
                                                     <!-- Nonaktifkan / Aktifkan Button -->
@@ -297,27 +297,27 @@
                                                         <?php if ($isSelf): ?>
                                                             <button type="button" disabled 
                                                                     title="Tidak dapat menonaktifkan akun sendiri"
-                                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
+                                                                    aria-label="Tidak dapat menonaktifkan akun sendiri"
+                                                                    class="w-8 h-8 rounded-xl inline-flex items-center justify-center bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
                                                                 <i class="fas fa-ban text-xs"></i>
-                                                                <span>Nonaktif</span>
                                                             </button>
                                                         <?php else: ?>
                                                             <button type="button" 
                                                                     onclick="openDeactivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
-                                                                    class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 transition"
-                                                                    title="Nonaktifkan Akun">
+                                                                    class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs"
+                                                                    title="Nonaktifkan Akun"
+                                                                    aria-label="Nonaktifkan Akun">
                                                                 <i class="fas fa-user-slash text-xs"></i>
-                                                                <span>Nonaktif</span>
                                                             </button>
                                                         <?php endif; ?>
                                                     <?php else: ?>
                                                         <!-- Aktifkan Kembali -->
                                                         <button type="button" 
                                                                 onclick="openActivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
-                                                                class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition"
-                                                                title="Aktifkan Kembali">
+                                                                class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 border border-emerald-200 transition shadow-xs"
+                                                                title="Aktifkan Kembali Akun"
+                                                                aria-label="Aktifkan Kembali Akun">
                                                             <i class="fas fa-user-check text-xs"></i>
-                                                            <span>Aktifkan</span>
                                                         </button>
                                                     <?php endif; ?>
                                                 </div>
