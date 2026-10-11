@@ -13,7 +13,8 @@
                 <!-- Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Kelola Paket</h1>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Katalog Paket</h1>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Daftar paket perjalanan umroh dan haji yang terdaftar dalam sistem.</p>
                     </div>
                     <a href="<?= base_url('/superadmin/packages/create') ?>" 
                        class="btn-interactive inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs sm:text-sm font-bold shadow-sm transition">

@@ -16,13 +16,13 @@ class Package extends BaseController
 
     public function index()
     {
-        if (!session('logged_in') || session('role') !== 'admin') {
+        if (!session('logged_in') || !in_array(session('role'), ['admin', 'pusat'])) {
             return redirect()->to('/login');
         }
 
         $packages = $this->packageModel->findAll();
         $data = [
-            'title' => 'Kelola Paket',
+            'title' => 'Katalog Paket',
             'packages' => $packages,
         ];
 
@@ -31,7 +31,7 @@ class Package extends BaseController
 
     public function create()
     {
-        if (!session('logged_in') || session('role') !== 'admin') {
+        if (!session('logged_in') || !in_array(session('role'), ['admin', 'pusat'])) {
             return redirect()->to('/login');
         }
 
@@ -40,6 +40,10 @@ class Package extends BaseController
 
     public function store()
     {
+        if (!session('logged_in') || !in_array(session('role'), ['admin', 'pusat'])) {
+            return redirect()->to('/login');
+        }
+
         if (!$this->request->is('post')) {
             return redirect()->back();
         }
@@ -61,21 +65,29 @@ class Package extends BaseController
             'created_by' => session('user_id')
         ]);
 
-        return redirect()->to('/admin/packages')->with('success', 'Data paket ditambahkan');
+        return redirect()->to('/admin/packages')->with('success', 'Data paket berhasil ditambahkan');
     }
 
     public function edit($id)
     {
-        if (!session('logged_in') || session('role') !== 'admin') {
+        if (!session('logged_in') || !in_array(session('role'), ['admin', 'pusat'])) {
             return redirect()->to('/login');
         }
 
         $package = $this->packageModel->find($id);
+        if (!$package) {
+            return redirect()->to('/admin/packages')->with('error', 'Paket tidak ditemukan');
+        }
+
         return view('admin/package_form', ['title' => 'Edit Paket', 'package' => $package]);
     }
 
     public function update($id)
     {
+        if (!session('logged_in') || !in_array(session('role'), ['admin', 'pusat'])) {
+            return redirect()->to('/login');
+        }
+
         if (!$this->request->is('post')) {
             return redirect()->back();
         }
@@ -105,6 +117,6 @@ class Package extends BaseController
 
         $this->packageModel->update($id, $dataUpdate);
 
-        return redirect()->to('/admin/packages')->with('success', 'Perubahan data tersimpan');
+        return redirect()->to('/admin/packages')->with('success', 'Perubahan data paket berhasil disimpan');
     }
 }

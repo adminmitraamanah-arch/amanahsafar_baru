@@ -65,7 +65,7 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
 });
 
 // Admin
-$routes->group('admin', ['filter' => 'roleFilter:admin'], function($routes) {
+$routes->group('admin', ['filter' => 'roleFilter:admin,pusat'], function($routes) {
     $routes->get('/', 'Admin\Dashboard::index');
     $routes->get('packages', 'Admin\Package::index');
     $routes->get('packages/create', 'Admin\Package::create');
@@ -79,6 +79,8 @@ $routes->group('admin', ['filter' => 'roleFilter:admin'], function($routes) {
 // Member (Pusat, Cabang, Manager, Mitra)
 $routes->group('app', ['filter' => 'roleFilter:pusat,cabang,manager_mitra,mitra'], function($routes) {
     $routes->get('dashboard', 'Member\Dashboard::index');
+    $routes->get('packages', 'Member\Package::index');
+    $routes->post('packages/order', 'Member\Package::order');
     $routes->get('binaan', 'Member\Binaan::index');
     $routes->get('orders', 'Member\Order::index');
     $routes->get('orders/(:num)', 'Member\Order::detail/$1');

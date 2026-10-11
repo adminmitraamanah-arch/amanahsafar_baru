@@ -16,13 +16,13 @@ class Package extends BaseController
 
     public function index()
     {
-        if (!session('logged_in') || session('role') !== 'super_admin') {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
             return redirect()->to('/login');
         }
 
         $packages = $this->packageModel->findAll();
         $data = [
-            'title' => 'Kelola Paket',
+            'title' => 'Katalog Paket',
             'packages' => $packages,
         ];
 
@@ -31,7 +31,7 @@ class Package extends BaseController
 
     public function create()
     {
-        if (!session('logged_in') || session('role') !== 'super_admin') {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
             return redirect()->to('/login');
         }
 
@@ -40,6 +40,10 @@ class Package extends BaseController
 
     public function store()
     {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
+            return redirect()->to('/login');
+        }
+
         if (!$this->request->is('post')) {
             return redirect()->back();
         }
@@ -61,21 +65,29 @@ class Package extends BaseController
             'created_by' => session('user_id')
         ]);
 
-        return redirect()->to('/superadmin/packages')->with('success', 'Data paket ditambahkan');
+        return redirect()->to('/superadmin/packages')->with('success', 'Data paket berhasil ditambahkan');
     }
 
     public function edit($id)
     {
-        if (!session('logged_in') || session('role') !== 'super_admin') {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
             return redirect()->to('/login');
         }
 
         $package = $this->packageModel->find($id);
+        if (!$package) {
+            return redirect()->to('/superadmin/packages')->with('error', 'Paket tidak ditemukan');
+        }
+
         return view('superadmin/package_form', ['title' => 'Edit Paket', 'package' => $package]);
     }
 
     public function update($id)
     {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
+            return redirect()->to('/login');
+        }
+
         if (!$this->request->is('post')) {
             return redirect()->back();
         }
@@ -106,12 +118,20 @@ class Package extends BaseController
 
         $this->packageModel->update($id, $dataUpdate);
 
-        return redirect()->to('/superadmin/packages')->with('success', 'Perubahan data tersimpan');
+        return redirect()->to('/superadmin/packages')->with('success', 'Perubahan data paket berhasil disimpan');
     }
 
     public function delete($id)
     {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak: Hanya Super Admin yang berhak menghapus paket');
+        }
+
+        if (!$this->request->is('post')) {
+            return redirect()->to('/superadmin/packages')->with('error', 'Metode tidak diizinkan');
+        }
+
         $this->packageModel->delete($id);
-        return redirect()->back()->with('deleted', 'Data paket dihapus');
+        return redirect()->back()->with('deleted', 'Data paket berhasil dihapus');
     }
 }

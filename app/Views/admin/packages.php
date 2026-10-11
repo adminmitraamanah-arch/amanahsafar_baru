@@ -8,36 +8,69 @@
         <?= $this->include('layouts/navbar') ?>
         
         <main class="flex-1 p-4 sm:p-6 lg:p-8">
-            <div class="max-w-7xl">
-                <div class="flex justify-between items-center mb-8">
-                    <h1 class="text-3xl font-bold text-gray-900">Kelola Paket</h1>
-                    <a href="/admin/packages/create" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-plus mr-2"></i> Paket Baru
+            <div class="max-w-7xl mx-auto space-y-6">
+                
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Katalog Paket</h1>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Daftar paket perjalanan umroh dan haji yang dikelola oleh Admin Pusat.</p>
+                    </div>
+                    <a href="<?= base_url('/admin/packages/create') ?>" 
+                       class="btn-interactive inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs sm:text-sm font-bold shadow-sm transition">
+                        <i class="fas fa-plus text-xs"></i>
+                        <span>Paket Baru</span>
                     </a>
                 </div>
 
+                <!-- Package Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <?php foreach ($packages ?? [] as $pkg): ?>
-                        <div class="bg-white rounded-lg shadow hover:shadow-lg transition">
-                            <div class="p-6">
-                                <h3 class="text-lg font-bold text-gray-900 mb-2"><?= $pkg['nama'] ?></h3>
-                                <p class="text-gray-600 text-sm mb-3"><?= substr($pkg['deskripsi'] ?? '', 0, 80) ?>...</p>
+                    <?php if (empty($packages)): ?>
+                        <div class="col-span-full bg-white rounded-2xl border border-slate-200/80 p-12 text-center text-slate-400 text-xs">
+                            <i class="fas fa-box-open text-3xl mb-2 text-slate-300"></i>
+                            <p>Belum ada paket umroh terdaftar.</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($packages as $pkg): ?>
+                            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col hover:shadow-md transition duration-200">
+                                <?php if (!empty($pkg['gambar'])): ?>
+                                    <div class="h-44 w-full overflow-hidden bg-slate-100">
+                                        <img src="<?= base_url('uploads/packages/' . esc($pkg['gambar'])) ?>" alt="<?= esc($pkg['nama']) ?>" class="w-full h-full object-cover">
+                                    </div>
+                                <?php else: ?>
+                                    <div class="h-44 w-full bg-[#5e0078] flex items-center justify-center text-white">
+                                        <i class="fas fa-kaaba text-4xl opacity-80"></i>
+                                    </div>
+                                <?php endif; ?>
                                 
-                                <div class="flex justify-between items-center mb-4">
-                                    <span class="text-2xl font-bold text-blue-600">Rp <?= number_format($pkg['harga'], 0, ',', '.') ?></span>
-                                    <span class="px-2 py-1 rounded text-xs font-medium
-                                        <?= $pkg['status'] === 'aktif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' ?>">
-                                        <?= ucfirst($pkg['status']) ?>
-                                    </span>
-                                </div>
+                                <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                                    <div>
+                                        <span class="text-[11px] font-bold text-[#5e0078] uppercase tracking-wider block mb-1"><?= esc($pkg['kategori'] ?? 'Umroh') ?></span>
+                                        <h3 class="text-base font-bold text-slate-900 mb-1 leading-snug"><?= esc($pkg['nama']) ?></h3>
+                                        <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed"><?= esc($pkg['deskripsi'] ?? '') ?></p>
+                                    </div>
+                                    
+                                    <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
+                                        <span class="text-lg font-extrabold text-[#5e0078]">Rp <?= number_format($pkg['harga'], 0, ',', '.') ?></span>
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold
+                                            <?= $pkg['status'] === 'aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200' ?>">
+                                            <span class="w-1.5 h-1.5 rounded-full <?= $pkg['status'] === 'aktif' ? 'bg-emerald-500' : 'bg-slate-400' ?>"></span>
+                                            <?= ucfirst($pkg['status']) ?>
+                                        </span>
+                                    </div>
 
-                                <div class="flex gap-2">
-                                    <a href="/admin/packages/<?= $pkg['id'] ?>/edit" class="flex-1 text-center bg-blue-100 text-blue-600 px-3 py-2 rounded hover:bg-blue-200 text-sm font-medium">Edit</a>
+                                    <div class="pt-1">
+                                        <a href="<?= base_url('/admin/packages/' . $pkg['id'] . '/edit') ?>" 
+                                           class="btn-interactive w-full block text-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200/80 px-3 py-2 rounded-xl text-xs font-bold transition">
+                                            <i class="fas fa-edit mr-1"></i> Edit Paket
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
+
             </div>
         </main>
     </div>

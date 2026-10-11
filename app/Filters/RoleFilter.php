@@ -31,6 +31,20 @@ class RoleFilter implements FilterInterface
         if ($arguments) {
             $allowedRoles = is_array($arguments) ? $arguments : explode(',', $arguments);
             
+            // Normalize role aliases
+            if (in_array('super_admin', $allowedRoles) && !in_array('superadmin', $allowedRoles)) {
+                $allowedRoles[] = 'superadmin';
+            }
+            if (in_array('superadmin', $allowedRoles) && !in_array('super_admin', $allowedRoles)) {
+                $allowedRoles[] = 'super_admin';
+            }
+            if (in_array('admin', $allowedRoles) && !in_array('pusat', $allowedRoles)) {
+                $allowedRoles[] = 'pusat';
+            }
+            if (in_array('pusat', $allowedRoles) && !in_array('admin', $allowedRoles)) {
+                $allowedRoles[] = 'admin';
+            }
+
             if (!in_array($userRole, $allowedRoles)) {
                 return redirect()->to('/dashboard')->with('error', 'Akses ditolak');
             }
