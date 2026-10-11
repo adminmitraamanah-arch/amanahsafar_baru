@@ -19,6 +19,7 @@ class UserModel extends Model
         'password_hash',
         'role',
         'pembina_id',
+        'kode_pembina',
         'status',
         'verification_status',
         'agreement_accepted_at'
@@ -74,4 +75,56 @@ class UserModel extends Model
         }
         return $ids;
     }
+
+    /**
+     * Mengambil atau menginisialisasi kode identitas unik pembina (3 digit) secara permanen.
+     * Kode ini disimpan di kolom kode_pembina sehingga kebal terhadap perubahan nama akun.
+     */
+    public function getOrAssignKodePembina($userId)
+    {
+        $user = $this->find($userId);
+        if (!$user) {
+            return null;
+        }
+
+        if (!empty($user['kode_pembina'])) {
+            return $user['kode_pembina'];
+        }
+
+        // Tentukan kode baru permanen
+        $kodeBaru = '001';
+        if ($user['role'] === 'pusat') {
+            $kodeBaru = '001';
+        } else {
+            // Hitung nomor urut tertinggi untuk role ini
+            $db = \Config\Database::connect();
+            $maxRow = $db->query(
+                "SELECT MAX(CAST(kode_pembina AS UNSIGNED)) AS max_val FROM users WHERE role = ? AND kode_pembina IS NOT NULL",
+                [$user['role']]
+            )->getRowArray();
+
+            $maxVal = (int)($maxRow['max_val'] ?? 0);
+            $kodeBaru = sprintf('%03d', $maxVal + 1);
+        }
+
+        $this->update($userId, ['kode_pembina' => $kodeBaru]);
+        return $kodeBaru;
+    }
+
+    /**
+     * Mapping prefix jenis pembina sesuai format:
+     * - Pusat => PS
+     * - Cabang => CB
+     * - Manager Mitra => MG
+     */
+    public static function getPrefixJenisPembina($role)
+    {
+        return match ($role) {
+            'pusat' => 'PS',
+            'cabang' => 'CB',
+            'manager_mitra' => 'MG',
+            default => 'XX',
+        };
+    }
 }
+

@@ -22,9 +22,11 @@ class Voucher extends BaseController
 
         $db = \Config\Database::connect();
 
+        $userModel = new \App\Models\UserModel();
+
         // 1. Ambil daftar voucher beserta data pembina dan induk pembina
         $vouchers = $db->table('vouchers v')
-            ->select('v.*, p.nama_lengkap as nama_pembina, p.role as role_pembina, p.domisili as domisili_pembina, pi.nama_lengkap as nama_induk, pi.role as role_induk, u.nama_lengkap as nama_pengguna')
+            ->select('v.*, p.nama_lengkap as nama_pembina, p.role as role_pembina, p.domisili as domisili_pembina, p.kode_pembina as kode_pembina_user, pi.nama_lengkap as nama_induk, pi.role as role_induk, u.nama_lengkap as nama_pengguna')
             ->join('users p', 'p.id = v.pembina_id', 'left')
             ->join('users pi', 'pi.id = p.pembina_id', 'left')
             ->join('users u', 'u.id = v.used_by', 'left')
@@ -32,29 +34,63 @@ class Voucher extends BaseController
             ->get()
             ->getResultArray();
 
+        // Helper untuk memperkaya data akun pembina dengan kode_pembina & nomor urut berikutnya
+        $enrichAccounts = function (array $accounts) use ($db, $userModel) {
+            foreach ($accounts as &$acc) {
+                if (empty($acc['kode_pembina'])) {
+                    $acc['kode_pembina'] = $userModel->getOrAssignKodePembina($acc['id']);
+                }
+                $acc['jenis_prefix'] = \App\Models\UserModel::getPrefixJenisPembina($acc['role']);
+
+                $maxRow = $db->query(
+                    "SELECT MAX(nomor_urut) AS max_urut FROM vouchers WHERE pembina_id = ?",
+                    [$acc['id']]
+                )->getRowArray();
+                $lastUrut = (int)($maxRow['max_urut'] ?? 0);
+
+                if ($lastUrut === 0) {
+                    $prefixLike = "MIT-{$acc['jenis_prefix']}-{$acc['kode_pembina']}-%";
+                    $lastV = $db->query(
+                        "SELECT kode FROM vouchers WHERE pembina_id = ? AND kode LIKE ? ORDER BY id DESC LIMIT 1",
+                        [$acc['id'], $prefixLike]
+                    )->getRowArray();
+                    if ($lastV && preg_match('/-(\d{4})$/', $lastV['kode'], $m)) {
+                        $lastUrut = (int)$m[1];
+                    }
+                }
+
+                $acc['next_urut'] = $lastUrut + 1;
+                $acc['next_urut_fmt'] = sprintf('%04d', $acc['next_urut']);
+                $acc['preview_code'] = "MIT-{$acc['jenis_prefix']}-{$acc['kode_pembina']}-{$acc['next_urut_fmt']}";
+            }
+            return $accounts;
+        };
+
         // 2. Akun Pusat yang aktif
-        $pusatAccounts = $db->table('users')
-            ->select('id, nama_lengkap, role, email')
+        $rawPusat = $db->table('users')
+            ->select('id, nama_lengkap, role, email, kode_pembina')
             ->where('role', 'pusat')
             ->where('status', 'aktif')
             ->where('deleted_at', null)
             ->orderBy('nama_lengkap', 'ASC')
             ->get()
             ->getResultArray();
+        $pusatAccounts = $enrichAccounts($rawPusat);
 
         // 3. Seluruh akun Cabang yang valid dan aktif
-        $cabangAccounts = $db->table('users')
-            ->select('id, nama_lengkap, role, email, domisili')
+        $rawCabang = $db->table('users')
+            ->select('id, nama_lengkap, role, email, domisili, kode_pembina')
             ->where('role', 'cabang')
             ->where('status', 'aktif')
             ->where('deleted_at', null)
             ->orderBy('nama_lengkap', 'ASC')
             ->get()
             ->getResultArray();
+        $cabangAccounts = $enrichAccounts($rawCabang);
 
         // 4. Seluruh Manager Mitra yang valid dan aktif beserta relasi induknya (Pusat / Cabang)
-        $managerAccounts = $db->table('users m')
-            ->select('m.id, m.nama_lengkap, m.role, m.email, m.domisili, m.pembina_id, p.nama_lengkap as nama_induk, p.role as role_induk')
+        $rawManager = $db->table('users m')
+            ->select('m.id, m.nama_lengkap, m.role, m.email, m.domisili, m.kode_pembina, m.pembina_id, p.nama_lengkap as nama_induk, p.role as role_induk')
             ->join('users p', 'p.id = m.pembina_id', 'inner')
             ->where('m.role', 'manager_mitra')
             ->where('m.status', 'aktif')
@@ -65,6 +101,7 @@ class Voucher extends BaseController
             ->orderBy('m.nama_lengkap', 'ASC')
             ->get()
             ->getResultArray();
+        $managerAccounts = $enrichAccounts($rawManager);
 
         $data = [
             'title' => 'Kelola Voucher',
@@ -96,43 +133,6 @@ class Voucher extends BaseController
             return redirect()->back()->with('error', 'Wajib memilih satu akun pembina langsung sebelum membuat voucher.')->withInput();
         }
 
-        $db = \Config\Database::connect();
-
-        // Periksa akun pembina yang dipilih
-        $pembina = $db->table('users')
-            ->where('id', $pembinaId)
-            ->where('status', 'aktif')
-            ->where('deleted_at', null)
-            ->get()
-            ->getRowArray();
-
-        if (!$pembina) {
-            return redirect()->back()->with('error', 'Akun pembina yang dipilih tidak ditemukan atau sedang dinonaktifkan.')->withInput();
-        }
-
-        if (!in_array($pembina['role'], ['pusat', 'cabang', 'manager_mitra'])) {
-            return redirect()->back()->with('error', 'Role pembina yang dipilih tidak valid. Pembina harus Pusat, Cabang, atau Manager Mitra.')->withInput();
-        }
-
-        // Jika pembina adalah manager_mitra, periksa bahwa relasi induknya sah (di bawah Pusat atau Cabang aktif)
-        if ($pembina['role'] === 'manager_mitra') {
-            if (empty($pembina['pembina_id'])) {
-                return redirect()->back()->with('error', 'Manager Mitra yang dipilih tidak memiliki induk Cabang atau Pusat yang valid.')->withInput();
-            }
-
-            $induk = $db->table('users')
-                ->where('id', $pembina['pembina_id'])
-                ->where('status', 'aktif')
-                ->where('deleted_at', null)
-                ->whereIn('role', ['pusat', 'cabang'])
-                ->get()
-                ->getRowArray();
-
-            if (!$induk) {
-                return redirect()->back()->with('error', 'Induk dari Manager Mitra yang dipilih tidak aktif atau tidak valid.')->withInput();
-            }
-        }
-
         // Format tanggal expired jika diberikan
         $expiredAt = null;
         if (!empty($expiredAtInput)) {
@@ -142,25 +142,25 @@ class Voucher extends BaseController
             }
         }
 
-        // Generate voucher sebanyak $qty dengan kode unik
-        for ($i = 0; $i < $qty; $i++) {
-            do {
-                $kode = strtoupper(bin2hex(random_bytes(4)));
-                $exists = $this->voucherModel->where('kode', $kode)->countAllResults();
-            } while ($exists > 0);
+        // Panggil method pembuatan voucher terstruktur aman konkurensi
+        $result = $this->voucherModel->generateStructuredVouchers(
+            $pembinaId,
+            $qty,
+            $expiredAt,
+            session('user_id')
+        );
 
-            $this->voucherModel->insert([
-                'kode' => $kode,
-                'role_tujuan' => 'mitra', // Sesuai aturan: Voucher hanya digunakan untuk role mitra!
-                'pembina_id' => $pembinaId,
-                'status' => 'tersedia',
-                'expired_at' => $expiredAt,
-                'created_by' => session('user_id'),
-            ]);
+        if (!$result['status']) {
+            return redirect()->back()->with('error', $result['message'])->withInput();
         }
 
+        $firstCode = $result['generatedCodes'][0] ?? '';
+        $lastCode = end($result['generatedCodes']);
+        $codeRange = ($qty === 1) ? $firstCode : "{$firstCode} s/d {$lastCode}";
+        $pembina = $result['pembina'];
         $pembinaLabel = esc($pembina['nama_lengkap']) . ' (' . ucfirst(str_replace('_', ' ', $pembina['role'])) . ')';
-        return redirect()->back()->with('success', "{$qty} voucher berhasil dibuat dengan pembina langsung: {$pembinaLabel}");
+
+        return redirect()->back()->with('success', "Berhasil menerbitkan {$qty} voucher [{$codeRange}] untuk pembina langsung: {$pembinaLabel}");
     }
 
     public function disable($id)

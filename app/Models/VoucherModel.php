@@ -14,6 +14,7 @@ class VoucherModel extends Model
         'kode',
         'role_tujuan',
         'pembina_id',
+        'nomor_urut',
         'status',
         'expired_at',
         'used_by',
@@ -129,5 +130,157 @@ class VoucherModel extends Model
         );
 
         return ($db->affectedRows() > 0);
+    }
+
+    /**
+     * Mem-parsing kode voucher berformat MIT-[JENIS]-[KODE]-[URUT]
+     */
+    public function parseKodeVoucher($kode)
+    {
+        $kode = strtoupper(trim((string)$kode));
+        if (preg_match('/^MIT-(PS|CB|MG)-([0-9]{3})-([0-9]{4})$/', $kode, $matches)) {
+            $jenisMap = [
+                'PS' => ['nama' => 'Kantor Pusat', 'role' => 'pusat'],
+                'CB' => ['nama' => 'Cabang', 'role' => 'cabang'],
+                'MG' => ['nama' => 'Manager Mitra', 'role' => 'manager_mitra'],
+            ];
+
+            return [
+                'is_structured' => true,
+                'prefix' => 'MIT',
+                'jenis_kode' => $matches[1],
+                'jenis_nama' => $jenisMap[$matches[1]]['nama'] ?? $matches[1],
+                'jenis_role' => $jenisMap[$matches[1]]['role'] ?? null,
+                'kode_pembina' => $matches[2],
+                'nomor_urut' => $matches[3],
+                'nomor_urut_int' => (int)$matches[3],
+            ];
+        }
+
+        return [
+            'is_structured' => false,
+            'kode' => $kode,
+        ];
+    }
+
+    /**
+     * Membuat voucher berformat terstruktur (MIT-[JENIS]-[KODE]-[URUT]) secara aman dan atomik.
+     * Menggunakan locking SELECT FOR UPDATE untuk mencegah duplikasi nomor urut saat konkurensi tinggi.
+     */
+    public function generateStructuredVouchers($pembinaId, $qty, $expiredAt = null, $createdBy = null)
+    {
+        $db = \Config\Database::connect();
+        $userModel = new UserModel();
+
+        $pembinaId = (int)$pembinaId;
+        $qty = max(1, min(100, (int)$qty));
+
+        // 1. Ambil data pembina
+        $pembina = $db->table('users')
+            ->where('id', $pembinaId)
+            ->where('status', 'aktif')
+            ->where('deleted_at', null)
+            ->get()
+            ->getRowArray();
+
+        if (!$pembina) {
+            return ['status' => false, 'message' => 'Akun pembina tidak ditemukan atau sedang dinonaktifkan.'];
+        }
+
+        if (!in_array($pembina['role'], ['pusat', 'cabang', 'manager_mitra'])) {
+            return ['status' => false, 'message' => 'Role pembina tidak valid untuk penerbitan voucher.'];
+        }
+
+        // Jika pembina adalah manager_mitra, pastikan relasi induknya sah
+        if ($pembina['role'] === 'manager_mitra') {
+            if (empty($pembina['pembina_id'])) {
+                return ['status' => false, 'message' => 'Manager Mitra tidak memiliki akun induk yang sah.'];
+            }
+            $induk = $db->table('users')
+                ->where('id', (int)$pembina['pembina_id'])
+                ->where('status', 'aktif')
+                ->where('deleted_at', null)
+                ->whereIn('role', ['pusat', 'cabang'])
+                ->get()
+                ->getRowArray();
+            if (!$induk) {
+                return ['status' => false, 'message' => 'Akun induk Manager Mitra tidak aktif atau tidak valid.'];
+            }
+        }
+
+        // 2. Dapatkan atau inisialisasi kode pembina permanen (3 digit)
+        $kodePembina = $userModel->getOrAssignKodePembina($pembinaId);
+        $jenisCode = UserModel::getPrefixJenisPembina($pembina['role']);
+
+        // 3. Mulai transaksi database untuk mengunci dan menghitung nomor urut
+        $db->transStart();
+
+        try {
+            // Pessimistic lock pada tabel vouchers untuk pembina ini guna mengamankan nomor urut
+            $maxRow = $db->query(
+                "SELECT MAX(nomor_urut) AS max_urut FROM vouchers WHERE pembina_id = ? FOR UPDATE",
+                [$pembinaId]
+            )->getRowArray();
+
+            $lastUrut = (int)($maxRow['max_urut'] ?? 0);
+
+            // Fallback jika belum pernah ada nomor_urut tetapi sudah ada voucher berformat MIT-XX-XXX-XXXX
+            if ($lastUrut === 0) {
+                $prefixLike = "MIT-{$jenisCode}-{$kodePembina}-%";
+                $lastVoucher = $db->query(
+                    "SELECT kode FROM vouchers WHERE pembina_id = ? AND kode LIKE ? ORDER BY id DESC LIMIT 1 FOR UPDATE",
+                    [$pembinaId, $prefixLike]
+                )->getRowArray();
+
+                if ($lastVoucher && preg_match('/-(\d{4})$/', $lastVoucher['kode'], $m)) {
+                    $lastUrut = (int)$m[1];
+                }
+            }
+
+            $generatedCodes = [];
+            $batchData = [];
+
+            for ($i = 1; $i <= $qty; $i++) {
+                $currentUrut = $lastUrut + $i;
+                $strUrut = sprintf('%04d', $currentUrut);
+                $kodeVoucher = "MIT-{$jenisCode}-{$kodePembina}-{$strUrut}";
+
+                $batchData[] = [
+                    'kode' => $kodeVoucher,
+                    'role_tujuan' => 'mitra',
+                    'pembina_id' => $pembinaId,
+                    'nomor_urut' => $currentUrut,
+                    'status' => 'tersedia',
+                    'expired_at' => $expiredAt,
+                    'created_by' => $createdBy ?? 1,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ];
+
+                $generatedCodes[] = $kodeVoucher;
+            }
+
+            $db->table('vouchers')->insertBatch($batchData);
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                return ['status' => false, 'message' => 'Gagal menyimpan voucher ke dalam database.'];
+            }
+
+            return [
+                'status' => true,
+                'count' => $qty,
+                'pembina' => $pembina,
+                'jenisCode' => $jenisCode,
+                'kodePembina' => $kodePembina,
+                'startUrut' => $lastUrut + 1,
+                'endUrut' => $lastUrut + $qty,
+                'generatedCodes' => $generatedCodes,
+            ];
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return ['status' => false, 'message' => 'Gagal membuat voucher: ' . $e->getMessage()];
+        }
     }
 }

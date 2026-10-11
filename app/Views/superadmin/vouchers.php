@@ -72,15 +72,15 @@
                                                     <span class="font-bold text-slate-900 text-xs block leading-tight"><?= esc($voucher['nama_pembina']) ?></span>
                                                     <?php if ($voucher['role_pembina'] === 'pusat'): ?>
                                                         <span class="inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200 mt-1">
-                                                            <i class="fas fa-building text-[9px]"></i> Kantor Pusat
+                                                            <i class="fas fa-building text-[9px]"></i> Kantor Pusat (Kode: PS-<?= esc($voucher['kode_pembina_user'] ?? '001') ?>)
                                                         </span>
                                                     <?php elseif ($voucher['role_pembina'] === 'cabang'): ?>
                                                         <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 mt-1">
-                                                            <i class="fas fa-code-branch text-[9px]"></i> Cabang <?= esc($voucher['domisili_pembina'] ?? '') ?>
+                                                            <i class="fas fa-code-branch text-[9px]"></i> Cabang <?= esc($voucher['domisili_pembina'] ?? '') ?> (Kode: CB-<?= esc($voucher['kode_pembina_user'] ?? '001') ?>)
                                                         </span>
                                                     <?php elseif ($voucher['role_pembina'] === 'manager_mitra'): ?>
                                                         <span class="inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md border border-purple-200 mt-1">
-                                                            <i class="fas fa-user-tie text-[9px]"></i> Manager Mitra &bull; Induk: <?= esc($voucher['nama_induk'] ?? 'Pusat/Cabang') ?>
+                                                            <i class="fas fa-user-tie text-[9px]"></i> Manager Mitra (Kode: MG-<?= esc($voucher['kode_pembina_user'] ?? '001') ?>) &bull; Induk: <?= esc($voucher['nama_induk'] ?? 'Pusat/Cabang') ?>
                                                         </span>
                                                     <?php else: ?>
                                                         <span class="text-[10px] text-slate-500 font-medium"><?= ucfirst(str_replace('_', ' ', $voucher['role_pembina'])) ?></span>
@@ -195,11 +195,33 @@
             <!-- Pilihan 2: Akun Pembina Langsung -->
             <div>
                 <label for="pembina_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">2. Akun Pembina Langsung <span class="text-rose-500">*</span></label>
-                <select id="pembina_id" name="pembina_id" required disabled
+                <select id="pembina_id" name="pembina_id" required disabled onchange="updateVoucherPreview()"
                         class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] focus:bg-white focus:outline-none transition disabled:opacity-60 disabled:cursor-not-allowed">
                     <option value="">-- Pilih Jenis Pembina Terlebih Dahulu --</option>
                 </select>
                 <p id="pembinaHint" class="text-[11px] text-slate-400 mt-1">Pilih jenis pembina di atas untuk melihat akun yang tersedia.</p>
+            </div>
+
+            <!-- Live Preview Format Voucher -->
+            <div id="voucherPreviewBox" class="hidden p-3.5 bg-purple-50/50 rounded-xl border border-purple-200/80 transition-all">
+                <div class="flex items-center justify-between mb-1.5">
+                    <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fas fa-barcode text-[#5e0078]"></i> Format Voucher yang Dihasilkan
+                    </span>
+                    <span class="text-[10px] text-purple-700 font-semibold bg-purple-100 px-2 py-0.5 rounded-md">
+                        Auto-Urut
+                    </span>
+                </div>
+                <div class="p-2.5 bg-white rounded-lg border border-purple-100 flex items-center justify-between">
+                    <div>
+                        <span id="previewVoucherCode" class="font-mono font-black text-[#5e0078] text-sm sm:text-base tracking-wider block select-all">-</span>
+                        <span id="previewVoucherDesc" class="text-[11px] text-slate-500 font-medium">Nomor urut dimulai dari urutan berikutnya</span>
+                    </div>
+                    <span id="previewQtyBadge" class="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">1 Voucher</span>
+                </div>
+                <p class="text-[10.5px] text-slate-400 mt-1.5 leading-relaxed">
+                    Format: <code class="text-slate-600 font-mono">MIT-[JENIS]-[KODE]-[URUT]</code>. Nomor urut bertambah otomatis per pembina.
+                </p>
             </div>
 
             <!-- Masa Berlaku (Opsional) -->
@@ -233,6 +255,7 @@ const managerAccounts = <?= json_encode($managerAccounts ?? []) ?>;
 function openGenerateModal() {
     document.getElementById('generateModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    updateVoucherPreview();
 }
 
 function closeGenerateModal() {
@@ -254,6 +277,7 @@ function onJenisPembinaChange() {
         pembinaSelect.classList.remove('bg-slate-50');
         pembinaSelect.innerHTML = '<option value="">-- Pilih Jenis Pembina Terlebih Dahulu --</option>';
         hint.textContent = 'Pilih jenis pembina di atas untuk melihat akun yang tersedia.';
+        updateVoucherPreview();
         return;
     }
 
@@ -272,6 +296,7 @@ function onJenisPembinaChange() {
         pembinaSelect.classList.remove('bg-slate-50');
         pembinaSelect.innerHTML = '<option value="">-- Tidak ada akun aktif ditemukan --</option>';
         hint.textContent = 'Tidak ada akun aktif untuk jenis pembina yang dipilih.';
+        updateVoucherPreview();
         return;
     }
 
@@ -287,25 +312,73 @@ function onJenisPembinaChange() {
     accounts.forEach(acc => {
         let opt = document.createElement('option');
         opt.value = acc.id;
+        opt.dataset.prefix = `MIT-${acc.jenis_prefix}-${acc.kode_pembina}`;
+        opt.dataset.nextUrut = acc.next_urut;
+        opt.dataset.preview = acc.preview_code;
 
         if (selectedJenis === 'pusat') {
-            opt.textContent = `${acc.nama_lengkap} (Kantor Pusat - ${acc.email})`;
+            opt.textContent = `[PS-${acc.kode_pembina}] ${acc.nama_lengkap} (Kantor Pusat)`;
         } else if (selectedJenis === 'cabang') {
-            opt.textContent = `${acc.nama_lengkap} (Cabang ${acc.domisili || ''}) - ${acc.email}`;
+            opt.textContent = `[CB-${acc.kode_pembina}] ${acc.nama_lengkap} (Cabang ${acc.domisili || ''})`;
         } else if (selectedJenis === 'manager_mitra') {
             const indukRoleFmt = (acc.role_induk === 'pusat') ? 'Pusat' : 'Cabang';
-            opt.textContent = `${acc.nama_lengkap} (Induk: ${acc.nama_induk} - ${indukRoleFmt})`;
+            opt.textContent = `[MG-${acc.kode_pembina}] ${acc.nama_lengkap} (Induk: ${acc.nama_induk} - ${indukRoleFmt})`;
         }
 
         pembinaSelect.appendChild(opt);
     });
 
     if (selectedJenis === 'manager_mitra') {
-        hint.textContent = 'Setiap Manager Mitra menampilkan informasi induknya (Pusat atau Cabang).';
+        hint.textContent = 'Setiap Manager Mitra menampilkan kode identitas dan relasi induknya (Pusat atau Cabang).';
     } else {
-        hint.textContent = 'Pilih akun yang akan menjadi pembina langsung bagi Mitra pendaftar.';
+        hint.textContent = 'Pilih akun pembina. Format kode dan nomor urut akan ditentukan otomatis.';
+    }
+
+    updateVoucherPreview();
+}
+
+function updateVoucherPreview() {
+    const pembinaSelect = document.getElementById('pembina_id');
+    const previewBox = document.getElementById('voucherPreviewBox');
+    const previewCode = document.getElementById('previewVoucherCode');
+    const previewDesc = document.getElementById('previewVoucherDesc');
+    const previewQty = document.getElementById('previewQtyBadge');
+    const qtyInput = document.querySelector('input[name="qty"]');
+
+    const selectedOption = pembinaSelect.options[pembinaSelect.selectedIndex];
+    const qty = Math.max(1, Math.min(100, parseInt(qtyInput ? qtyInput.value : 1) || 1));
+
+    if (!selectedOption || !selectedOption.value || !selectedOption.dataset.prefix) {
+        previewBox.classList.add('hidden');
+        return;
+    }
+
+    const prefix = selectedOption.dataset.prefix;
+    const startUrut = parseInt(selectedOption.dataset.nextUrut) || 1;
+    const endUrut = startUrut + qty - 1;
+
+    const startFmt = String(startUrut).padStart(4, '0');
+    const endFmt = String(endUrut).padStart(4, '0');
+
+    previewBox.classList.remove('hidden');
+    previewQty.textContent = `${qty} Voucher`;
+
+    if (qty === 1) {
+        previewCode.textContent = `${prefix}-${startFmt}`;
+        previewDesc.textContent = `Urutan voucher #${startFmt} untuk pembina ini`;
+    } else {
+        previewCode.textContent = `${prefix}-${startFmt} s/d ${prefix}-${endFmt}`;
+        previewDesc.textContent = `Urutan voucher #${startFmt} s/d #${endFmt} (${qty} voucher berurutan)`;
     }
 }
+
+// Bind qty input change to preview
+document.addEventListener('DOMContentLoaded', function() {
+    const qtyInput = document.querySelector('input[name="qty"]');
+    if (qtyInput) {
+        qtyInput.addEventListener('input', updateVoucherPreview);
+    }
+});
 
 function validateGenerateForm() {
     const pembinaSelect = document.getElementById('pembina_id');
