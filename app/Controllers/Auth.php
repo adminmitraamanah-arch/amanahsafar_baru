@@ -103,32 +103,53 @@ class Auth extends BaseController
                 return redirect()->back()->with('error', 'Nomor WhatsApp sudah terdaftar')->withInput();
             }
 
-            // Validate voucher
-            if (!$this->voucherModel->isValid($kode_voucher)) {
-                return redirect()->back()->with('error', 'Kode voucher tidak valid atau sudah dipakai')->withInput();
+            // Validate voucher with hierarchical & active rules
+            $voucherCheck = $this->voucherModel->validateForRegistration($kode_voucher);
+            if (!$voucherCheck['valid']) {
+                return redirect()->back()->with('error', $voucherCheck['message'])->withInput();
             }
 
-            $voucher = $this->voucherModel->findByKode($kode_voucher);
+            $voucher = $voucherCheck['voucher'];
 
             // Create user
             $db = \Config\Database::connect();
             $db->transStart();
 
             try {
+                // Pessimistic lock for atomic claim check
+                $locked = $db->query("SELECT * FROM vouchers WHERE id = ? FOR UPDATE", [$voucher['id']])->getRowArray();
+
+                if (!$locked || $locked['status'] !== 'tersedia' || ($locked['expired_at'] && strtotime($locked['expired_at']) < time())) {
+                    $db->transRollback();
+                    return redirect()->back()->with('error', 'Kode voucher tidak valid atau sudah terpakai')->withInput();
+                }
+
+                // Role is strictly 'mitra' as mandated by voucher policy
+                $targetRole = 'mitra';
+
                 $userId = $this->userModel->insert([
                     'nama_lengkap' => $nama,
                     'email' => $email,
                     'no_wa' => $no_wa,
                     'domisili' => $domisili,
                     'password_hash' => password_hash($password, PASSWORD_BCRYPT),
-                    'role' => $voucher['role_tujuan'],
+                    'role' => $targetRole,
                     'pembina_id' => $voucher['pembina_id'],
                     'status' => 'aktif',
                     'verification_status' => 'belum_verifikasi'
                 ]);
 
-                // Mark voucher as used
-                $this->voucherModel->markAsUsed($kode_voucher, $userId);
+                if (!$userId) {
+                    $db->transRollback();
+                    return redirect()->back()->with('error', 'Gagal membuat akun pendaftar')->withInput();
+                }
+
+                // Mark voucher as used atomically
+                $claimed = $this->voucherModel->claimAtomically($voucher['id'], $userId);
+                if (!$claimed) {
+                    $db->transRollback();
+                    return redirect()->back()->with('error', 'Kode voucher telah digunakan oleh pendaftar lain. Silakan gunakan voucher baru.')->withInput();
+                }
 
                 // Create verification record
                 $this->verificationModel->insert([
@@ -138,16 +159,20 @@ class Auth extends BaseController
 
                 $db->transComplete();
 
+                if ($db->transStatus() === false) {
+                    return redirect()->back()->with('error', 'Gagal memproses pendaftaran. Silakan coba lagi.')->withInput();
+                }
+
                 session()->set([
                     'user_id' => $userId,
-                    'role' => $voucher['role_tujuan'],
+                    'role' => $targetRole,
                     'email' => $email
                 ]);
 
                 return redirect()->to('/verify');
             } catch (\Exception $e) {
                 $db->transRollback();
-                return redirect()->back()->with('error', 'Gagal mendaftar: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Gagal mendaftar: ' . $e->getMessage())->withInput();
             }
         }
 
