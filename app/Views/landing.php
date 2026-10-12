@@ -47,7 +47,7 @@
     <?php endif; ?>
 
     <!-- Navigation Header (Smooth Animations & Micro-Interactions) -->
-    <header id="mainHeader" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-purple-100/80 shadow-xs transition-all duration-300">
+    <header id="mainHeader" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-purple-100/80 shadow-md transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
@@ -139,13 +139,14 @@
            NAVBAR ANIMATION & SMOOTH INTERACTION STYLES
            ======================================================== */
         #mainHeader {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -2px rgba(94, 0, 120, 0.06);
             transition: box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
                         background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
                         border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         #mainHeader.scrolled {
-            box-shadow: 0 4px 20px -4px rgba(94, 0, 120, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(94, 0, 120, 0.10);
             border-color: rgba(94, 0, 120, 0.12);
             background-color: rgba(255, 255, 255, 0.98);
         }

@@ -15,7 +15,7 @@
     </div>
 
     <!-- Navigation Header (Tetap sesuai tampilan awal) -->
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-purple-100 shadow-sm transition-all">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-purple-100 shadow-md transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
