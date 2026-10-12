@@ -1282,7 +1282,7 @@
 
             <!-- Copyright -->
             <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-purple-300/70 gap-4">
-                <p>&copy; <?= date('Y') ?> Amanah Safar. Hak Cipta Dilindungi Undang-Undang.</p>
+                <p>&copy; <?= date('Y') ?> PT Amanah Tangguh Mandiri. All Rights Reserved. | Amanah Safar Digital Platform.</p>
                 <div class="flex gap-6">
                     <a href="#" class="hover:text-white transition">Kebijakan Privasi</a>
                     <a href="#" class="hover:text-white transition">Syarat &amp; Ketentuan</a>
