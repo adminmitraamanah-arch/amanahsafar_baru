@@ -57,7 +57,7 @@
                     </div>
                     <div>
                         <span class="text-xl font-bold text-gray-900 tracking-tight block">Amanah Safar</span>
-                        <span class="text-[11px] font-medium text-purple-700 tracking-wider uppercase block -mt-1">Mitra Umroh &amp; Haji</span>
+                        <span class="text-[11px] font-medium text-purple-700 tracking-wider uppercase block -mt-1">Sistem Mitra Amanah</span>
                     </div>
                 </a>
 
