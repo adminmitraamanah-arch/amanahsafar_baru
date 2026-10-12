@@ -201,8 +201,13 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         color: #dfb2f1;
     }
-    .text-purple-muted {
-        color: #dfb2f1;
+    .text-purple-muted,
+    .panel-feature-text,
+    .auth-left-panel p,
+    .auth-left-panel ul li span,
+    .left-panel-footer,
+    .left-panel-footer span {
+        color: #dfb2f1 !important;
     }
     .border-white-subtle {
         border-color: rgba(255, 255, 255, 0.14);
@@ -238,7 +243,7 @@
         align-items: center;
         justify-content: space-between;
         font-size: 0.75rem;
-        color: #dfb2f1;
+        color: #dfb2f1 !important;
     }
     @media (max-width: 640px) {
         .auth-left-panel {
@@ -452,7 +457,7 @@
                             Bahagia sampai Baitullah.
                         </h1>
                     </div>
-                    <p class="text-xs sm:text-sm text-[#dfb2f1] leading-relaxed mb-8">
+                    <p class="text-xs sm:text-sm leading-relaxed mb-8 panel-feature-text" style="color: #dfb2f1 !important;">
                         Daftarkan akun Mitra Anda dengan kode voucher resmi dari Pembina untuk membuka akses syiar dan bagi hasil yang barakah.
                     </p>
 
@@ -462,26 +467,26 @@
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
-                            <span class="text-xs text-[#dfb2f1] font-medium">Aktivasi otomatis via Kode Voucher Pembina</span>
+                            <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Aktivasi otomatis via Kode Voucher Pembina</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-coins"></i>
                             </div>
-                            <span class="text-xs text-[#dfb2f1] font-medium">Pencairan ujroh transparan & realtime</span>
+                            <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Pencairan ujroh transparan & realtime</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-file-contract"></i>
                             </div>
-                            <span class="text-xs text-[#dfb2f1] font-medium">Verifikasi data & PKS digital berkekuatan hukum</span>
+                            <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Verifikasi data & PKS digital berkekuatan hukum</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Footer Panel Kiri -->
-                <div class="left-panel-footer">
-                    <span class="text-[#dfb2f1]">Butuh Bantuan?</span>
+                <div class="left-panel-footer" style="color: #dfb2f1 !important;">
+                    <span class="panel-feature-text" style="color: #dfb2f1 !important;">Butuh Bantuan?</span>
                 </div>
             </div>
 
