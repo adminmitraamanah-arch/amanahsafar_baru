@@ -24,7 +24,7 @@
     .auth-card-container {
         width: 100%;
         max-width: 980px;
-        margin: 2rem auto;
+        margin: 1rem auto 2.5rem;
         border-radius: 28px;
         overflow: hidden;
         border: 1.5px solid #ffffff;
@@ -36,7 +36,7 @@
     @media (min-width: 1024px) {
         .auth-card-container {
             flex-direction: row;
-            min-height: 580px;
+            min-height: 600px;
         }
         .auth-left-panel {
             width: 44%;
@@ -50,7 +50,7 @@
     .auth-left-panel {
         background: linear-gradient(145deg, #180020 0%, #2e003c 45%, #420054 100%);
         color: #ffffff;
-        padding: 3rem 2.5rem;
+        padding: 2.5rem 2.25rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -59,7 +59,7 @@
     }
     .auth-right-panel {
         background: #ffffff;
-        padding: 3rem 2.75rem;
+        padding: 2.5rem 2.25rem;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -296,6 +296,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        min-width: 72px;
+        text-align: center;
         gap: 0.35rem;
         padding: 0.45rem 1.15rem;
         border-radius: 9999px;
@@ -341,7 +343,7 @@
     </header>
 
     <!-- Main Card Container (2 Kolom Presisi Sesuai Referensi) -->
-    <main class="w-full max-w-5xl mx-auto z-10 flex-grow flex items-center justify-center">
+    <main class="w-full max-w-5xl mx-auto z-10 flex-grow flex items-start justify-center pt-2 sm:pt-4">
         <div class="auth-card-container">
             
             <!-- Panel Kiri: Identitas Ungu Amanah Safar -->
@@ -414,7 +416,7 @@
             <div class="auth-right-panel">
                 <div>
                     <!-- Form Header & Pill Switcher Tab (Persis Gambar Referensi: Login / Daftar) -->
-                    <div class="flex items-start justify-between gap-4 pb-6 border-b border-slate-100">
+                    <div class="flex items-start justify-between gap-4 pb-5 border-b border-slate-100">
                         <div>
                             <h2 class="text-2xl font-black text-slate-900 tracking-tight">Login</h2>
                             <p class="text-xs sm:text-sm text-slate-500 mt-1.5">Masukkan kredensial Anda untuk melanjutkan</p>
