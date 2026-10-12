@@ -22,18 +22,18 @@ class Auth extends BaseController
     public function login()
     {
         if ($this->request->is('post')) {
-            $email = $this->request->getPost('email');
+            $email = trim($this->request->getPost('email') ?? '');
             $password = $this->request->getPost('password');
             $role = $this->request->getPost('role');
 
             $user = $this->userModel->findByEmail($email);
 
             if (!$user || !password_verify($password, $user['password_hash'])) {
-                return redirect()->back()->with('error', 'Email atau password tidak sesuai');
+                return redirect()->back()->with('error', 'Email atau kata sandi tidak sesuai')->withInput();
             }
 
-            if ($user['role'] !== $role) {
-                return redirect()->back()->with('warning', 'Role yang dipilih tidak sesuai dengan data login');
+            if (!empty($role) && $user['role'] !== $role) {
+                return redirect()->back()->with('warning', 'Role yang dipilih tidak sesuai dengan data login')->withInput();
             }
 
             if ($user['status'] === 'nonaktif') {
@@ -206,16 +206,32 @@ class Auth extends BaseController
                 $swafoto_path = $swafoto->store('uploads/verifikasi');
             }
 
-            $this->verificationModel->where('user_id', $user_id)->update(null, [
-                'ktp_path' => $ktp_path,
-                'swafoto_path' => $swafoto_path,
+            $existing = $this->verificationModel->where('user_id', $user_id)->first();
+            $dataToSave = [
                 'nama_bank' => $nama_bank,
                 'nomor_rekening' => $nomor_rekening,
                 'nama_pemilik_rekening' => $nama_pemilik,
                 'status' => 'menunggu_review'
-            ]);
+            ];
+            if ($ktp_path) {
+                $dataToSave['ktp_path'] = $ktp_path;
+            } elseif ($existing && !empty($existing['ktp_path'])) {
+                $dataToSave['ktp_path'] = $existing['ktp_path'];
+            }
+            if ($swafoto_path) {
+                $dataToSave['swafoto_path'] = $swafoto_path;
+            } elseif ($existing && !empty($existing['swafoto_path'])) {
+                $dataToSave['swafoto_path'] = $existing['swafoto_path'];
+            }
 
-            return redirect()->to('/agreement');
+            if ($existing) {
+                $this->verificationModel->where('user_id', $user_id)->update(null, $dataToSave);
+            } else {
+                $dataToSave['user_id'] = $user_id;
+                $this->verificationModel->insert($dataToSave);
+            }
+
+            return redirect()->to('/agreement')->with('success', 'Data verifikasi berhasil dikirim');
         }
 
         $user = $this->userModel->find(session('user_id'));
@@ -236,7 +252,16 @@ class Auth extends BaseController
                 'status' => 'aktif'
             ]);
 
-            return redirect()->to('/dashboard');
+            $user = $this->userModel->find($user_id);
+            session()->set([
+                'user_id' => $user['id'],
+                'email' => $user['email'],
+                'nama' => $user['nama_lengkap'],
+                'role' => $user['role'],
+                'logged_in' => true
+            ]);
+
+            return redirect()->to('/dashboard')->with('success', 'Selamat! Perjanjian Kerja Sama telah disetujui. Akun kemitraan Anda telah aktif.');
         }
 
         $user = $this->userModel->find(session('user_id'));

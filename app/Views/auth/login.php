@@ -1,65 +1,637 @@
 <?= $this->extend('layouts/base') ?>
 
+<?= $this->section('styles') ?>
+<style>
+    /* Styling Presisi Sesuai Gambar Referensi */
+    body {
+        background-color: #030105 !important;
+        background-image: radial-gradient(circle at 10% 20%, rgba(94, 0, 120, 0.45) 0%, transparent 45%),
+                          radial-gradient(circle at 90% 80%, rgba(143, 32, 173, 0.35) 0%, transparent 45%),
+                          radial-gradient(circle at 50% 50%, rgba(45, 0, 59, 0.6) 0%, transparent 60%),
+                          radial-gradient(rgba(223, 178, 241, 0.15) 1px, transparent 1px) !important;
+        background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px !important;
+        background-attachment: fixed !important;
+        color: #ffffff;
+        min-height: 100vh;
+    }
+    .auth-glow-bg {
+        background: transparent;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .auth-card-container {
+        width: 100%;
+        max-width: 980px;
+        margin: 2rem auto;
+        border-radius: 28px;
+        overflow: hidden;
+        border: 1.5px solid #ffffff;
+        box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(94, 0, 120, 0.25);
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+    }
+    @media (min-width: 1024px) {
+        .auth-card-container {
+            flex-direction: row;
+            min-height: 580px;
+        }
+        .auth-left-panel {
+            width: 44%;
+            flex-shrink: 0;
+        }
+        .auth-right-panel {
+            width: 56%;
+            flex-grow: 1;
+        }
+    }
+    .auth-left-panel {
+        background: linear-gradient(145deg, #180020 0%, #2e003c 45%, #420054 100%);
+        color: #ffffff;
+        padding: 3rem 2.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+    .auth-right-panel {
+        background: #ffffff;
+        padding: 3rem 2.75rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: #0f172a;
+    }
+    .watermark-dome {
+        position: absolute;
+        right: -25px;
+        bottom: -25px;
+        width: 190px;
+        height: 190px;
+        opacity: 0.12;
+        pointer-events-none;
+        color: #ffffff;
+    }
+    .form-group-spaced {
+        margin-bottom: 1rem;
+    }
+    .input-pill {
+        width: 100%;
+        background-color: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.625rem 0.875rem 0.625rem 2.65rem;
+        font-size: 0.8125rem;
+        color: #0f172a;
+        transition: all 0.2s ease;
+    }
+    .input-pill:focus {
+        background-color: #ffffff;
+        border-color: #6b008a;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(107, 0, 138, 0.15);
+    }
+    select.input-pill {
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        background-image: none !important;
+        cursor: pointer;
+    }
+    select.input-pill::-ms-expand {
+        display: none !important;
+    }
+    .btn-brand-primary {
+        width: 100%;
+        background-color: #6b008a;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 0.875rem;
+        letter-spacing: 0.015em;
+        padding: 0.6875rem 1.25rem;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        box-shadow: 0 6px 18px -3px rgba(107, 0, 138, 0.45), 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-brand-primary:hover {
+        background-color: #55006e;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 22px -3px rgba(107, 0, 138, 0.55), 0 3px 6px rgba(0, 0, 0, 0.14);
+    }
+    .btn-brand-primary:active {
+        background-color: #430057;
+        transform: scale(0.99);
+    }
+    .nav-pill-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1.15rem;
+        border-radius: 9999px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: #ffffff !important;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+    .nav-pill-btn:hover {
+        background: rgba(255, 255, 255, 0.22);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 15px rgba(223, 178, 241, 0.25);
+    }
+    .nav-pill-btn .icon-arrow {
+        color: #dfb2f1;
+        font-size: 0.75rem;
+        transition: transform 0.2s ease, color 0.2s ease;
+    }
+    .nav-pill-btn:hover .icon-arrow {
+        transform: translateX(-3px);
+        color: #ffffff;
+    }
+    .nav-pill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.375rem 0.95rem;
+        border-radius: 9999px;
+        background: rgba(107, 0, 138, 0.32);
+        border: 1px solid rgba(202, 130, 230, 0.38);
+        color: #e9d5ff !important;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        letter-spacing: 0.01em;
+    }
+    .nav-badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 9999px;
+        background-color: #dfb2f1;
+        box-shadow: 0 0 8px #dfb2f1;
+        display: inline-block;
+        flex-shrink: 0;
+        animation: pulseBadgeDot 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulseBadgeDot {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+            box-shadow: 0 0 10px rgba(223, 178, 241, 0.9);
+        }
+        50% {
+            opacity: 0.35;
+            transform: scale(0.85);
+            box-shadow: 0 0 2px rgba(223, 178, 241, 0.3);
+        }
+    }
+    .frosted-tile {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .frosted-badge {
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #dfb2f1;
+    }
+    .text-purple-muted {
+        color: rgba(243, 232, 255, 0.85);
+    }
+    .border-white-subtle {
+        border-color: rgba(255, 255, 255, 0.14);
+    }
+    .auth-bottom-footer {
+        width: 100%;
+        max-w-5xl;
+        margin: 0 auto;
+        padding: 0.85rem 1rem;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.45);
+    }
+    .auth-bottom-footer a {
+        color: rgba(255, 255, 255, 0.75);
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    .auth-bottom-footer a:hover {
+        color: #ffffff;
+    }
+    .modal-backdrop-dark {
+        background: rgba(0, 0, 0, 0.68);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+    .left-panel-footer {
+        position: relative;
+        z-index: 10;
+        margin-top: 2rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.14);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: rgba(243, 232, 255, 0.85);
+    }
+    @media (max-width: 640px) {
+        .auth-left-panel {
+            padding: 2.25rem 1.35rem;
+        }
+        .auth-right-panel {
+            padding: 2.25rem 1.35rem;
+        }
+        .auth-card-container {
+            border-radius: 20px;
+        }
+    }
+    .auth-submit-wrap {
+        margin-top: 1.5rem;
+    }
+    .auth-form-bottom-link {
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    .auth-card-footer {
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid #f1f5f9;
+        text-align: center;
+        font-size: 0.6875rem;
+        color: #94a3b8;
+    }
+    .auth-tab-switcher {
+        display: inline-flex;
+        align-items: center;
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 9999px;
+        padding: 4px;
+        gap: 4px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    .auth-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 0.45rem 1.15rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        line-height: 1;
+        cursor: pointer;
+        user-select: none;
+    }
+    .auth-tab-btn.active {
+        background-color: #6b008a;
+        color: #ffffff !important;
+        font-weight: 700;
+        box-shadow: 0 4px 12px -1px rgba(107, 0, 138, 0.4), 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+    .auth-tab-btn.inactive {
+        background-color: transparent;
+        color: #64748b;
+    }
+    .auth-tab-btn.inactive:hover {
+        background-color: rgba(107, 0, 138, 0.08);
+        color: #6b008a;
+        transform: translateY(-0.5px);
+    }
+</style>
+<?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
-<div class="flex h-screen">
-    <!-- Left side - Image -->
-    <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-blue-600 to-blue-800 items-center justify-center">
-        <div class="text-center text-white">
-            <div class="w-20 h-20 bg-white rounded-2xl mx-auto mb-6 flex items-center justify-center">
-                <span class="text-4xl font-bold text-blue-600">AS</span>
-            </div>
-            <h1 class="text-4xl font-bold mb-4">Amanah Safar</h1>
-            <p class="text-xl text-blue-100 max-w-md">Sistem Manajemen Mitra & Perjalanan Terpercaya</p>
+<div class="auth-glow-bg p-4 sm:p-6 lg:p-8 relative selection:bg-[#6b008a] selection:text-white">
+
+    <!-- Top Navigation Header (Persis Referensi: Tombol Kiri Pill & Badge Status Kanan) -->
+    <header class="w-full max-w-5xl mx-auto flex items-center justify-between py-2 z-10">
+        <a href="<?= base_url('/') ?>" class="nav-pill-btn group">
+            <i class="fas fa-arrow-left icon-arrow"></i>
+            <span>Kembali ke Beranda</span>
+        </a>
+        <div class="nav-pill-badge">
+            <span class="nav-badge-dot"></span>
+            <span>Sistem Mitra Amanah</span>
         </div>
-    </div>
+    </header>
 
-    <!-- Right side - Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center px-6 py-12">
-        <div class="w-full max-w-md">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-gray-900">Login</h2>
-                <p class="text-gray-600 mt-2">Masukkan kredensial Anda untuk melanjutkan</p>
-            </div>
-
-            <form method="POST" class="space-y-5">
-                <?= csrf_field() ?>
+    <!-- Main Card Container (2 Kolom Presisi Sesuai Referensi) -->
+    <main class="w-full max-w-5xl mx-auto z-10 flex-grow flex items-center justify-center">
+        <div class="auth-card-container">
+            
+            <!-- Panel Kiri: Identitas Ungu Amanah Safar -->
+            <div class="auth-left-panel">
+                <!-- Watermark Ornamen Siluet Kubah -->
+                <div class="watermark-dome">
+                    <svg viewBox="0 0 200 200" fill="currentColor">
+                        <path d="M100 20 C85 50 60 70 60 100 C60 145 78 180 100 200 C122 180 140 145 140 100 C140 70 115 50 100 20 Z" />
+                        <path d="M40 120 C40 160 65 190 100 200 C35 190 20 150 20 120 Z" opacity="0.5" />
+                        <path d="M160 120 C160 160 135 190 100 200 C165 190 180 150 180 120 Z" opacity="0.5" />
+                    </svg>
+                </div>
                 
-                <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                    <input type="email" id="email" name="email" required 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="nama@email.com">
+                <div class="relative z-10">
+                    <!-- Squircle Logo & Nama Perusahaan (Persis Referensi) -->
+                    <div class="flex items-center gap-3.5 mb-7">
+                        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center font-black text-lg text-[#6b008a] shadow-md shrink-0">
+                            AS
+                        </div>
+                        <div>
+                            <span class="block font-black text-lg sm:text-xl tracking-tight leading-tight text-white uppercase">Amanah Safar</span>
+                            <span class="block text-[11px] font-semibold text-[#ca82e6] tracking-wider uppercase">Sistem Mitra Amanah</span>
+                        </div>
+                    </div>
+
+                    <!-- Badge Pill Bintang Emas -->
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full frosted-badge text-xs font-semibold mb-6">
+                        <i class="fas fa-star text-[10px] text-amber-400"></i>
+                        <span>Kemitraan Amanah & Profesional</span>
+                    </div>
+
+                    <!-- Headline Sambutan -->
+                    <h1 class="text-2xl sm:text-[26px] font-extrabold leading-snug text-white mb-4">
+                        Menebar Kebaikan, Menggapai Keberkahan Bersama.
+                    </h1>
+                    <p class="text-xs sm:text-sm text-purple-muted leading-relaxed mb-8">
+                        Akses mudah ke seluruh rangkaian kemitraan, seleksi alur pendaftaran jamaah, hingga pencairan ujroh dan komisi resmi secara digital.
+                    </p>
+
+                    <!-- Poin Keunggulan (3 List Item Kotak Ikon Persis Referensi) -->
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3">
+                            <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <span class="text-xs text-white font-medium">Konfirmasi & PKS langsung ke Email</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <span class="text-xs text-white font-medium">Pencairan ujroh transparan & realtime</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <span class="text-xs text-white font-medium">Data terenkripsi aman dan terverifikasi</span>
+                        </li>
+                    </ul>
                 </div>
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                    <input type="password" id="password" name="password" required 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="••••••••">
+                <!-- Footer Panel Kiri -->
+                <div class="left-panel-footer">
+                    <span>Butuh Bantuan?</span>
                 </div>
-
-                <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                    <select id="role" name="role" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        <option value="">Pilih Role</option>
-                        <option value="super_admin">Super Admin</option>
-                        <option value="admin">Admin</option>
-                        <option value="pusat">Pusat</option>
-                        <option value="cabang">Cabang</option>
-                        <option value="manager_mitra">Manager Mitra</option>
-                        <option value="mitra">Mitra</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn-interactive w-full bg-blue-600 text-white py-2.5 rounded-xl font-semibold hover:bg-blue-700 shadow-sm transition">
-                    Login
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-gray-600">Belum punya akun? <a href="<?= base_url('/register') ?>" class="text-blue-600 font-medium hover:underline">Daftar di sini</a></p>
             </div>
+
+            <!-- Panel Kanan: Area Formulir Putih Bersih -->
+            <div class="auth-right-panel">
+                <div>
+                    <!-- Form Header & Pill Switcher Tab (Persis Gambar Referensi: Login / Daftar) -->
+                    <div class="flex items-start justify-between gap-4 pb-6 border-b border-slate-100">
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Login</h2>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1.5">Masukkan kredensial Anda untuk melanjutkan</p>
+                        </div>
+                        <div class="auth-tab-switcher">
+                            <span class="auth-tab-btn active">
+                                Login
+                            </span>
+                            <a href="<?= base_url('/register') ?>" class="auth-tab-btn inactive">
+                                Daftar
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Flash Message Notifications -->
+                    <?php if (session()->getFlashdata('error')): ?>
+                        <div class="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
+                            <i class="fas fa-circle-exclamation text-rose-500 text-sm shrink-0"></i>
+                            <div class="font-medium"><?= esc(session()->getFlashdata('error')) ?></div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (session()->getFlashdata('warning')): ?>
+                        <div class="mt-4 p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center gap-3">
+                            <i class="fas fa-triangle-exclamation text-amber-500 text-sm shrink-0"></i>
+                            <div class="font-medium"><?= esc(session()->getFlashdata('warning')) ?></div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (session()->getFlashdata('success')): ?>
+                        <div class="mt-4 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-3">
+                            <i class="fas fa-circle-check text-emerald-500 text-sm shrink-0"></i>
+                            <div class="font-medium"><?= esc(session()->getFlashdata('success')) ?></div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (session()->getFlashdata('logout')): ?>
+                        <div class="mt-4 p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-[#6b008a] text-xs flex items-center gap-3">
+                            <i class="fas fa-arrow-right-from-bracket text-[#6b008a] text-sm shrink-0"></i>
+                            <div class="font-medium"><?= esc(session()->getFlashdata('logout')) ?></div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Form Login -->
+                    <form method="POST" action="<?= base_url('/login') ?>" class="mt-6">
+                        <?= csrf_field() ?>
+
+                        <!-- Email Input (Hanya Menggunakan Email Aktif) -->
+                        <div class="form-group-spaced">
+                            <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5">
+                                Email Aktif
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <input type="email" id="email" name="email" required autofocus
+                                    value="<?= esc(old('email') ?? '') ?>"
+                                    class="input-pill"
+                                    placeholder="nama@email.com">
+                            </div>
+                            <p class="text-[11px] text-slate-400 mt-1.5">Masukkan alamat email aktif yang terdaftar pada akun Anda.</p>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="form-group-spaced">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="password" class="block text-xs font-bold text-slate-700">
+                                    Kata Sandi
+                                </label>
+                                <button type="button" onclick="openForgotModal()" class="text-xs font-bold text-[#6b008a] hover:text-[#55006e] hover:underline focus:outline-none">
+                                    Lupa Sandi?
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" id="password" name="password" required
+                                    class="input-pill pr-11"
+                                    placeholder="Masukkan kata sandi akun Anda">
+                                <button type="button" id="togglePassword" onclick="togglePasswordVisibility()" aria-label="Tampilkan atau sembunyikan kata sandi"
+                                    class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition focus:outline-none">
+                                    <i id="eyeIcon" class="fas fa-eye text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Role Selection (Mempertahankan Seluruh Role Asli Sistem) -->
+                        <div class="form-group-spaced">
+                            <label for="role" class="block text-xs font-bold text-slate-700 mb-1.5">
+                                Role
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
+                                    <i class="fa-solid fa-users"></i>
+                                </span>
+                                <select id="role" name="role" required
+                                    class="input-pill pr-8 cursor-pointer">
+                                    <option value="" <?= empty(old('role')) ? 'selected' : '' ?>>Pilih Role</option>
+                                    <option value="super_admin" <?= old('role') === 'super_admin' ? 'selected' : '' ?>>Super Admin</option>
+                                    <option value="admin" <?= old('role') === 'admin' ? 'selected' : '' ?>>Admin</option>
+                                    <option value="pusat" <?= old('role') === 'pusat' ? 'selected' : '' ?>>Pusat</option>
+                                    <option value="cabang" <?= old('role') === 'cabang' ? 'selected' : '' ?>>Cabang</option>
+                                    <option value="manager_mitra" <?= old('role') === 'manager_mitra' ? 'selected' : '' ?>>Manager Mitra</option>
+                                    <option value="mitra" <?= old('role') === 'mitra' ? 'selected' : '' ?>>Mitra</option>
+                                </select>
+                                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400 text-xs">
+                                    <i class="fas fa-chevron-down"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Tombol Utama Login (Kalimat Asli Sistem: Login) -->
+                        <div class="auth-submit-wrap">
+                            <button type="submit" class="btn-brand-primary">
+                                <span>Login</span>
+                                <i class="fas fa-arrow-right text-xs"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Link Teks Bawah (Kalimat Asli Sistem: Belum punya akun? Daftar di sini) -->
+                    <div class="auth-form-bottom-link">
+                        <p class="text-xs text-slate-500">
+                            Belum punya akun?
+                            <a href="<?= base_url('/register') ?>" class="text-[#6b008a] font-bold hover:text-[#55006e] hover:underline ml-1">
+                                Daftar di sini
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer Kartu -->
+                <div class="auth-card-footer">
+                    © <?= date('Y') ?> PT Amanah Tangguh Mandiri • Dilindungi Sistem Keamanan Terpadu
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Page Footer (Persis Referensi: Alur Pendaftaran • Persyaratan • Bantuan & Kontak) -->
+    <footer class="auth-bottom-footer">
+        <a href="<?= base_url('/') ?>">Alur Pendaftaran</a>
+        <span>•</span>
+        <a href="<?= base_url('/register') ?>">Persyaratan</a>
+        <span>•</span>
+        <a href="https://wa.me/6281234567890" target="_blank">Bantuan & Kontak</a>
+    </footer>
+</div>
+
+<!-- Modal Bantuan Lupa Kata Sandi -->
+<div id="forgotModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-dark hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-200" id="forgotModalCard">
+        <div class="w-12 h-12 rounded-xl bg-purple-50 text-[#6b008a] flex items-center justify-center text-xl mb-4">
+            <i class="fas fa-key"></i>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 mb-2">Lupa Kata Sandi</h3>
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-5">
+            Untuk menjaga keamanan akun Anda, pemulihan kata sandi dilakukan melalui verifikasi Admin Layanan Mitra Amanah Safar.
+        </p>
+        <div class="bg-purple-50/70 border border-purple-100 rounded-xl p-3.5 text-xs text-[#6b008a] mb-5 space-y-1">
+            <div class="font-bold flex items-center gap-1.5">
+                <i class="fas fa-info-circle"></i> Siapkan Informasi Berikut:
+            </div>
+            <ul class="list-disc list-inside text-slate-600 pl-1 text-[11px] space-y-0.5">
+                <li>Alamat email aktif yang terdaftar</li>
+                <li>Nama lengkap sesuai identitas KTP</li>
+                <li>Nama Pembina Anda (jika ada)</li>
+            </ul>
+        </div>
+        <div class="flex items-center justify-end gap-2.5">
+            <button type="button" onclick="closeForgotModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition">
+                Tutup
+            </button>
+            <a href="https://wa.me/6281234567890?text=Halo%20Admin%20Amanah%20Safar,%20saya%20ingin%20meminta%20bantuan%20reset%20kata%20sandi" target="_blank"
+                class="px-4 py-2 rounded-xl text-xs font-bold bg-[#6b008a] hover:bg-[#55006e] text-white flex items-center gap-1.5 shadow-sm transition">
+                <i class="fab fa-whatsapp"></i> Hubungi Admin
+            </a>
         </div>
     </div>
 </div>
+
+<script>
+function togglePasswordVisibility() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.className = 'fas fa-eye-slash text-sm text-[#6b008a]';
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.className = 'fas fa-eye text-sm text-slate-400';
+    }
+}
+
+function openForgotModal() {
+    const modal = document.getElementById('forgotModal');
+    const card = document.getElementById('forgotModalCard');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
+    }, 10);
+}
+
+function closeForgotModal() {
+    const modal = document.getElementById('forgotModal');
+    const card = document.getElementById('forgotModalCard');
+    modal.classList.add('opacity-0');
+    card.classList.remove('scale-100');
+    card.classList.add('scale-95');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+</script>
 <?= $this->endSection() ?>
