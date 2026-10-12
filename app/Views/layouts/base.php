@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?? 'Amanah Safar' ?></title>
-    <!-- Google Fonts: Plus Jakarta Sans -->
+    <!-- Google Fonts: Plus Jakarta Sans & Amiri (Arabic) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Compiled Static Tailwind CSS with cache-busting -->
     <link rel="stylesheet" href="<?= base_url('assets/css/app.min.css') ?>?v=<?= file_exists(FCPATH . 'assets/css/app.min.css') ? filemtime(FCPATH . 'assets/css/app.min.css') : time() ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Global Table Pagination & Sorting Helper with cache-busting -->
+    <script src="<?= base_url('assets/js/table-pagination.js') ?>?v=<?= file_exists(FCPATH . 'assets/js/table-pagination.js') ? filemtime(FCPATH . 'assets/js/table-pagination.js') : time() ?>"></script>
     <style>
         /* Dashboard Layout - Sidebar & Main Content Space Guarantees */
         @media (min-width: 768px) {
@@ -163,8 +165,9 @@
             }
         }
     </style>
+    <?= $this->renderSection('styles') ?>
 </head>
-<body class="bg-[#faf7fb] text-slate-900 antialiased page-fade-in">
+<body class="<?= $bodyClass ?? 'bg-[#faf7fb] text-slate-900' ?> antialiased page-fade-in">
     <?= $this->renderSection('content') ?>
 
     <!-- Global Floating Toast Notification Container -->

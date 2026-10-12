@@ -355,6 +355,43 @@
         color: #6b008a;
         transform: translateY(-0.5px);
     }
+    .arabic-bismillah-gold {
+        font-family: 'Amiri', 'Traditional Arabic', 'Scheherazade New', 'Noto Naskh Arabic', serif;
+        font-size: 1.25rem;
+        line-height: 1.5;
+        font-weight: 700;
+        display: inline-block;
+        background: linear-gradient(
+            120deg,
+            #d4af37 0%,
+            #f5d77f 25%,
+            #fff8db 45%,
+            #ffffff 50%,
+            #fff8db 55%,
+            #f5d77f 75%,
+            #b8860b 100%
+        );
+        background-size: 250% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: goldShimmerSlow 7s ease-in-out infinite;
+        filter: drop-shadow(0 2px 10px rgba(212, 175, 55, 0.28));
+        margin-bottom: 0.35rem;
+    }
+    @media (max-width: 640px) {
+        .arabic-bismillah-gold {
+            font-size: 1.1rem;
+        }
+    }
+    @keyframes goldShimmerSlow {
+        0% {
+            background-position: 150% 0;
+        }
+        100% {
+            background-position: -150% 0;
+        }
+    }
 </style>
 <?= $this->endSection() ?>
 
@@ -406,10 +443,15 @@
                         <span>Kemitraan Amanah & Profesional</span>
                     </div>
 
-                    <!-- Headline Sambutan -->
-                    <h1 class="text-2xl sm:text-[26px] font-extrabold leading-snug text-white mb-4">
-                        Menebar Kebaikan, Menggapai Keberkahan Bersama.
-                    </h1>
+                    <!-- Headline Sambutan (Dua Bagian: Kaligrafi Arab Gold Shimmer & Modern Bold Headline) -->
+                    <div class="mb-4">
+                        <div class="arabic-bismillah-gold" dir="rtl" lang="ar">
+                            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                        </div>
+                        <h1 class="text-2xl sm:text-[27px] font-black tracking-tight leading-snug text-white mt-1">
+                            Bahagia sampai Baitullah.
+                        </h1>
+                    </div>
                     <p class="text-xs sm:text-sm text-purple-muted leading-relaxed mb-8">
                         Daftarkan akun Mitra Anda dengan kode voucher resmi dari Pembina untuk membuka akses syiar dan bagi hasil yang barakah.
                     </p>
