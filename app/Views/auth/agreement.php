@@ -25,7 +25,7 @@
         width: 100%;
         max-width: 980px;
         margin: 1rem auto 2.5rem;
-        border-radius: 28px;
+        border-radius: 36px;
         overflow: hidden;
         border: 1.5px solid #ffffff;
         box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(94, 0, 120, 0.25);
@@ -86,7 +86,7 @@
         font-size: 0.875rem;
         letter-spacing: 0.015em;
         padding: 0.6875rem 1.25rem;
-        border-radius: 10px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -261,7 +261,7 @@
             padding: 2.25rem 1.35rem;
         }
         .auth-card-container {
-            border-radius: 20px;
+            border-radius: 24px;
         }
     }
     .auth-submit-wrap {
