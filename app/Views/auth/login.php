@@ -406,10 +406,9 @@
             <!-- Panel Kiri: Identitas Ungu Amanah Safar -->
             <div class="auth-left-panel">
                 <div class="relative z-10">
-                    <!-- Logo Resmi Amanah Safar Putih & Identitas -->
+                    <!-- Logo Resmi Amanah Safar Putih -->
                     <div class="mb-7">
-                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="h-11 sm:h-12 w-auto object-contain mb-1.5 drop-shadow-sm">
-                        <span class="block text-[11px] font-semibold text-[#ca82e6] tracking-wider uppercase">Sistem Mitra Amanah</span>
+                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="h-11 sm:h-12 w-auto object-contain drop-shadow-sm">
                     </div>
 
                     <!-- Badge Pill Bintang Emas -->
