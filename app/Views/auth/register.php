@@ -445,7 +445,7 @@
                     <!-- Badge Pill Bintang Emas -->
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full frosted-badge text-xs font-semibold mb-6">
                         <i class="fas fa-star text-[10px] text-amber-400"></i>
-                        <span>Kemitraan Amanah & Profesional</span>
+                        <span>Sistem Mitra Amanah Safar</span>
                     </div>
 
                     <!-- Headline Sambutan (Dua Bagian: Kaligrafi Arab Gold Shimmer & Modern Bold Headline) -->
