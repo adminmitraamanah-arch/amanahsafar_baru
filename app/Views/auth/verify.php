@@ -65,18 +65,6 @@
         justify-content: space-between;
         color: #0f172a;
     }
-    .watermark-kaaba,
-    .watermark-dome {
-        position: absolute;
-        right: -25px;
-        bottom: -48px;
-        width: 210px;
-        height: 210px;
-        opacity: 0.14;
-        pointer-events: none;
-        z-index: 1;
-        transition: opacity 0.3s ease;
-    }
     .form-group-spaced {
         margin-bottom: 1rem;
     }
@@ -290,14 +278,6 @@
         .auth-card-container {
             border-radius: 24px;
         }
-        .watermark-kaaba,
-        .watermark-dome {
-            width: 160px;
-            height: 160px;
-            right: -15px;
-            bottom: -35px;
-            opacity: 0.11;
-        }
     }
     .auth-submit-wrap {
         margin-top: 1.5rem;
@@ -367,22 +347,6 @@
             
             <!-- Panel Kiri: Identitas Ungu Amanah Safar & Stepper -->
             <div class="auth-left-panel">
-                <!-- Watermark Ornamen Ikon Ka'bah Geometris (Sesuai Desain Referensi) -->
-                <div class="watermark-kaaba">
-                    <svg viewBox="0 0 160 160" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Atap Chevron Putih -->
-                        <path d="M 80,18 L 150,40 L 150,56 L 80,34 L 10,56 L 10,40 Z" fill="#FFFFFF" />
-                        <!-- Bayangan Sisi Kiri Bawah Atap -->
-                        <path d="M 80,34 L 80,42 L 48,52 L 10,56 Z" fill="rgba(0, 0, 0, 0.25)" />
-                        <!-- Sabuk Emas / Gold Chevron Band -->
-                        <path d="M 80,42 L 150,64 L 150,86 L 80,64 L 10,86 L 10,64 Z" fill="#FDBD3F" />
-                        <!-- 3 Pilar Vertikal Putih -->
-                        <path d="M 10,160 L 10,86 L 44,75.3 L 44,160 Z" fill="#FFFFFF" />
-                        <path d="M 60,160 L 60,70.3 L 80,64 L 100,70.3 L 100,160 Z" fill="#FFFFFF" />
-                        <path d="M 116,160 L 116,75.3 L 150,86 L 150,160 Z" fill="#FFFFFF" />
-                    </svg>
-                </div>
-                
                 <div class="relative z-10">
                     <!-- Squircle Logo & Nama Perusahaan -->
                     <div class="flex items-center gap-3.5 mb-7">
