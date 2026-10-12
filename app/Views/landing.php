@@ -46,13 +46,13 @@
     </div>
     <?php endif; ?>
 
-    <!-- Navigation Header (Smooth Animations & Micro-Interactions) -->
-    <header id="mainHeader" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-purple-100/80 shadow-md transition-all duration-300">
+    <!-- Navigation Header (Royal Purple Glassmorphism, Smooth Animations & Micro-Interactions) -->
+    <header id="mainHeader" class="sticky top-0 z-40 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
-                <a href="<?= base_url('/') ?>" class="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078] rounded-xl">
-                    <img src="<?= base_url('assets/images/logo-purple.png') ?>" alt="Amanah Safar" class="h-8 sm:h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
+                <a href="<?= base_url('/') ?>" class="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-xl" title="Amanah Safar">
+                    <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
                 </a>
 
                 <!-- Desktop Menu -->
@@ -82,7 +82,7 @@
 
                     <!-- Mobile Menu Button (md:hidden) -->
                     <button id="mobileMenuBtn" type="button" aria-label="Toggle Navigation Menu" aria-expanded="false" 
-                            class="md:hidden w-9 h-9 rounded-xl text-gray-700 hover:text-[#5e0078] hover:bg-purple-50/70 flex items-center justify-center transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078]">
+                            class="md:hidden w-9 h-9 rounded-xl text-white/90 hover:text-amber-300 hover:bg-white/10 flex items-center justify-center transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400">
                         <i id="mobileMenuIcon" class="fas fa-bars text-lg"></i>
                     </button>
                 </div>
@@ -90,13 +90,13 @@
         </div>
 
         <!-- Mobile Navigation Drawer -->
-        <div id="mobileMenuDrawer" class="hidden md:hidden border-t border-purple-100 bg-white/98 backdrop-blur-md px-4 py-3 space-y-1 shadow-lg transition-all duration-300">
-            <a href="#hero" class="mobile-nav-link active block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Beranda</a>
-            <a href="#keunggulan" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Keunggulan</a>
-            <a href="#program" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Paket Program</a>
-            <a href="#fasilitas" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Fasilitas</a>
-            <a href="#testimoni" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Testimoni</a>
-            <a href="#faq" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">FAQ</a>
+        <div id="mobileMenuDrawer" class="hidden md:hidden border-t border-purple-800/40 bg-[#250033]/98 backdrop-blur-xl px-4 py-3 space-y-1 shadow-2xl transition-all duration-300">
+            <a href="#hero" class="mobile-nav-link active block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Beranda</a>
+            <a href="#keunggulan" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Keunggulan</a>
+            <a href="#program" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Paket Program</a>
+            <a href="#fasilitas" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Fasilitas</a>
+            <a href="#testimoni" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Testimoni</a>
+            <a href="#faq" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">FAQ</a>
         </div>
     </header>
 
@@ -136,19 +136,28 @@
         }
 
         /* ========================================================
-           NAVBAR ANIMATION & SMOOTH INTERACTION STYLES
+           HEADER REDESIGN: ROYAL PURPLE GLASSMORPHISM & SMOOTH SCROLL
            ======================================================== */
         #mainHeader {
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 2px 8px -2px rgba(94, 0, 120, 0.06);
-            transition: box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
-                        background-color 280ms cubic-bezier(0.22, 1, 0.36, 1),
-                        border-color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+            /* Kondisi Sebelum Scroll: Ungu Brand Transparan 75-85% + Backdrop Blur Halus */
+            background-color: rgba(46, 0, 60, 0.80);
+            backdrop-filter: blur(14px) saturate(180%);
+            -webkit-backdrop-filter: blur(14px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.18), 0 2px 8px -2px rgba(94, 0, 120, 0.25);
+            transition: background-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                        box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                        backdrop-filter 300ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
+        /* Kondisi Setelah Halaman Di-scroll: Ungu Lebih Solid + Glassmorphism Ringan & Shadow Lembut */
         #mainHeader.scrolled {
-            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(94, 0, 120, 0.10);
-            border-color: rgba(94, 0, 120, 0.12);
-            background-color: rgba(255, 255, 255, 0.98);
+            background-color: rgba(34, 0, 46, 0.95);
+            backdrop-filter: blur(16px) saturate(190%);
+            -webkit-backdrop-filter: blur(16px) saturate(190%);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.40), 0 4px 16px -2px rgba(94, 0, 120, 0.35);
         }
 
         /* Nav Item (Text & Animated Underline) */
@@ -158,10 +167,11 @@
             align-items: center;
             padding-top: 0.375rem;
             padding-bottom: 0.375rem;
-            color: #374151; /* text-gray-700 */
+            color: rgba(255, 255, 255, 0.88);
             font-size: 0.875rem;
             font-weight: 500;
-            transition: color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+            letter-spacing: 0.01em;
+            transition: color 280ms cubic-bezier(0.22, 1, 0.36, 1);
             outline: none;
             text-decoration: none;
         }
@@ -169,33 +179,34 @@
         .nav-link-item::after {
             content: '';
             position: absolute;
-            bottom: -2px;
+            bottom: -3px;
             left: 0;
             width: 100%;
-            height: 2px;
-            background-color: #5e0078;
+            height: 2.5px;
+            background: linear-gradient(90deg, #d4af37, #f6cf57, #d4af37);
             border-radius: 9999px;
             transform: scaleX(0);
             transform-origin: center;
-            transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
-                        opacity 240ms ease-out;
+            transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                        opacity 260ms ease-out;
             opacity: 0;
+            box-shadow: 0 0 8px rgba(246, 207, 87, 0.6);
             pointer-events: none;
         }
 
-        /* Hover: text turns purple, underline smoothly expands from center */
+        /* Hover State */
         .nav-link-item:hover {
-            color: #5e0078;
+            color: #ffffff;
         }
 
         .nav-link-item:hover::after {
             transform: scaleX(1);
-            opacity: 1;
+            opacity: 0.85;
         }
 
-        /* Active State: persistent purple text and underline */
+        /* Active State */
         .nav-link-item.active {
-            color: #5e0078;
+            color: #fce79a;
             font-weight: 600;
         }
 
@@ -205,16 +216,25 @@
         }
 
         .nav-link-item:focus-visible {
-            outline: 2px solid #5e0078;
+            outline: 2px solid #f6cf57;
             outline-offset: 4px;
             border-radius: 0.25rem;
         }
 
         /* Mobile Nav Link */
+        .mobile-nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            background-color: transparent;
+        }
+        .mobile-nav-link:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.08);
+        }
         .mobile-nav-link.active {
-            background-color: rgba(94, 0, 120, 0.08);
-            color: #5e0078;
+            background-color: rgba(94, 0, 120, 0.50);
+            color: #fce79a;
             font-weight: 600;
+            border-left: 3px solid #f6cf57;
         }
 
         /* Action Button: Masuk */
@@ -222,62 +242,74 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.45rem 0.95rem;
+            padding: 0.45rem 1rem;
             font-size: 0.875rem;
             font-weight: 600;
-            color: #374151;
+            color: #ffffff;
             border-radius: 0.75rem;
-            transition: color 240ms cubic-bezier(0.22, 1, 0.36, 1),
-                        background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+            background-color: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            backdrop-filter: blur(8px);
+            transition: color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                        background-color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 260ms cubic-bezier(0.22, 1, 0.36, 1),
                         transform 150ms ease-out;
             outline: none;
             text-decoration: none;
         }
 
         .btn-nav-login:hover {
-            color: #5e0078;
-            background-color: rgba(94, 0, 120, 0.05);
+            color: #fce79a;
+            background-color: rgba(255, 255, 255, 0.18);
+            border-color: rgba(246, 207, 87, 0.40);
+            transform: translateY(-1px);
         }
 
         .btn-nav-login:active {
-            transform: scale(0.97);
+            transform: scale(0.97) translateY(0);
         }
 
         .btn-nav-login:focus-visible {
-            outline: 2px solid #5e0078;
+            outline: 2px solid #f6cf57;
             outline-offset: 2px;
         }
 
-        /* Action Button: Daftar Mitra */
+        /* Action Button: Daftar Mitra (CTA Ungu Solid dengan Sudut Membulat) */
         .btn-nav-register {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.45rem 1.15rem;
+            padding: 0.45rem 1.25rem;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 0.015em;
             color: #ffffff;
-            background-color: #5e0078;
+            background: linear-gradient(135deg, #7c129e 0%, #5e0078 50%, #4a005f 100%);
+            border: 1px solid rgba(255, 255, 255, 0.22);
             border-radius: 0.75rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
-                        box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow: 0 4px 14px -2px rgba(94, 0, 120, 0.50), 0 2px 4px rgba(0, 0, 0, 0.20);
+            transition: background 280ms ease,
+                        box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 280ms ease,
                         transform 150ms ease-out;
             outline: none;
             text-decoration: none;
         }
 
         .btn-nav-register:hover {
-            background-color: #4c0062;
-            box-shadow: 0 6px 18px -4px rgba(94, 0, 120, 0.35);
+            background: linear-gradient(135deg, #8f20ad 0%, #6e008c 50%, #54006c 100%);
+            border-color: rgba(246, 207, 87, 0.50);
+            box-shadow: 0 8px 22px -3px rgba(124, 18, 158, 0.65), 0 0 12px rgba(212, 175, 55, 0.30);
+            transform: translateY(-1.5px);
+            color: #ffffff;
         }
 
         .btn-nav-register:active {
-            transform: scale(0.98);
+            transform: scale(0.97) translateY(0);
         }
 
         .btn-nav-register:focus-visible {
-            outline: 2px solid #5e0078;
+            outline: 2px solid #f6cf57;
             outline-offset: 2px;
         }
 
