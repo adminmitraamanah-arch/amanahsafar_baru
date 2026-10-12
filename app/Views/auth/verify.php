@@ -69,10 +69,10 @@
     .watermark-dome {
         position: absolute;
         right: -25px;
-        bottom: -8px;
+        bottom: -48px;
         width: 210px;
         height: 210px;
-        opacity: 0.22;
+        opacity: 0.14;
         pointer-events: none;
         z-index: 1;
         transition: opacity 0.3s ease;
@@ -295,8 +295,8 @@
             width: 160px;
             height: 160px;
             right: -15px;
-            bottom: -5px;
-            opacity: 0.18;
+            bottom: -35px;
+            opacity: 0.11;
         }
     }
     .auth-submit-wrap {
