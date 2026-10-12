@@ -201,7 +201,7 @@
         border: 1px solid rgba(255, 255, 255, 0.16);
     }
     .text-purple-muted {
-        color: rgba(243, 232, 255, 0.85);
+        color: #9b24c9;
     }
     .border-white-subtle {
         border-color: rgba(255, 255, 255, 0.14);
@@ -246,7 +246,7 @@
         align-items: center;
         justify-content: space-between;
         font-size: 0.75rem;
-        color: rgba(243, 232, 255, 0.85);
+        color: #9b24c9;
     }
     @media (max-width: 640px) {
         .auth-left-panel {
@@ -371,7 +371,7 @@
                     <h1 class="text-2xl sm:text-[26px] font-extrabold leading-snug text-white mb-4">
                         Lengkapi Berkas Verifikasi Mitra.
                     </h1>
-                    <p class="text-xs sm:text-sm text-purple-muted leading-relaxed mb-6">
+                    <p class="text-xs sm:text-sm text-[#9b24c9] leading-relaxed mb-6">
                         Data identitas dan rekening diperlukan untuk validasi legalitas, penerbitan PKS, serta penyaluran ujroh bagi hasil.
                     </p>
 
@@ -381,40 +381,40 @@
                         <div class="font-bold text-white flex items-center gap-2">
                             <i class="fas fa-user-circle text-[#ca82e6]"></i> <?= esc($user['nama_lengkap'] ?? 'Mitra') ?>
                         </div>
-                        <div class="text-[11px] text-purple-muted flex items-center gap-2">
+                        <div class="text-[11px] text-[#9b24c9] flex items-center gap-2">
                             <i class="fas fa-envelope text-[#ca82e6]"></i> <?= esc($user['email'] ?? '-') ?>
                         </div>
-                        <div class="text-[11px] text-purple-muted flex items-center gap-2">
+                        <div class="text-[11px] text-[#9b24c9] flex items-center gap-2">
                             <i class="fab fa-whatsapp text-[#ca82e6]"></i> <?= esc($user['no_wa'] ?? '-') ?>
                         </div>
                     </div>
 
                     <!-- Poin Panduan Dokumen -->
-                    <ul class="space-y-3.5 text-xs text-white">
+                    <ul class="space-y-3.5 text-xs text-[#9b24c9]">
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-id-card"></i>
                             </div>
-                            <span>Foto KTP asli terbaca jelas & tidak buram</span>
+                            <span class="text-[#9b24c9]">Foto KTP asli terbaca jelas & tidak buram</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-camera"></i>
                             </div>
-                            <span>Swafoto wajah terang tanpa kacamata hitam</span>
+                            <span class="text-[#9b24c9]">Swafoto wajah terang tanpa kacamata hitam</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-building-columns"></i>
                             </div>
-                            <span>Rekening bank valid atas nama pribadi</span>
+                            <span class="text-[#9b24c9]">Rekening bank valid atas nama pribadi</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Footer Panel Kiri -->
                 <div class="left-panel-footer">
-                    <span>Butuh Bantuan?</span>
+                    <span class="text-[#9b24c9]">Butuh Bantuan?</span>
                 </div>
             </div>
 

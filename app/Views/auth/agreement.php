@@ -185,7 +185,7 @@
         border: 1px solid rgba(255, 255, 255, 0.16);
     }
     .text-purple-muted {
-        color: rgba(243, 232, 255, 0.85);
+        color: #9b24c9;
     }
     .border-white-subtle {
         border-color: rgba(255, 255, 255, 0.14);
@@ -221,7 +221,7 @@
         align-items: center;
         justify-content: space-between;
         font-size: 0.75rem;
-        color: rgba(243, 232, 255, 0.85);
+        color: #9b24c9;
     }
     @media (max-width: 640px) {
         .auth-left-panel {
@@ -346,36 +346,36 @@
                     <h1 class="text-2xl sm:text-[26px] font-extrabold leading-snug text-white mb-4">
                         Perjanjian Kerja Sama (PKS) Digital.
                     </h1>
-                    <p class="text-xs sm:text-sm text-purple-muted leading-relaxed mb-6">
+                    <p class="text-xs sm:text-sm text-[#9b24c9] leading-relaxed mb-6">
                         Dokumen legalitas ini mengikat kesepakatan kemitraan syiar antara PT Amanah Tangguh Mandiri dengan Mitra, menjamin transparansi ujroh dan kode etik layanan.
                     </p>
 
                     <!-- Poin Keunggulan Legalitas -->
-                    <ul class="space-y-3.5 text-xs text-white">
+                    <ul class="space-y-3.5 text-xs text-[#9b24c9]">
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-scale-balanced"></i>
                             </div>
-                            <span>Landasan hukum resmi sesuai regulasi Kemenag & UU ITE</span>
+                            <span class="text-[#9b24c9]">Landasan hukum resmi sesuai regulasi Kemenag & UU ITE</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-signature"></i>
                             </div>
-                            <span>Tanda tangan elektronik sah & tersimpan permanen</span>
+                            <span class="text-[#9b24c9]">Tanda tangan elektronik sah & tersimpan permanen</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
                                 <i class="fas fa-shield-halved"></i>
                             </div>
-                            <span>Hak ujroh, perlindungan data, dan transparansi terjamin</span>
+                            <span class="text-[#9b24c9]">Hak ujroh, perlindungan data, dan transparansi terjamin</span>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Footer Panel Kiri -->
                 <div class="left-panel-footer">
-                    <span>Butuh Bantuan?</span>
+                    <span class="text-[#9b24c9]">Butuh Bantuan?</span>
                 </div>
             </div>
 
