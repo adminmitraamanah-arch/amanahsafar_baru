@@ -438,8 +438,8 @@
             <div class="auth-left-panel">
                 <div class="relative z-10">
                     <!-- Logo Resmi Amanah Safar Putih -->
-                    <div class="mb-7">
-                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="h-11 sm:h-12 w-auto object-contain drop-shadow-sm">
+                    <div class="mb-8" style="margin-bottom: 2rem;">
+                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="block h-11 sm:h-12 w-auto object-contain drop-shadow-sm">
                     </div>
 
                     <!-- Badge Pill Bintang Emas -->
