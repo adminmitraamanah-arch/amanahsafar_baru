@@ -377,7 +377,7 @@
     }
     .arabic-bismillah-gold {
         font-family: 'Amiri', 'Traditional Arabic', 'Scheherazade New', 'Noto Naskh Arabic', serif;
-        font-size: 1.25rem;
+        font-size: 1.45rem;
         line-height: 1.5;
         font-weight: 700;
         display: inline-block;
@@ -401,7 +401,7 @@
     }
     @media (max-width: 640px) {
         .arabic-bismillah-gold {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
         }
     }
     @keyframes goldShimmerSlow {
