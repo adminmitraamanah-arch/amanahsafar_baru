@@ -49,10 +49,10 @@
     <!-- Navigation Header (Smooth Animations & Micro-Interactions) -->
     <header id="mainHeader" class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-purple-100/80 shadow-xs transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
+            <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <a href="<?= base_url('/') ?>" class="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078] rounded-xl">
-                    <img src="<?= base_url('assets/images/logo-purple.png') ?>" alt="Amanah Safar" class="h-10 sm:h-11 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
+                    <img src="<?= base_url('assets/images/logo-purple.png') ?>" alt="Amanah Safar" class="h-8 sm:h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
                 </a>
 
                 <!-- Desktop Menu -->
@@ -83,7 +83,7 @@
 
                     <!-- Mobile Menu Button (md:hidden) -->
                     <button id="mobileMenuBtn" type="button" aria-label="Toggle Navigation Menu" aria-expanded="false" 
-                            class="md:hidden w-10 h-10 rounded-xl text-gray-700 hover:text-[#5e0078] hover:bg-purple-50/70 flex items-center justify-center transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078]">
+                            class="md:hidden w-9 h-9 rounded-xl text-gray-700 hover:text-[#5e0078] hover:bg-purple-50/70 flex items-center justify-center transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078]">
                         <i id="mobileMenuIcon" class="fas fa-bars text-lg"></i>
                     </button>
                 </div>
@@ -157,8 +157,8 @@
             position: relative;
             display: inline-flex;
             align-items: center;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
+            padding-top: 0.375rem;
+            padding-bottom: 0.375rem;
             color: #374151; /* text-gray-700 */
             font-size: 0.875rem;
             font-weight: 500;
@@ -223,7 +223,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.625rem 1rem;
+            padding: 0.45rem 0.95rem;
             font-size: 0.875rem;
             font-weight: 600;
             color: #374151;
@@ -254,7 +254,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.625rem 1.25rem;
+            padding: 0.45rem 1.15rem;
             font-size: 0.875rem;
             font-weight: 600;
             color: #ffffff;

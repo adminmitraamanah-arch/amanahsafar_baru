@@ -17,10 +17,10 @@
     <!-- Navigation Header (Tetap sesuai tampilan awal) -->
     <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-purple-100 shadow-sm transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
+            <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
                 <a href="<?= base_url('/') ?>" class="flex items-center group">
-                    <img src="<?= base_url('assets/images/logo-purple.png') ?>" alt="Amanah Safar" class="h-10 sm:h-11 w-auto object-contain transition group-hover:scale-105">
+                    <img src="<?= base_url('assets/images/logo-purple.png') ?>" alt="Amanah Safar" class="h-8 sm:h-9 w-auto object-contain transition group-hover:scale-105">
                 </a>
 
                 <!-- Desktop Menu -->
@@ -37,14 +37,14 @@
                 <!-- Action Buttons -->
                 <div class="flex items-center gap-3">
                     <?php if (session('logged_in')): ?>
-                        <a href="<?= base_url('/dashboard') ?>" class="px-5 py-2.5 rounded-xl bg-[#5e0078] text-white text-sm font-semibold hover:bg-[#4c0062] shadow-sm hover:shadow-md transition flex items-center gap-2">
+                        <a href="<?= base_url('/dashboard') ?>" class="px-4 py-2 rounded-xl bg-[#5e0078] text-white text-sm font-semibold hover:bg-[#4c0062] shadow-sm hover:shadow-md transition flex items-center gap-2">
                             <i class="fas fa-columns text-xs"></i> Dashboard
                         </a>
                     <?php else: ?>
-                        <a href="<?= base_url('/login') ?>" class="px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-[#5e0078] transition">
+                        <a href="<?= base_url('/login') ?>" class="px-3.5 py-2 text-sm font-semibold text-gray-700 hover:text-[#5e0078] transition">
                             Masuk
                         </a>
-                        <a href="<?= base_url('/register') ?>" class="px-5 py-2.5 rounded-xl bg-[#5e0078] text-white text-sm font-semibold hover:bg-[#4c0062] shadow-sm hover:shadow-md transition">
+                        <a href="<?= base_url('/register') ?>" class="px-4.5 py-2 rounded-xl bg-[#5e0078] text-white text-sm font-semibold hover:bg-[#4c0062] shadow-sm hover:shadow-md transition">
                             Daftar Mitra
                         </a>
                     <?php endif; ?>
