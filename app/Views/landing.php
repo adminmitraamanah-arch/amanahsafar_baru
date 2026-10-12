@@ -58,7 +58,6 @@
                 <!-- Desktop Menu -->
                 <nav id="desktopNav" class="hidden md:flex items-center gap-7 lg:gap-8 text-sm font-medium">
                     <a href="#hero" class="nav-link-item active">Beranda</a>
-                    <a href="#filter-finder" class="nav-link-item">Cari Paket</a>
                     <a href="#keunggulan" class="nav-link-item">Keunggulan</a>
                     <a href="#program" class="nav-link-item">Paket Program</a>
                     <a href="#fasilitas" class="nav-link-item">Fasilitas</a>
@@ -93,7 +92,6 @@
         <!-- Mobile Navigation Drawer -->
         <div id="mobileMenuDrawer" class="hidden md:hidden border-t border-purple-100 bg-white/98 backdrop-blur-md px-4 py-3 space-y-1 shadow-lg transition-all duration-300">
             <a href="#hero" class="mobile-nav-link active block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Beranda</a>
-            <a href="#filter-finder" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Cari Paket</a>
             <a href="#keunggulan" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Keunggulan</a>
             <a href="#program" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Paket Program</a>
             <a href="#fasilitas" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-[#5e0078] transition-colors duration-200">Fasilitas</a>
@@ -585,60 +583,7 @@
         </script>
     </section>
 
-    <!-- SECTION 2: SEARCH & FINDER FILTER BAR (Interaktif) -->
-    <section id="filter-finder" class="relative -mt-8 z-30 max-w-6xl mx-auto px-4 w-full scroll-mt-24">
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200/80 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
-            
-            <!-- Filter 1: Jenis Paket -->
-            <div>
-                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                    <i class="fas fa-kaaba text-[#5e0078] mr-1"></i> Kategori Perjalanan
-                </label>
-                <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-[#5e0078] focus:outline-none">
-                    <option>Semua Kategori</option>
-                    <option>Umroh Reguler (9-12 Hari)</option>
-                    <option>Umroh Plus Wisata Sejarah (Thaif/Turki)</option>
-                    <option>Haji Khusus Furoda</option>
-                    <option>Ramadhan &amp; Syawal</option>
-                </select>
-            </div>
 
-            <!-- Filter 2: Bulan Keberangkatan -->
-            <div>
-                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                    <i class="far fa-calendar-alt text-[#5e0078] mr-1"></i> Bulan Rencana
-                </label>
-                <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-[#5e0078] focus:outline-none">
-                    <option>Semua Bulan</option>
-                    <option>Syawal 1448 H</option>
-                    <option>Dzulqo'dah 1448 H</option>
-                    <option>Muharram 1449 H</option>
-                    <option>Musim Dingin (Desember)</option>
-                </select>
-            </div>
-
-            <!-- Filter 3: Akomodasi -->
-            <div>
-                <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                    <i class="fas fa-hotel text-[#5e0078] mr-1"></i> Akomodasi Hotel
-                </label>
-                <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-800 font-medium focus:ring-2 focus:ring-[#5e0078] focus:outline-none">
-                    <option>Bintang 5 (Pelataran Masjid)</option>
-                    <option>Bintang 4 (Jarak &lt; 200m)</option>
-                    <option>Paket Hemat Nyaman</option>
-                </select>
-            </div>
-
-            <!-- Filter 4: Tombol Cari -->
-            <div class="sm:col-span-2 lg:col-span-1 pt-1 sm:pt-0">
-                <a href="<?= base_url('/catalog') ?>" class="w-full py-2.5 px-4 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white font-bold text-sm text-center shadow-md shadow-purple-900/20 transition flex items-center justify-center gap-2">
-                    <i class="fas fa-search text-xs"></i>
-                    <span>Cari Keberangkatan</span>
-                </a>
-            </div>
-
-        </div>
-    </section>
 
     <!-- SECTION 3: KEUNGGULAN UTAMA (DealTech UI Inspired Card List) -->
     <section id="keunggulan" class="py-20 bg-slate-50 scroll-mt-24">
@@ -1374,7 +1319,7 @@ if (empty($waCsUrl)) {
     const mobileIcon = document.getElementById('mobileMenuIcon');
 
     // Section definitions matching all navbar anchor targets
-    const sectionIds = ['hero', 'filter-finder', 'keunggulan', 'program', 'fasilitas', 'testimoni', 'faq'];
+    const sectionIds = ['hero', 'keunggulan', 'program', 'fasilitas', 'testimoni', 'faq'];
     const sections = sectionIds
         .map(id => document.getElementById(id))
         .filter(el => el !== null);
