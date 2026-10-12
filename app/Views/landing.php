@@ -386,12 +386,26 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        /* Hero Slider Full Viewport Height 100vh */
+        .hero-slider-100vh {
+            height: calc(100vh - 4rem);
+            height: calc(100dvh - 4rem);
+            min-height: 560px;
+        }
+        @media (max-width: 639.98px) {
+            .hero-slider-100vh {
+                height: calc(100vh - 4rem);
+                height: calc(100dvh - 4rem);
+                min-height: 520px;
+            }
+        }
     </style>
 
-    <!-- SECTION 1: HERO SLIDER CAROUSEL (Dinamis dari Database Hero Slides) -->
-    <section id="hero" class="relative overflow-hidden bg-slate-950 text-white scroll-mt-24">
-        <!-- Carousel Container -->
-        <div class="relative w-full h-[460px] sm:h-[560px] lg:h-[620px] overflow-hidden" id="heroSlider">
+    <!-- SECTION 1: HERO SLIDER CAROUSEL (Dinamis dari Database Hero Slides - 100vh Full Viewport) -->
+    <section id="hero" class="relative overflow-hidden bg-slate-950 text-white scroll-mt-20">
+        <!-- Carousel Container (100vh Viewport Responsive) -->
+        <div class="relative w-full overflow-hidden hero-slider-100vh" id="heroSlider" style="height: calc(100vh - 4rem); height: calc(100dvh - 4rem); min-height: 560px;">
             
             <?php 
             $slideList = !empty($slides) ? $slides : [
@@ -495,7 +509,7 @@
             </button>
 
             <!-- Slide Indicators (Bullets) -->
-            <div class="absolute bottom-16 sm:bottom-14 left-0 right-0 z-20 flex justify-center items-center gap-2.5">
+            <div class="absolute bottom-8 sm:bottom-10 left-0 right-0 z-20 flex justify-center items-center gap-2.5">
                 <?php foreach ($slideList as $index => $s): ?>
                     <button type="button" onclick="setHeroSlide(<?= $index ?>)" 
                             class="hero-dot <?= $index === 0 ? 'w-9 h-2 bg-amber-400' : 'w-2.5 h-2 bg-white/40 hover:bg-white/70' ?> rounded-full transition-all duration-300" 
