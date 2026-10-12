@@ -406,15 +406,10 @@
             <!-- Panel Kiri: Identitas Ungu Amanah Safar -->
             <div class="auth-left-panel">
                 <div class="relative z-10">
-                    <!-- Squircle Logo & Nama Perusahaan (Persis Referensi) -->
-                    <div class="flex items-center gap-3.5 mb-7">
-                        <div class="w-12 h-12 rounded-2xl bg-white flex items-center justify-center font-black text-lg text-[#6b008a] shadow-md shrink-0">
-                            AS
-                        </div>
-                        <div>
-                            <span class="block font-black text-lg sm:text-xl tracking-tight leading-tight text-white uppercase">Amanah Safar</span>
-                            <span class="block text-[11px] font-semibold text-[#ca82e6] tracking-wider uppercase">Sistem Mitra Amanah</span>
-                        </div>
+                    <!-- Logo Resmi Amanah Safar Putih & Identitas -->
+                    <div class="mb-7">
+                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="h-11 sm:h-12 w-auto object-contain mb-1.5 drop-shadow-sm">
+                        <span class="block text-[11px] font-semibold text-[#ca82e6] tracking-wider uppercase">Sistem Mitra Amanah</span>
                     </div>
 
                     <!-- Badge Pill Bintang Emas -->

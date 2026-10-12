@@ -52,13 +52,8 @@
             <div class="flex items-center justify-between h-20">
                 <!-- Logo -->
                 <a href="<?= base_url('/') ?>" class="flex items-center gap-3 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5e0078] rounded-xl">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#5e0078] to-[#8f20ad] flex items-center justify-center text-white font-extrabold text-base shadow-md shadow-purple-900/20 group-hover:scale-105 transition-transform duration-200">
-                        AS
-                    </div>
-                    <div>
-                        <span class="text-xl font-bold text-gray-900 tracking-tight block">Amanah Safar</span>
-                        <span class="text-[11px] font-medium text-purple-700 tracking-wider uppercase block -mt-1">Sistem Mitra Amanah</span>
-                    </div>
+                    <img src="<?= base_url('assets/images/logo-purple.png') ?>" alt="Amanah Safar" class="h-10 sm:h-11 w-auto object-contain transition-transform duration-200 group-hover:scale-105">
+                    <span class="text-[11px] font-semibold text-purple-700 tracking-wider uppercase border-l-2 border-purple-200/80 pl-3 hidden sm:inline-block">Sistem Mitra Amanah</span>
                 </a>
 
                 <!-- Desktop Menu -->
