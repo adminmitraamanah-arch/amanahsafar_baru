@@ -90,7 +90,7 @@
         </div>
 
         <!-- Mobile Navigation Drawer -->
-        <div id="mobileMenuDrawer" class="hidden md:hidden border-t border-purple-800/40 bg-[#250033]/98 backdrop-blur-xl px-4 py-3 space-y-1 shadow-2xl transition-all duration-300">
+        <div id="mobileMenuDrawer" class="hidden md:hidden border-t border-purple-800/40 bg-[#240030] backdrop-blur-xl px-4 py-3 space-y-1 shadow-2xl transition-all duration-300">
             <a href="#hero" class="mobile-nav-link active block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Beranda</a>
             <a href="#keunggulan" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Keunggulan</a>
             <a href="#program" class="mobile-nav-link block py-2.5 px-3.5 rounded-xl text-sm font-medium transition-colors duration-300">Paket Program</a>
@@ -139,25 +139,25 @@
            HEADER REDESIGN: ROYAL PURPLE GLASSMORPHISM & SMOOTH SCROLL
            ======================================================== */
         #mainHeader {
-            /* Kondisi Sebelum Scroll: Ungu Brand Transparan 75-85% + Backdrop Blur Halus */
-            background-color: rgba(46, 0, 60, 0.80);
+            /* Kondisi Sebelum Scroll: Ungu Footer Transparan ~82% + Backdrop Blur Halus */
+            background-color: rgba(36, 0, 48, 0.82);
             backdrop-filter: blur(14px) saturate(180%);
             -webkit-backdrop-filter: blur(14px) saturate(180%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.18), 0 2px 8px -2px rgba(94, 0, 120, 0.25);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.18), 0 2px 8px -2px rgba(36, 0, 48, 0.35);
             transition: background-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
                         box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
                         border-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
                         backdrop-filter 300ms cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Kondisi Setelah Halaman Di-scroll: Ungu Lebih Solid + Glassmorphism Ringan & Shadow Lembut */
+        /* Kondisi Setelah Halaman Di-scroll: Ungu Gelap Sama Seperti Background Footer (#240030) */
         #mainHeader.scrolled {
-            background-color: rgba(34, 0, 46, 0.95);
+            background-color: #240030;
             backdrop-filter: blur(16px) saturate(190%);
             -webkit-backdrop-filter: blur(16px) saturate(190%);
             border-bottom: 1px solid rgba(212, 175, 55, 0.22);
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.40), 0 4px 16px -2px rgba(94, 0, 120, 0.35);
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.40), 0 4px 16px -2px rgba(36, 0, 48, 0.50);
         }
 
         /* Nav Item (Text & Animated Underline) */
