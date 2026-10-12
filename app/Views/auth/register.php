@@ -196,6 +196,31 @@
         background: rgba(255, 255, 255, 0.12);
         border: 1px solid rgba(255, 255, 255, 0.18);
     }
+    .circle-icon-badge {
+        width: 2rem;
+        height: 2rem;
+        min-width: 2rem;
+        min-height: 2rem;
+        border-radius: 9999px;
+        background: rgba(202, 130, 230, 0.14);
+        border: 1.5px solid rgba(202, 130, 230, 0.45);
+        color: #dfb2f1 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 0 10px rgba(202, 130, 230, 0.12);
+        transition: all 0.25s ease;
+    }
+    .circle-icon-badge:hover {
+        background: rgba(202, 130, 230, 0.22);
+        border-color: rgba(223, 178, 241, 0.65);
+        box-shadow: 0 0 14px rgba(223, 178, 241, 0.25);
+    }
+    .circle-icon-badge i {
+        color: #dfb2f1 !important;
+        font-size: 0.75rem;
+    }
     .frosted-badge {
         background: rgba(255, 255, 255, 0.12);
         border: 1px solid rgba(255, 255, 255, 0.2);
@@ -461,22 +486,22 @@
                         Daftarkan akun Mitra Anda dengan kode voucher resmi dari Pembina untuk membuka akses syiar dan bagi hasil yang barakah.
                     </p>
 
-                    <!-- Poin Keunggulan (3 List Item Kotak Ikon Persis Referensi) -->
+                    <!-- Poin Keunggulan (3 List Item Ikon Bulat Sesuai Referensi) -->
                     <ul class="space-y-4">
                         <li class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
+                            <div class="circle-icon-badge">
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
                             <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Aktivasi otomatis via Kode Voucher Pembina</span>
                         </li>
                         <li class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
+                            <div class="circle-icon-badge">
                                 <i class="fas fa-coins"></i>
                             </div>
                             <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Pencairan ujroh transparan & realtime</span>
                         </li>
                         <li class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-lg frosted-tile flex items-center justify-center shrink-0 text-[#ca82e6] text-xs">
+                            <div class="circle-icon-badge">
                                 <i class="fas fa-file-contract"></i>
                             </div>
                             <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Verifikasi data & PKS digital berkekuatan hukum</span>
