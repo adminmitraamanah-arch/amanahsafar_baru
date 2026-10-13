@@ -274,7 +274,7 @@
             outline-offset: 2px;
         }
 
-        /* Action Button: Daftar Mitra (CTA Ungu Solid dengan Sudut Membulat) */
+        /* Action Button: Daftar Mitra (CTA Putih Solid Elegan & Mewah) */
         .btn-nav-register {
             display: inline-flex;
             align-items: center;
@@ -283,25 +283,26 @@
             font-size: 0.875rem;
             font-weight: 700;
             letter-spacing: 0.015em;
-            color: #ffffff;
-            background: linear-gradient(135deg, #7c129e 0%, #5e0078 50%, #4a005f 100%);
-            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #240030;
+            background-color: #ffffff;
+            border: 1px solid #ffffff;
             border-radius: 0.75rem;
-            box-shadow: 0 4px 14px -2px rgba(94, 0, 120, 0.50), 0 2px 4px rgba(0, 0, 0, 0.20);
-            transition: background 280ms ease,
-                        box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1),
-                        border-color 280ms ease,
+            box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(255, 255, 255, 0.20);
+            transition: background-color 260ms ease,
+                        color 260ms ease,
+                        box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+                        border-color 260ms ease,
                         transform 150ms ease-out;
             outline: none;
             text-decoration: none;
         }
 
         .btn-nav-register:hover {
-            background: linear-gradient(135deg, #8f20ad 0%, #6e008c 50%, #54006c 100%);
-            border-color: rgba(246, 207, 87, 0.50);
-            box-shadow: 0 8px 22px -3px rgba(124, 18, 158, 0.65), 0 0 12px rgba(212, 175, 55, 0.30);
+            background-color: #faf5ff;
+            color: #5e0078;
+            border-color: rgba(246, 207, 87, 0.60);
+            box-shadow: 0 6px 20px -3px rgba(255, 255, 255, 0.40), 0 0 12px rgba(212, 175, 55, 0.30);
             transform: translateY(-1.5px);
-            color: #ffffff;
         }
 
         .btn-nav-register:active {
