@@ -394,9 +394,9 @@
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="circle-icon-badge">
-                                <i class="fas fa-signature"></i>
+                                <i class="fas fa-file-shield"></i>
                             </div>
-                            <span class="panel-feature-text" style="color: #dfb2f1 !important;">Tanda tangan elektronik sah & tersimpan permanen</span>
+                            <span class="panel-feature-text" style="color: #dfb2f1 !important;">Persetujuan elektronik sah & tersimpan permanen</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="circle-icon-badge">
@@ -523,39 +523,9 @@
                         </div>
                     </div>
 
-                    <!-- Form Persetujuan & Tanda Tangan -->
+                    <!-- Form Persetujuan -->
                     <form method="POST" action="<?= base_url('/agreement') ?>" class="mt-5">
                         <?= csrf_field() ?>
-
-                        <!-- Mekanisme Tanda Tangan Digital (Canvas Asli Sistem) -->
-                        <div class="form-group-spaced">
-                            <div class="flex items-center justify-between mb-1.5">
-                                <label class="block text-xs font-bold text-slate-700">
-                                    Tanda Tangan Digital <span class="text-rose-500">*</span>
-                                </label>
-                                <button type="button" onclick="clearSignature()" class="text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline inline-flex items-center gap-1 focus:outline-none">
-                                    <i class="fas fa-rotate-left text-[10px]"></i> Hapus / Ulangi
-                                </button>
-                            </div>
-                            
-                            <div class="relative bg-slate-50 border border-slate-200 rounded-xl p-2.5 group hover:border-[#6b008a] transition">
-                                <canvas id="signaturePad" class="w-full h-28 rounded-lg bg-white border border-dashed border-slate-200 cursor-crosshair touch-none"></canvas>
-                                
-                                <div id="signaturePlaceholder" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-400 text-xs gap-1">
-                                    <i class="fas fa-pen-nib text-sm text-slate-300"></i>
-                                    <span>Tanda tangani di area ini (Gunakan mouse atau layar sentuh)</span>
-                                </div>
-
-                                <div class="flex items-center justify-between mt-2 px-1 text-[11px] text-slate-500">
-                                    <span class="flex items-center gap-1 font-semibold text-slate-700">
-                                        <i class="fas fa-user-check text-[#6b008a]"></i> <?= esc($user['nama_lengkap'] ?? 'Mitra') ?>
-                                    </span>
-                                    <span class="text-emerald-600 font-bold flex items-center gap-1">
-                                        <i class="fas fa-shield-halved text-[10px]"></i> Tanda Tangan Sah Terverifikasi
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Checkbox Persetujuan (Kalimat Asli Sistem) -->
                         <div class="pt-1 mb-5">
@@ -595,79 +565,4 @@
     </footer>
 </div>
 
-<script>
-// Interactive Signature Pad
-const canvas = document.getElementById('signaturePad');
-const ctx = canvas.getContext('2d');
-const placeholder = document.getElementById('signaturePlaceholder');
-let isDrawing = false;
-let hasSigned = false;
-
-function resizeCanvas() {
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * ratio;
-    canvas.height = rect.height * ratio;
-    ctx.scale(ratio, ratio);
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#1e1b4b';
-}
-
-window.addEventListener('resize', resizeCanvas);
-setTimeout(resizeCanvas, 50);
-
-function startDrawing(e) {
-    isDrawing = true;
-    placeholder.classList.add('hidden');
-    draw(e);
-}
-
-function stopDrawing() {
-    isDrawing = false;
-    ctx.beginPath();
-}
-
-function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return {
-        x: clientX - rect.left,
-        y: clientY - rect.top
-    };
-}
-
-function draw(e) {
-    if (!isDrawing) return;
-    hasSigned = true;
-    const pos = getPos(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
-}
-
-canvas.addEventListener('mousedown', startDrawing);
-canvas.addEventListener('mousemove', draw);
-window.addEventListener('mouseup', stopDrawing);
-
-canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    startDrawing(e);
-}, { passive: false });
-canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    draw(e);
-}, { passive: false });
-window.addEventListener('touchend', stopDrawing);
-
-function clearSignature() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    hasSigned = false;
-    placeholder.classList.remove('hidden');
-}
-</script>
 <?= $this->endSection() ?>
