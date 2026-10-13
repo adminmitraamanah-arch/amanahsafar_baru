@@ -75,6 +75,11 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
     $routes->post('tasks/(:num)/delete', 'SuperAdmin\Task::delete/$1');
     $routes->get('tasks/(:num)/download', 'SuperAdmin\Task::download/$1');
     $routes->get('verifications', 'SuperAdmin\Verification::index');
+    $routes->get('verifications/(:num)', 'SuperAdmin\Verification::show/$1');
+    $routes->get('verifications/document/(:num)/(:segment)', 'SuperAdmin\Verification::document/$1/$2');
+    $routes->get('verifications/(:num)/pks', 'SuperAdmin\Verification::pks/$1');
+    $routes->post('verifications/(:num)/approve', 'SuperAdmin\Verification::approve/$1');
+    $routes->post('verifications/(:num)/reject', 'SuperAdmin\Verification::reject/$1');
     
     // Landing Page Management
     $routes->get('landing', 'SuperAdmin\LandingContent::index');
