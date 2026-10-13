@@ -56,6 +56,34 @@
         justify-content: space-between;
         position: relative;
         overflow: hidden;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .auth-left-panel,
+    .auth-left-panel * {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    .auth-left-panel *::selection {
+        background: transparent !important;
+        color: inherit !important;
+    }
+    .auth-left-panel img {
+        -webkit-user-drag: none;
+        -khtml-user-drag: none;
+        -moz-user-drag: none;
+        -o-user-drag: none;
+        user-drag: none;
+        pointer-events: none;
+    }
+    .auth-left-panel a,
+    .auth-left-panel button {
+        pointer-events: auto;
+        cursor: pointer;
     }
     .auth-right-panel {
         background: #ffffff;

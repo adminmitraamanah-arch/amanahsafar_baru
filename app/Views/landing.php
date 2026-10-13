@@ -51,8 +51,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <!-- Logo -->
-                <a href="<?= base_url('/') ?>" class="flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-xl" title="Amanah Safar">
-                    <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
+                <a href="<?= base_url('/') ?>" class="header-logo-link flex items-center group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 rounded-xl" title="Amanah Safar">
+                    <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="header-logo-img h-8 sm:h-9 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
                 </a>
 
                 <!-- Desktop Menu -->
@@ -133,6 +133,44 @@
         .landing-page span,
         .landing-page li {
             font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        /* ========================================================
+           NON-SELECTABLE BRAND ELEMENTS (LOGO & HERO SECTION)
+           ======================================================== */
+        .header-logo-link,
+        .header-logo-img,
+        #hero .hero-slide img,
+        #hero .hero-slide video,
+        #hero .hero-slide h1,
+        #hero .hero-slide p,
+        #hero .hero-slide span:not(.btn-gold-royal span) {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .header-logo-img,
+        #hero .hero-slide img,
+        #hero .hero-slide video {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+
+        /* Ensure interactive buttons, links, and controls remain fully functional */
+        .header-logo-link,
+        #mainHeader a,
+        #mainHeader button,
+        #hero a,
+        #hero button,
+        #hero .hero-ctrl-btn {
+            pointer-events: auto !important;
+            cursor: pointer;
         }
 
         /* ========================================================
