@@ -138,6 +138,20 @@
                         </div>
 
                         <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
+                            <!-- Sort By -->
+                            <select id="userSortSelect" class="px-3 py-2 bg-slate-50 border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="id_asc">Urutkan: ID (Terkecil)</option>
+                                <option value="id_desc">Urutkan: ID (Terbaru)</option>
+                                <option value="nama_asc">Urutkan: Nama (A - Z)</option>
+                                <option value="nama_desc">Urutkan: Nama (Z - A)</option>
+                                <option value="role_asc">Urutkan: Role (A - Z)</option>
+                                <option value="role_desc">Urutkan: Role (Z - A)</option>
+                                <option value="pembina_asc">Urutkan: Pembina (A - Z)</option>
+                                <option value="pembina_desc">Urutkan: Pembina (Z - A)</option>
+                                <option value="status_asc">Urutkan: Status (Aktif Dahulu)</option>
+                                <option value="status_desc">Urutkan: Status (Nonaktif Dahulu)</option>
+                            </select>
+
                             <!-- Filter Status -->
                             <select id="statusFilter" class="px-3 py-2 bg-slate-50 border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
                                 <option value="all">Semua Status Akun</option>
@@ -156,6 +170,14 @@
                                 <option value="mitra">Mitra</option>
                             </select>
 
+                            <!-- Per Page Size -->
+                            <select id="userPageSizeSelect" class="px-3 py-2 bg-slate-50 border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="10">10 / halaman</option>
+                                <option value="25">25 / halaman</option>
+                                <option value="50">50 / halaman</option>
+                                <option value="100">100 / halaman</option>
+                            </select>
+
                             <!-- Reset Button -->
                             <button type="button" id="resetFiltersBtn" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition text-xs" title="Reset Filter">
                                 <i class="fas fa-redo-alt"></i>
@@ -168,12 +190,12 @@
                         <table class="w-full text-left border-collapse min-w-[760px]" id="usersTable">
                             <thead>
                                 <tr class="bg-slate-50/70 border-b border-slate-200/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                                    <th class="px-5 py-3.5 w-16 text-center">#</th>
-                                    <th class="px-5 py-3.5">Detail Pengguna</th>
+                                    <th class="px-5 py-3.5 w-16 text-center" data-sort-asc="id_asc" data-sort-desc="id_desc">#</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="nama_asc" data-sort-desc="nama_desc">Detail Pengguna</th>
                                     <th class="px-5 py-3.5">Kontak &amp; Domisili</th>
-                                    <th class="px-5 py-3.5">Role</th>
-                                    <th class="px-5 py-3.5">Pembina</th>
-                                    <th class="px-5 py-3.5">Status Akun</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="role_asc" data-sort-desc="role_desc">Role</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="pembina_asc" data-sort-desc="pembina_desc">Pembina</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="status_asc" data-sort-desc="status_desc">Status Akun</th>
                                     <th class="px-5 py-3.5">KYC Status</th>
                                     <th class="px-5 py-3.5 text-right">Aksi</th>
                                 </tr>
@@ -191,9 +213,12 @@
                                         $initial = strtoupper(substr($user['nama_lengkap'] ?? 'U', 0, 1));
                                     ?>
                                         <tr class="hover:bg-purple-50/30 transition-colors user-table-row" 
+                                            data-id="<?= esc($user['id']) ?>"
+                                            data-nama="<?= strtolower(esc($user['nama_lengkap'])) ?>"
                                             data-status="<?= esc($user['status']) ?>" 
                                             data-role="<?= esc($user['role']) ?>"
-                                            data-search="<?= strtolower(esc($user['nama_lengkap'] . ' ' . $user['email'] . ' ' . $user['no_wa'] . ' ' . $user['domisili'] . ' ' . $user['role'])) ?>">
+                                            data-pembina="<?= strtolower(esc($user['nama_pembina'] ?? '')) ?>"
+                                            data-search="<?= strtolower(esc($user['nama_lengkap'] . ' ' . $user['email'] . ' ' . $user['no_wa'] . ' ' . $user['domisili'] . ' ' . $user['role'] . ' ' . ($user['nama_pembina'] ?? ''))) ?>">
                                             
                                             <!-- ID -->
                                             <td class="px-5 py-4 text-center text-xs font-semibold text-slate-400">
@@ -304,7 +329,7 @@
                                                         <?php else: ?>
                                                             <button type="button" 
                                                                     onclick="openDeactivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
-                                                                    class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs"
+                                                                    class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 border border-amber-200 transition shadow-xs"
                                                                     title="Nonaktifkan Akun"
                                                                     aria-label="Nonaktifkan Akun">
                                                                 <i class="fas fa-user-slash text-xs"></i>
@@ -318,6 +343,24 @@
                                                                 title="Aktifkan Kembali Akun"
                                                                 aria-label="Aktifkan Kembali Akun">
                                                             <i class="fas fa-user-check text-xs"></i>
+                                                        </button>
+                                                    <?php endif; ?>
+
+                                                    <!-- Hapus Button -->
+                                                    <?php if ($isSelf): ?>
+                                                        <button type="button" disabled 
+                                                                title="Tidak dapat menghapus akun sendiri"
+                                                                aria-label="Tidak dapat menghapus akun sendiri"
+                                                                class="w-8 h-8 rounded-xl inline-flex items-center justify-center bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
+                                                            <i class="fas fa-trash-alt text-xs"></i>
+                                                        </button>
+                                                    <?php else: ?>
+                                                        <button type="button" 
+                                                                onclick="openDeleteModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>', '<?= esc($user['email'], 'js') ?>')" 
+                                                                class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs"
+                                                                title="Hapus Pengguna"
+                                                                aria-label="Hapus Pengguna">
+                                                            <i class="fas fa-trash-alt text-xs"></i>
                                                         </button>
                                                     <?php endif; ?>
                                                 </div>
@@ -535,6 +578,46 @@
     </div>
 </div>
 
+<!-- ========================================================
+     MODAL 4: KONFIRMASI HAPUS PENGGUNA
+     ======================================================== -->
+<div id="deleteUserModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative p-6 space-y-4 border border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl mx-auto">
+            <i class="fas fa-trash-alt"></i>
+        </div>
+
+        <div class="text-center space-y-2">
+            <h3 class="text-lg font-bold text-slate-900">Hapus Pengguna?</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Apakah Anda yakin ingin menghapus akun <strong id="deleteUserName" class="text-slate-900 font-bold"></strong> (<span id="deleteUserEmail" class="text-slate-500 font-medium"></span>)?
+            </p>
+            <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-left text-xs text-rose-800 space-y-1">
+                <div class="font-bold flex items-center gap-1.5">
+                    <i class="fas fa-exclamation-triangle text-rose-600"></i> Perhatian:
+                </div>
+                <p class="text-[11px] leading-relaxed text-rose-700">
+                    • Akun akan dihapus dari sistem dan tidak dapat login kembali.<br>
+                    • Seluruh sesi aktif di semua perangkat akan langsung dihentikan.<br>
+                    • Relasi pembina pada mitra binaan akan disesuaikan otomatis.
+                </p>
+            </div>
+        </div>
+
+        <form id="deleteUserForm" method="POST" action="" class="flex items-center justify-end gap-3 pt-2">
+            <?= csrf_field() ?>
+            <button type="button" onclick="closeDeleteModal()" 
+                    class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
+                Batal
+            </button>
+            <button type="submit" 
+                    class="btn-interactive px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-sm transition">
+                <i class="fas fa-trash-alt mr-1.5"></i> Ya, Hapus Pengguna
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- JAVASCRIPT CONTROLLERS -->
 <script>
     const baseUrl = '<?= base_url() ?>';
@@ -602,17 +685,39 @@
         document.body.style.overflow = '';
     }
 
+    // 4. Delete Modal Controller
+    function openDeleteModal(userId, userName, userEmail) {
+        const modal = document.getElementById('deleteUserModal');
+        const form = document.getElementById('deleteUserForm');
+        const nameEl = document.getElementById('deleteUserName');
+        const emailEl = document.getElementById('deleteUserEmail');
+
+        form.action = `${baseUrl}/superadmin/users/delete/${userId}`;
+        nameEl.textContent = userName || 'pengguna ini';
+        emailEl.textContent = userEmail || '';
+
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteUserModal');
+        if (modal) modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
     // Close modals on escape key
     window.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeEditModal();
             closeDeactivateModal();
             closeActivateModal();
+            closeDeleteModal();
         }
     });
 
     // Close modals on backdrop click
-    ['editUserModal', 'deactivateUserModal', 'activateUserModal'].forEach(id => {
+    ['editUserModal', 'deactivateUserModal', 'activateUserModal', 'deleteUserModal'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             el.addEventListener('click', function(e) {
@@ -624,130 +729,40 @@
         }
     });
 
-    // 4. Client-side Search, Filtering, and Pagination
+    // 4. AmanahTable Initialization (Search, Filtering, Sorting & Pagination)
     document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('usersSearchInput');
-        const statusFilter = document.getElementById('statusFilter');
-        const roleFilter = document.getElementById('roleFilter');
-        const resetBtn = document.getElementById('resetFiltersBtn');
-        const rows = Array.from(document.querySelectorAll('.user-table-row'));
-        const summaryEl = document.getElementById('userCountSummary');
-        const paginationNumbers = document.getElementById('paginationNumbers');
-        const prevBtn = document.getElementById('prevPageBtn');
-        const nextBtn = document.getElementById('nextPageBtn');
-
-        const pageSize = 10;
-        let currentPage = 1;
-        let filteredRows = [...rows];
-
-        function applyFilters() {
-            const query = (searchInput.value || '').toLowerCase().trim();
-            const status = statusFilter.value;
-            const role = roleFilter.value;
-
-            filteredRows = rows.filter(row => {
-                const rowSearch = row.getAttribute('data-search') || '';
-                const rowStatus = row.getAttribute('data-status') || '';
-                const rowRole = row.getAttribute('data-role') || '';
-
-                const matchesSearch = !query || rowSearch.includes(query);
-                const matchesStatus = (status === 'all') || (rowStatus === status);
-                const matchesRole = (role === 'all') || (rowRole === role);
-
-                return matchesSearch && matchesStatus && matchesRole;
-            });
-
-            currentPage = 1;
-            renderTable();
-        }
-
-        function renderTable() {
-            const total = filteredRows.length;
-            const totalPages = Math.ceil(total / pageSize) || 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-            if (currentPage < 1) currentPage = 1;
-
-            // Hide all rows first
-            rows.forEach(r => r.style.display = 'none');
-
-            // Show paginated rows
-            const startIdx = (currentPage - 1) * pageSize;
-            const endIdx = startIdx + pageSize;
-            const currentSlice = filteredRows.slice(startIdx, endIdx);
-
-            currentSlice.forEach(r => r.style.display = '');
-
-            // Summary text
-            if (summaryEl) {
-                summaryEl.textContent = `Menampilkan ${currentSlice.length} dari ${total} pengguna (Total: ${rows.length})`;
-            }
-
-            // Pagination Controls
-            if (prevBtn) prevBtn.disabled = (currentPage <= 1);
-            if (nextBtn) nextBtn.disabled = (currentPage >= totalPages);
-
-            if (paginationNumbers) {
-                paginationNumbers.innerHTML = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageBtn = document.createElement('button');
-                    pageBtn.type = 'button';
-                    pageBtn.textContent = i;
-                    if (i === currentPage) {
-                        pageBtn.className = 'w-8 h-8 rounded-lg bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center';
-                    } else {
-                        pageBtn.className = 'w-8 h-8 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs flex items-center justify-center transition';
-                    }
-                    pageBtn.addEventListener('click', () => {
-                        currentPage = i;
-                        renderTable();
-                    });
-                    paginationNumbers.appendChild(pageBtn);
-                }
-            }
-        }
-
-        if (searchInput) searchInput.addEventListener('input', applyFilters);
-        if (statusFilter) statusFilter.addEventListener('change', applyFilters);
-        if (roleFilter) roleFilter.addEventListener('change', applyFilters);
-
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function() {
-                if (searchInput) searchInput.value = '';
-                if (statusFilter) statusFilter.value = 'all';
-                if (roleFilter) roleFilter.value = 'all';
-                applyFilters();
-            });
-        }
-
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderTable();
-                }
-            });
-        }
-
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
-                const totalPages = Math.ceil(filteredRows.length / pageSize) || 1;
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderTable();
-                }
-            });
-        }
-
-        // ⌘K or Ctrl+K shortcut
-        window.addEventListener('keydown', function(e) {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                if (searchInput) searchInput.focus();
+        AmanahTable.init({
+            containerId: 'usersTable',
+            rowSelector: 'tbody tr.user-table-row',
+            entityName: 'pengguna',
+            defaultPageSize: 10,
+            searchInputId: 'usersSearchInput',
+            sortSelectId: 'userSortSelect',
+            pageSizeSelectId: 'userPageSizeSelect',
+            summaryId: 'userCountSummary',
+            prevBtnId: 'prevPageBtn',
+            nextBtnId: 'nextPageBtn',
+            numbersId: 'paginationNumbers',
+            emptyStateId: 'emptyRow',
+            resetBtnId: 'resetFiltersBtn',
+            defaultSort: 'id_asc',
+            filters: [
+                { selectId: 'statusFilter', key: 'status', defaultValue: 'all' },
+                { selectId: 'roleFilter', key: 'role', defaultValue: 'all' }
+            ],
+            sortDefinitions: {
+                id_asc: (a, b) => (parseInt(a.getAttribute('data-id'), 10) || 0) - (parseInt(b.getAttribute('data-id'), 10) || 0),
+                id_desc: (a, b) => (parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0),
+                nama_asc: (a, b) => (a.getAttribute('data-nama') || '').localeCompare(b.getAttribute('data-nama') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(a.getAttribute('data-id'), 10) || 0) - (parseInt(b.getAttribute('data-id'), 10) || 0)),
+                nama_desc: (a, b) => (b.getAttribute('data-nama') || '').localeCompare(a.getAttribute('data-nama') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+                role_asc: (a, b) => (a.getAttribute('data-role') || '').localeCompare(b.getAttribute('data-role') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(a.getAttribute('data-id'), 10) || 0) - (parseInt(b.getAttribute('data-id'), 10) || 0)),
+                role_desc: (a, b) => (b.getAttribute('data-role') || '').localeCompare(a.getAttribute('data-role') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+                pembina_asc: (a, b) => (a.getAttribute('data-pembina') || '').localeCompare(b.getAttribute('data-pembina') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(a.getAttribute('data-id'), 10) || 0) - (parseInt(b.getAttribute('data-id'), 10) || 0)),
+                pembina_desc: (a, b) => (b.getAttribute('data-pembina') || '').localeCompare(a.getAttribute('data-pembina') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+                status_asc: (a, b) => (a.getAttribute('data-status') || '').localeCompare(b.getAttribute('data-status') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(a.getAttribute('data-id'), 10) || 0) - (parseInt(b.getAttribute('data-id'), 10) || 0)),
+                status_desc: (a, b) => (b.getAttribute('data-status') || '').localeCompare(a.getAttribute('data-status') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0))
             }
         });
-
-        // Initial render
-        applyFilters();
     });
 </script>
 

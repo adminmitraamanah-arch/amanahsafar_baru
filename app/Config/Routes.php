@@ -18,6 +18,16 @@ $routes->post('/verify', 'Auth::verify');
 $routes->get('/agreement', 'Auth::agreement');
 $routes->post('/agreement', 'Auth::agreement');
 
+// Partners Flow (New)
+$routes->get('/partners/login', 'Partners::login');
+$routes->post('/partners/login', 'Partners::login');
+$routes->get('/partners/register', 'Partners::register');
+$routes->post('/partners/register', 'Partners::register');
+$routes->get('/partners/verification', 'Partners::verification');
+$routes->post('/partners/verification', 'Partners::verification');
+$routes->get('/partners/agreement', 'Partners::agreement');
+$routes->post('/partners/agreement', 'Partners::agreement');
+
 // Dashboard
 $routes->get('/dashboard', 'Dashboard::index');
 
@@ -50,9 +60,20 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
     $routes->post('users/update/(:num)', 'SuperAdmin\User::update/$1');
     $routes->post('users/deactivate/(:num)', 'SuperAdmin\User::deactivate/$1');
     $routes->post('users/activate/(:num)', 'SuperAdmin\User::activate/$1');
+    $routes->post('users/delete/(:num)', 'SuperAdmin\User::delete/$1');
+    $routes->get('users/delete/(:num)', 'SuperAdmin\User::delete/$1');
     $routes->get('commissions', 'SuperAdmin\Commission::index');
+    $routes->post('commissions/store', 'SuperAdmin\Commission::store');
+    $routes->post('commissions/(:num)/update', 'SuperAdmin\Commission::update/$1');
+    $routes->post('commissions/(:num)/delete', 'SuperAdmin\Commission::delete/$1');
+    // Tasks
     $routes->get('tasks', 'SuperAdmin\Task::index');
+    $routes->get('tasks/edit/(:num)', 'SuperAdmin\Task::edit/$1');
+    $routes->get('tasks/(:num)/edit', 'SuperAdmin\Task::edit/$1');
     $routes->post('tasks/store', 'SuperAdmin\Task::store');
+    $routes->post('tasks/(:num)/update', 'SuperAdmin\Task::update/$1');
+    $routes->post('tasks/(:num)/delete', 'SuperAdmin\Task::delete/$1');
+    $routes->get('tasks/(:num)/download', 'SuperAdmin\Task::download/$1');
     $routes->get('verifications', 'SuperAdmin\Verification::index');
     
     // Landing Page Management
@@ -69,13 +90,29 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
 // Admin
 $routes->group('admin', ['filter' => 'roleFilter:admin,pusat'], function($routes) {
     $routes->get('/', 'Admin\Dashboard::index');
+    
+    // Packages
     $routes->get('packages', 'Admin\Package::index');
     $routes->get('packages/create', 'Admin\Package::create');
     $routes->post('packages/store', 'Admin\Package::store');
     $routes->get('packages/(:num)/edit', 'Admin\Package::edit/$1');
     $routes->post('packages/(:num)/update', 'Admin\Package::update/$1');
+    $routes->post('packages/(:num)/delete', 'Admin\Package::delete/$1');
+    
+    // Commissions
+    $routes->get('commissions', 'Admin\Commission::index');
+    $routes->post('commissions/store', 'Admin\Commission::store');
+    $routes->post('commissions/(:num)/update', 'Admin\Commission::update/$1');
+    $routes->post('commissions/(:num)/delete', 'Admin\Commission::delete/$1');
+    
+    // Tasks
     $routes->get('tasks', 'Admin\Task::index');
+    $routes->get('tasks/edit/(:num)', 'Admin\Task::edit/$1');
+    $routes->get('tasks/(:num)/edit', 'Admin\Task::edit/$1');
     $routes->post('tasks/store', 'Admin\Task::store');
+    $routes->post('tasks/(:num)/update', 'Admin\Task::update/$1');
+    $routes->post('tasks/(:num)/delete', 'Admin\Task::delete/$1');
+    $routes->get('tasks/(:num)/download', 'Admin\Task::download/$1');
 });
 
 // Member (Pusat, Cabang, Manager, Mitra)
@@ -87,4 +124,7 @@ $routes->group('app', ['filter' => 'roleFilter:pusat,cabang,manager_mitra,mitra'
     $routes->get('orders', 'Member\Order::index');
     $routes->get('orders/(:num)', 'Member\Order::detail/$1');
     $routes->get('tasks', 'Member\Task::index');
+    $routes->get('tasks/(:num)/download', 'Member\Task::download/$1');
 });
+
+$routes->get('/partners/test', 'Partners::test');

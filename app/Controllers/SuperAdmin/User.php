@@ -223,6 +223,51 @@ class User extends BaseController
         return redirect()->back()->with('success', "Akun {$user['nama_lengkap']} diaktifkan kembali");
     }
 
+    public function delete($id)
+    {
+        if (!session('logged_in') || session('role') !== 'super_admin') {
+            return redirect()->to('/login');
+        }
+
+        $user = $this->userModel->find($id);
+        if (!$user) {
+            return redirect()->back()->with('error', 'Pengguna tidak ditemukan');
+        }
+
+        // Protection 1: Cannot delete own account
+        if ((int)$id === (int)session('user_id')) {
+            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Super Admin Anda sendiri');
+        }
+
+        // Protection 2: Cannot delete the last active Super Admin
+        if ($user['role'] === 'super_admin') {
+            $activeSuperAdmins = $this->userModel
+                ->where('role', 'super_admin')
+                ->where('status', 'aktif')
+                ->countAllResults();
+            if ($activeSuperAdmins <= 1) {
+                return redirect()->back()->with('error', 'Tidak dapat menghapus akun Super Admin terakhir di sistem');
+            }
+        }
+
+        // Invalidate all active sessions across devices
+        $this->revokeAllUserSessions($id);
+
+        $db = \Config\Database::connect();
+
+        // Reassign any users who had this user as pembina to null
+        $db->table('users')->where('pembina_id', $id)->update(['pembina_id' => null]);
+
+        // Soft delete the user & set status to nonaktif
+        $this->userModel->update($id, [
+            'status' => 'nonaktif',
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+        $this->userModel->delete($id);
+
+        return redirect()->back()->with('success', "Akun pengguna {$user['nama_lengkap']} berhasil dihapus");
+    }
+
     /**
      * Invalidate all active file-based sessions belonging to a specific user across all devices/browsers
      */
