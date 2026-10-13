@@ -13,9 +13,20 @@ class PackageModel extends Model
     protected $useSoftDeletes = true;
     protected $allowedFields = [
         'nama',
+        'tanggal_keberangkatan',
+        'program_durasi',
+        'maskapai',
+        'hotel_mekkah',
+        'hotel_madinah',
         'kategori',
         'harga',
+        'harga_quad',
+        'harga_triple',
+        'harga_double',
+        'seat_tersedia',
         'deskripsi',
+        'includes',
+        'excludes',
         'gambar',
         'status',
         'created_by'

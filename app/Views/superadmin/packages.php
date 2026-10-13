@@ -93,26 +93,68 @@
                                  data-harga="<?= (int)$pkg['harga'] ?>"
                                  data-kategori="<?= strtolower(esc($pkg['kategori'] ?? 'umroh')) ?>"
                                  data-status="<?= esc($pkg['status'] ?? 'aktif') ?>"
-                                 data-search="<?= strtolower(esc($pkg['nama'] . ' ' . ($pkg['kategori'] ?? '') . ' ' . ($pkg['deskripsi'] ?? '') . ' ' . $pkg['harga'])) ?>">
+                                 data-search="<?= strtolower(esc($pkg['nama'] . ' ' . ($pkg['kategori'] ?? '') . ' ' . ($pkg['program_durasi'] ?? '') . ' ' . ($pkg['maskapai'] ?? '') . ' ' . ($pkg['hotel_mekkah'] ?? '') . ' ' . ($pkg['deskripsi'] ?? '') . ' ' . $pkg['harga'])) ?>">
                                 <?php if (!empty($pkg['gambar'])): ?>
-                                    <div class="h-44 w-full overflow-hidden bg-slate-100">
+                                    <div class="h-44 w-full overflow-hidden bg-slate-100 relative">
                                         <img src="<?= base_url('uploads/packages/' . esc($pkg['gambar'])) ?>" alt="<?= esc($pkg['nama']) ?>" class="w-full h-full object-cover">
+                                        <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
+                                            <span class="px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">
+                                                <?= esc($pkg['kategori'] ?? 'Umroh') ?>
+                                            </span>
+                                            <?php if (!empty($pkg['program_durasi'])): ?>
+                                                <span class="px-2 py-0.5 rounded-lg bg-[#5e0078]/80 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">
+                                                    <?= esc($pkg['program_durasi']) ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                 <?php else: ?>
-                                    <div class="h-44 w-full bg-[#5e0078] flex items-center justify-center text-white">
-                                        <i class="fas fa-kaaba text-4xl opacity-80"></i>
+                                    <div class="h-44 w-full bg-[#5e0078] flex flex-col items-center justify-center text-white relative">
+                                        <i class="fas fa-kaaba text-4xl opacity-80 mb-1"></i>
+                                        <span class="text-xs font-semibold opacity-90 tracking-wider uppercase"><?= esc($pkg['kategori'] ?? 'Umroh') ?></span>
+                                        <?php if (!empty($pkg['program_durasi'])): ?>
+                                            <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full mt-1 font-bold"><?= esc($pkg['program_durasi']) ?></span>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
                                 
                                 <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
                                     <div>
-                                        <span class="text-[11px] font-bold text-[#5e0078] uppercase tracking-wider block mb-1"><?= esc($pkg['kategori'] ?? 'Umroh') ?></span>
+                                        <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                            <span class="text-[11px] font-bold text-[#5e0078] uppercase tracking-wider block"><?= esc($pkg['kategori'] ?? 'Umroh') ?></span>
+                                            <?php if (!empty($pkg['program_durasi'])): ?>
+                                                <span class="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md"><?= esc($pkg['program_durasi']) ?></span>
+                                            <?php endif; ?>
+                                            <?php if (isset($pkg['seat_tersedia']) && $pkg['seat_tersedia'] !== null): ?>
+                                                <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-md ml-auto">
+                                                    <i class="fas fa-chair text-[9px] mr-0.5"></i> <?= (int)$pkg['seat_tersedia'] ?> Seat
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
                                         <h3 class="text-base font-bold text-slate-900 mb-1 leading-snug"><?= esc($pkg['nama']) ?></h3>
+                                        
+                                        <!-- Key Highlights -->
+                                        <div class="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-slate-500 my-2">
+                                            <?php if (!empty($pkg['tanggal_keberangkatan'])): ?>
+                                                <span class="inline-flex items-center gap-1" title="Tanggal Keberangkatan">
+                                                    <i class="fas fa-calendar-day text-[#5e0078] text-[10px]"></i> <?= date('d M Y', strtotime($pkg['tanggal_keberangkatan'])) ?>
+                                                </span>
+                                            <?php endif; ?>
+                                            <?php if (!empty($pkg['maskapai'])): ?>
+                                                <span class="inline-flex items-center gap-1" title="Maskapai">
+                                                    <i class="fas fa-plane text-[#5e0078] text-[10px]"></i> <?= esc($pkg['maskapai']) ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+
                                         <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed"><?= esc($pkg['deskripsi'] ?? '') ?></p>
                                     </div>
                                     
                                     <div class="pt-3 border-t border-slate-100 flex justify-between items-center">
-                                        <span class="text-lg font-extrabold text-[#5e0078]">Rp <?= number_format($pkg['harga'], 0, ',', '.') ?></span>
+                                        <div>
+                                            <span class="text-xs text-slate-400 block font-medium">Mulai dari</span>
+                                            <span class="text-lg font-extrabold text-[#5e0078]">Rp <?= number_format($pkg['harga'], 0, ',', '.') ?></span>
+                                        </div>
                                         <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold
                                             <?= ($pkg['status'] ?? 'aktif') === 'aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200' ?>">
                                             <span class="w-1.5 h-1.5 rounded-full <?= ($pkg['status'] ?? 'aktif') === 'aktif' ? 'bg-emerald-500' : 'bg-slate-400' ?>"></span>
@@ -122,7 +164,7 @@
 
                                     <div class="flex gap-2 pt-1">
                                         <a href="<?= base_url('/superadmin/packages/' . $pkg['id'] . '/edit') ?>" 
-                                           class="btn-interactive flex-1 text-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200/80 px-3 py-2 rounded-xl text-xs font-bold transition">
+                                            class="btn-interactive flex-1 text-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200/80 px-3 py-2 rounded-xl text-xs font-bold transition">
                                             <i class="fas fa-edit mr-1"></i> Edit
                                         </a>
                                         <form method="POST" action="<?= base_url('/superadmin/packages/' . $pkg['id'] . '/delete') ?>" style="flex:1;" onsubmit="return confirm('Hapus paket ini?')">
@@ -146,10 +188,10 @@
                             <thead>
                                 <tr class="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                                     <th class="py-3.5 px-4 sm:px-6">Paket</th>
-                                    <th class="py-3.5 px-4">Kategori</th>
-                                    <th class="py-3.5 px-4">Dibuat</th>
-                                    <th class="py-3.5 px-4">Harga</th>
-                                    <th class="py-3.5 px-4">Status</th>
+                                    <th class="py-3.5 px-4">Kategori & Program</th>
+                                    <th class="py-3.5 px-4">Keberangkatan</th>
+                                    <th class="py-3.5 px-4">Harga Quad</th>
+                                    <th class="py-3.5 px-4">Seat & Status</th>
                                     <th class="py-3.5 px-4 sm:px-6 text-right">Aksi</th>
                                 </tr>
                             </thead>
@@ -168,7 +210,7 @@
                                             data-harga="<?= (int)$pkg['harga'] ?>"
                                             data-kategori="<?= strtolower(esc($pkg['kategori'] ?? 'umroh')) ?>"
                                             data-status="<?= esc($pkg['status'] ?? 'aktif') ?>"
-                                            data-search="<?= strtolower(esc($pkg['nama'] . ' ' . ($pkg['kategori'] ?? '') . ' ' . ($pkg['deskripsi'] ?? '') . ' ' . $pkg['harga'])) ?>">
+                                            data-search="<?= strtolower(esc($pkg['nama'] . ' ' . ($pkg['kategori'] ?? '') . ' ' . ($pkg['program_durasi'] ?? '') . ' ' . ($pkg['maskapai'] ?? '') . ' ' . ($pkg['hotel_mekkah'] ?? '') . ' ' . ($pkg['deskripsi'] ?? '') . ' ' . $pkg['harga'])) ?>">
                                             <td class="py-3.5 px-4 sm:px-6">
                                                 <div class="flex items-center gap-3">
                                                     <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-100 border border-slate-100">
@@ -182,30 +224,52 @@
                                                     </div>
                                                     <div class="min-w-0 max-w-xs sm:max-w-md">
                                                         <div class="font-bold text-slate-900 truncate"><?= esc($pkg['nama']) ?></div>
-                                                        <div class="text-[11px] text-slate-500 truncate mt-0.5"><?= esc($pkg['deskripsi'] ?? '-') ?></div>
+                                                        <div class="text-[11px] text-slate-500 truncate mt-0.5 flex items-center gap-2">
+                                                            <?php if (!empty($pkg['maskapai'])): ?>
+                                                                <span><i class="fas fa-plane text-slate-400 text-[10px]"></i> <?= esc($pkg['maskapai']) ?></span>
+                                                            <?php endif; ?>
+                                                            <span><?= esc($pkg['deskripsi'] ?? '-') ?></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="py-3.5 px-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-[#5e0078] border border-purple-200/60 uppercase tracking-wide">
-                                                    <?= esc($pkg['kategori'] ?? 'Umroh') ?>
-                                                </span>
+                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-[#5e0078] border border-purple-200/60 uppercase tracking-wide">
+                                                        <?= esc($pkg['kategori'] ?? 'Umroh') ?>
+                                                    </span>
+                                                    <?php if (!empty($pkg['program_durasi'])): ?>
+                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700">
+                                                            <?= esc($pkg['program_durasi']) ?>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
                                             </td>
                                             <td class="py-3.5 px-4 whitespace-nowrap text-slate-500">
                                                 <div class="flex items-center gap-1.5 text-[11px]">
-                                                    <i class="fas fa-calendar-day text-slate-400 text-[10px]"></i>
-                                                    <span><?= !empty($pkg['created_at']) ? date('d M Y', strtotime($pkg['created_at'])) : '-' ?></span>
+                                                    <i class="fas fa-calendar-day text-[#5e0078] text-[10px]"></i>
+                                                    <span><?= !empty($pkg['tanggal_keberangkatan']) ? date('d M Y', strtotime($pkg['tanggal_keberangkatan'])) : (!empty($pkg['created_at']) ? date('d M Y', strtotime($pkg['created_at'])) : '-') ?></span>
                                                 </div>
                                             </td>
                                             <td class="py-3.5 px-4 whitespace-nowrap">
-                                                <span class="font-bold text-slate-900 text-sm">Rp <?= number_format($pkg['harga'], 0, ',', '.') ?></span>
+                                                <span class="font-bold text-[#5e0078] text-sm">Rp <?= number_format($pkg['harga'], 0, ',', '.') ?></span>
+                                                <?php if (!empty($pkg['harga_triple']) || !empty($pkg['harga_double'])): ?>
+                                                    <div class="text-[10px] text-slate-400">Quad room</div>
+                                                <?php endif; ?>
                                             </td>
                                             <td class="py-3.5 px-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold
-                                                    <?= ($pkg['status'] ?? 'aktif') === 'aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200' ?>">
-                                                    <span class="w-1.5 h-1.5 rounded-full <?= ($pkg['status'] ?? 'aktif') === 'aktif' ? 'bg-emerald-500' : 'bg-slate-400' ?>"></span>
-                                                    <?= ucfirst($pkg['status'] ?? 'aktif') ?>
-                                                </span>
+                                                <div class="flex flex-col gap-1">
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold
+                                                        <?= ($pkg['status'] ?? 'aktif') === 'aktif' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200' ?>">
+                                                        <span class="w-1.5 h-1.5 rounded-full <?= ($pkg['status'] ?? 'aktif') === 'aktif' ? 'bg-emerald-500' : 'bg-slate-400' ?>"></span>
+                                                        <?= ucfirst($pkg['status'] ?? 'aktif') ?>
+                                                    </span>
+                                                    <?php if (isset($pkg['seat_tersedia']) && $pkg['seat_tersedia'] !== null): ?>
+                                                        <span class="text-[10px] text-slate-500 font-medium">
+                                                            <i class="fas fa-chair text-slate-400 mr-1"></i><?= (int)$pkg['seat_tersedia'] ?> kursi
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </div>
                                             </td>
                                             <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap text-right">
                                                 <div class="flex items-center justify-end gap-1.5">
