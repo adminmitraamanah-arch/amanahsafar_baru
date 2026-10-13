@@ -84,17 +84,6 @@ class Verification extends BaseController
             }
         }
 
-        // Cek file Swafoto jika ada
-        $swafotoExists = false;
-        $swafotoUrl = null;
-        if (!empty($verification['swafoto_path'])) {
-            $swafotoPath = $this->resolveFilePath($verification['swafoto_path']);
-            if ($swafotoPath && file_exists($swafotoPath)) {
-                $swafotoExists = true;
-                $swafotoUrl = base_url('superadmin/verifications/document/' . $verification['id'] . '/swafoto');
-            }
-        }
-
         // Data PKS
         $pksNumber = 'PKS/AS/' . date('Ym', strtotime($user['agreement_accepted_at'] ?? $verification['created_at'])) . '/' . str_pad((string)$user['id'], 4, '0', STR_PAD_LEFT);
         $pksAccepted = !empty($user['agreement_accepted_at']);
@@ -107,8 +96,6 @@ class Verification extends BaseController
             'voucher' => $voucher,
             'ktpExists' => $ktpExists,
             'ktpUrl' => $ktpUrl,
-            'swafotoExists' => $swafotoExists,
-            'swafotoUrl' => $swafotoUrl,
             'pksNumber' => $pksNumber,
             'pksAccepted' => $pksAccepted,
         ];
@@ -122,7 +109,7 @@ class Verification extends BaseController
             return $this->response->setStatusCode(403, 'Akses ditolak');
         }
 
-        if (!in_array($type, ['ktp', 'swafoto'], true)) {
+        if (!in_array($type, ['ktp'], true)) {
             return $this->response->setStatusCode(404, 'Jenis dokumen tidak valid');
         }
 
@@ -131,7 +118,7 @@ class Verification extends BaseController
             return $this->response->setStatusCode(404, 'Verifikasi tidak ditemukan');
         }
 
-        $relativePath = $type === 'ktp' ? $verification['ktp_path'] : $verification['swafoto_path'];
+        $relativePath = $verification['ktp_path'];
         if (empty($relativePath)) {
             return $this->response->setStatusCode(404, 'Dokumen belum diunggah');
         }

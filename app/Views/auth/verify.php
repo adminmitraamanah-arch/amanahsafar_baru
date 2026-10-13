@@ -433,12 +433,6 @@
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="circle-icon-badge">
-                                <i class="fas fa-camera"></i>
-                            </div>
-                            <span class="panel-feature-text" style="color: #dfb2f1 !important;">Swafoto wajah terang tanpa kacamata hitam</span>
-                        </li>
-                        <li class="flex items-center gap-3">
-                            <div class="circle-icon-badge">
                                 <i class="fas fa-building-columns"></i>
                             </div>
                             <span class="panel-feature-text" style="color: #dfb2f1 !important;">Rekening bank valid atas nama pribadi</span>
@@ -494,51 +488,23 @@
                     <form method="POST" action="<?= base_url('/verify') ?>" enctype="multipart/form-data" class="mt-5">
                         <?= csrf_field() ?>
 
-                        <!-- Bagian Upload: Upload KTP & Upload Selfie (Swafoto) -->
+                        <!-- Bagian Upload: Upload KTP -->
                         <div class="form-group-spaced">
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">
-                                Dokumen Identitas
+                                Dokumen Identitas KTP <span class="text-rose-500">*</span>
                             </label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <!-- Upload KTP -->
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                        Upload KTP <span class="text-rose-500">*</span>
-                                    </label>
-                                    <div class="upload-dropzone rounded-xl p-3.5 text-center cursor-pointer group relative"
-                                         onclick="document.getElementById('ktpInput').click()">
-                                        <input type="file" id="ktpInput" name="ktp" accept="image/*" required class="hidden" onchange="previewUpload(this, 'ktpPreview', 'ktpFileName', 'ktpDefaultIcon')">
-                                        
-                                        <div id="ktpPreview" class="hidden mb-2">
-                                            <img src="" alt="KTP Preview" class="h-16 mx-auto rounded-lg object-cover shadow-sm border border-slate-200">
-                                        </div>
-                                        <div id="ktpDefaultIcon" class="w-8 h-8 rounded-lg bg-purple-50 text-[#6b008a] flex items-center justify-center mx-auto mb-1.5 group-hover:scale-105 transition-transform">
-                                            <i class="fas fa-id-card text-sm"></i>
-                                        </div>
-                                        <span id="ktpFileName" class="block text-xs font-bold text-slate-800">Pilih Foto KTP</span>
-                                        <span class="block text-[10px] text-slate-400 mt-0.5">JPG, PNG, WEBP (Maks 5MB)</span>
-                                    </div>
+                            <div class="upload-dropzone rounded-xl p-4 text-center cursor-pointer group relative"
+                                 onclick="document.getElementById('ktpInput').click()">
+                                <input type="file" id="ktpInput" name="ktp" accept="image/*" required class="hidden" onchange="previewUpload(this, 'ktpPreview', 'ktpFileName', 'ktpDefaultIcon')">
+                                
+                                <div id="ktpPreview" class="hidden mb-2">
+                                    <img src="" alt="KTP Preview" class="h-20 mx-auto rounded-lg object-cover shadow-sm border border-slate-200">
                                 </div>
-
-                                <!-- Upload Selfie (Swafoto) -->
-                                <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">
-                                        Upload Selfie (Swafoto) <span class="text-rose-500">*</span>
-                                    </label>
-                                    <div class="upload-dropzone rounded-xl p-3.5 text-center cursor-pointer group relative"
-                                         onclick="document.getElementById('swafotoInput').click()">
-                                        <input type="file" id="swafotoInput" name="swafoto" accept="image/*" required class="hidden" onchange="previewUpload(this, 'swafotoPreview', 'swafotoFileName', 'swafotoDefaultIcon')">
-                                        
-                                        <div id="swafotoPreview" class="hidden mb-2">
-                                            <img src="" alt="Swafoto Preview" class="h-16 mx-auto rounded-lg object-cover shadow-sm border border-slate-200">
-                                        </div>
-                                        <div id="swafotoDefaultIcon" class="w-8 h-8 rounded-lg bg-purple-50 text-[#6b008a] flex items-center justify-center mx-auto mb-1.5 group-hover:scale-105 transition-transform">
-                                            <i class="fas fa-camera text-sm"></i>
-                                        </div>
-                                        <span id="swafotoFileName" class="block text-xs font-bold text-slate-800">Pilih Foto Selfie</span>
-                                        <span class="block text-[10px] text-slate-400 mt-0.5">Wajah terlihat jelas</span>
-                                    </div>
+                                <div id="ktpDefaultIcon" class="w-10 h-10 rounded-xl bg-purple-50 text-[#6b008a] flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform">
+                                    <i class="fas fa-id-card text-base"></i>
                                 </div>
+                                <span id="ktpFileName" class="block text-xs font-bold text-slate-800">Pilih Foto / Scan KTP</span>
+                                <span class="block text-[10px] text-slate-400 mt-0.5">Format JPG, PNG, atau WEBP (Maksimal 5MB)</span>
                             </div>
                         </div>
 

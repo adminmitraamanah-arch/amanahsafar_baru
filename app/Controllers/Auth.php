@@ -193,17 +193,11 @@ class Auth extends BaseController
 
             // Handle file uploads
             $ktp = $this->request->getFile('ktp');
-            $swafoto = $this->request->getFile('swafoto');
 
             $ktp_path = null;
-            $swafoto_path = null;
 
             if ($ktp && $ktp->isValid() && !$ktp->hasMoved()) {
                 $ktp_path = $ktp->store('uploads/verifikasi');
-            }
-
-            if ($swafoto && $swafoto->isValid() && !$swafoto->hasMoved()) {
-                $swafoto_path = $swafoto->store('uploads/verifikasi');
             }
 
             $existing = $this->verificationModel->where('user_id', $user_id)->first();
@@ -217,11 +211,6 @@ class Auth extends BaseController
                 $dataToSave['ktp_path'] = $ktp_path;
             } elseif ($existing && !empty($existing['ktp_path'])) {
                 $dataToSave['ktp_path'] = $existing['ktp_path'];
-            }
-            if ($swafoto_path) {
-                $dataToSave['swafoto_path'] = $swafoto_path;
-            } elseif ($existing && !empty($existing['swafoto_path'])) {
-                $dataToSave['swafoto_path'] = $existing['swafoto_path'];
             }
 
             if ($existing) {

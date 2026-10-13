@@ -81,7 +81,7 @@
                 <!-- Grid Layout: 2 Kolom -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     
-                    <!-- Kolom Kiri: Dokumen KTP, Swafoto, & PKS (7 dari 12) -->
+                    <!-- Kolom Kiri: Dokumen KTP & PKS (7 dari 12) -->
                     <div class="lg:col-span-7 space-y-6">
 
                         <!-- Card Dokumen KTP -->
@@ -161,56 +161,6 @@
                                 <?php endif; ?>
                             </div>
                         </div>
-
-                        <!-- Card Swafoto / Selfie (Jika Tersedia) -->
-                        <?php if (!empty($verification['swafoto_path'])): ?>
-                            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-                                <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                                    <div class="flex items-center gap-2.5">
-                                        <div class="w-8 h-8 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center font-bold text-sm">
-                                            <i class="fas fa-camera"></i>
-                                        </div>
-                                        <div>
-                                            <h2 class="text-sm font-bold text-slate-900">Dokumen Swafoto (Selfie)</h2>
-                                            <p class="text-[11px] text-slate-400">Foto wajah pengguna untuk verifikasi biometric</p>
-                                        </div>
-                                    </div>
-                                    <span class="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold inline-flex items-center gap-1">
-                                        <i class="fas fa-check-circle text-[9px]"></i> Dokumen Tersedia
-                                    </span>
-                                </div>
-                                <div class="p-5">
-                                    <?php if ($swafotoExists): ?>
-                                        <div class="space-y-3">
-                                            <div class="relative group bg-slate-950 rounded-xl overflow-hidden border border-slate-200 flex items-center justify-center max-h-[340px] shadow-inner">
-                                                <img src="<?= esc($swafotoUrl) ?>" 
-                                                     alt="Swafoto <?= esc($user['nama_lengkap']) ?>" 
-                                                     class="max-h-[340px] w-auto max-w-full object-contain cursor-pointer transition-transform duration-300 group-hover:scale-[1.01]"
-                                                     onclick="openImageLightbox('<?= esc($swafotoUrl) ?>', 'Swafoto - <?= esc($user['nama_lengkap']) ?>')">
-                                            </div>
-                                            <div class="flex items-center justify-between gap-2 pt-1 flex-wrap">
-                                                <span class="text-[11px] text-slate-400 font-mono">
-                                                    File: <?= esc(basename($verification['swafoto_path'])) ?>
-                                                </span>
-                                                <div class="flex items-center gap-2">
-                                                    <button type="button" 
-                                                            onclick="openImageLightbox('<?= esc($swafotoUrl) ?>', 'Swafoto - <?= esc($user['nama_lengkap']) ?>')"
-                                                            class="btn-interactive px-3 py-1.5 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#5e0078] text-xs font-bold inline-flex items-center gap-1.5 border border-purple-200 transition">
-                                                        <i class="fas fa-search-plus text-[11px]"></i>
-                                                        <span>Perbesar</span>
-                                                    </button>
-                                                    <a href="<?= esc($swafotoUrl) ?>" target="_blank"
-                                                       class="btn-interactive px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 transition">
-                                                        <i class="fas fa-arrow-up-right-from-square text-[11px]"></i>
-                                                        <span>Buka Tab Baru</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
 
                         <!-- Card Dokumen PKS (Perjanjian Kerja Sama Kemitraan) -->
                         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
