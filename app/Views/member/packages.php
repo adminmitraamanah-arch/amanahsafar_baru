@@ -99,29 +99,32 @@
                     </div>
 
                     <?php if (!empty($packages)): ?>
+                        <?php
+                        $packagesJsRegistry = [];
+                        foreach ($packages as $pItem) {
+                            $packagesJsRegistry[] = [
+                                'id' => (int)$pItem['id'],
+                                'nama' => $pItem['nama'],
+                                'kategori' => $pItem['kategori'] ?? 'Umroh',
+                                'program_durasi' => $pItem['program_durasi'] ?? '',
+                                'tanggal_keberangkatan' => !empty($pItem['tanggal_keberangkatan']) ? date('d M Y', strtotime($pItem['tanggal_keberangkatan'])) : '',
+                                'maskapai' => $pItem['maskapai'] ?? '',
+                                'hotel_mekkah' => $pItem['hotel_mekkah'] ?? '',
+                                'hotel_madinah' => $pItem['hotel_madinah'] ?? '',
+                                'harga' => (float)$pItem['harga'],
+                                'harga_fmt' => 'Rp ' . number_format($pItem['harga'], 0, ',', '.'),
+                                'harga_quad' => !empty($pItem['harga_quad']) ? 'Rp ' . number_format($pItem['harga_quad'], 0, ',', '.') : ('Rp ' . number_format($pItem['harga'], 0, ',', '.')),
+                                'harga_triple' => !empty($pItem['harga_triple']) ? 'Rp ' . number_format($pItem['harga_triple'], 0, ',', '.') : '-',
+                                'harga_double' => !empty($pItem['harga_double']) ? 'Rp ' . number_format($pItem['harga_double'], 0, ',', '.') : '-',
+                                'seat_tersedia' => (int)($pItem['seat_tersedia'] ?? 0),
+                                'includes' => !empty($pItem['includes']) ? (json_decode($pItem['includes'], true) ?: []) : [],
+                                'excludes' => !empty($pItem['excludes']) ? (json_decode($pItem['excludes'], true) ?: []) : [],
+                                'deskripsi' => $pItem['deskripsi'] ?? '',
+                                'gambar' => !empty($pItem['gambar']) ? base_url('uploads/packages/' . esc($pItem['gambar'])) : null
+                            ];
+                        }
+                        ?>
                         <?php foreach ($packages as $pkg): ?>
-                            <?php
-                            $pkgDetailJson = htmlspecialchars(json_encode([
-                                'id' => $pkg['id'],
-                                'nama' => $pkg['nama'],
-                                'kategori' => $pkg['kategori'] ?? 'Umroh',
-                                'program_durasi' => $pkg['program_durasi'] ?? '',
-                                'tanggal_keberangkatan' => !empty($pkg['tanggal_keberangkatan']) ? date('d M Y', strtotime($pkg['tanggal_keberangkatan'])) : '',
-                                'maskapai' => $pkg['maskapai'] ?? '',
-                                'hotel_mekkah' => $pkg['hotel_mekkah'] ?? '',
-                                'hotel_madinah' => $pkg['hotel_madinah'] ?? '',
-                                'harga' => (float)$pkg['harga'],
-                                'harga_fmt' => 'Rp ' . number_format($pkg['harga'], 0, ',', '.'),
-                                'harga_quad' => !empty($pkg['harga_quad']) ? 'Rp ' . number_format($pkg['harga_quad'], 0, ',', '.') : ('Rp ' . number_format($pkg['harga'], 0, ',', '.')),
-                                'harga_triple' => !empty($pkg['harga_triple']) ? 'Rp ' . number_format($pkg['harga_triple'], 0, ',', '.') : '-',
-                                'harga_double' => !empty($pkg['harga_double']) ? 'Rp ' . number_format($pkg['harga_double'], 0, ',', '.') : '-',
-                                'seat_tersedia' => (int)($pkg['seat_tersedia'] ?? 0),
-                                'includes' => !empty($pkg['includes']) ? (json_decode($pkg['includes'], true) ?: []) : [],
-                                'excludes' => !empty($pkg['excludes']) ? (json_decode($pkg['excludes'], true) ?: []) : [],
-                                'deskripsi' => $pkg['deskripsi'] ?? '',
-                                'gambar' => !empty($pkg['gambar']) ? base_url('uploads/packages/' . esc($pkg['gambar'])) : null
-                            ]), ENT_QUOTES, 'UTF-8');
-                            ?>
                             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col hover:shadow-md transition duration-200 group package-card-item"
                                  data-nama="<?= strtolower(esc($pkg['nama'])) ?>"
                                  data-harga="<?= (int)$pkg['harga'] ?>"
@@ -192,7 +195,7 @@
                                     <div class="flex gap-2 pt-1">
                                         <!-- Detail Button (All Roles) -->
                                         <button type="button" 
-                                                onclick="openDetailModal(<?= $pkgDetailJson ?>)"
+                                                onclick="showPackageDetail(<?= $pkg['id'] ?>)"
                                                 class="btn-interactive flex-1 text-center bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 px-3 py-2.5 rounded-xl text-xs font-bold transition">
                                             <i class="fas fa-info-circle mr-1"></i> Detail
                                         </button>
@@ -245,28 +248,6 @@
 
                                 <?php if (!empty($packages)): ?>
                                     <?php foreach ($packages as $pkg): ?>
-                                        <?php
-                                        $pkgDetailJson = htmlspecialchars(json_encode([
-                                            'id' => $pkg['id'],
-                                            'nama' => $pkg['nama'],
-                                            'kategori' => $pkg['kategori'] ?? 'Umroh',
-                                            'program_durasi' => $pkg['program_durasi'] ?? '',
-                                            'tanggal_keberangkatan' => !empty($pkg['tanggal_keberangkatan']) ? date('d M Y', strtotime($pkg['tanggal_keberangkatan'])) : '',
-                                            'maskapai' => $pkg['maskapai'] ?? '',
-                                            'hotel_mekkah' => $pkg['hotel_mekkah'] ?? '',
-                                            'hotel_madinah' => $pkg['hotel_madinah'] ?? '',
-                                            'harga' => (float)$pkg['harga'],
-                                            'harga_fmt' => 'Rp ' . number_format($pkg['harga'], 0, ',', '.'),
-                                            'harga_quad' => !empty($pkg['harga_quad']) ? 'Rp ' . number_format($pkg['harga_quad'], 0, ',', '.') : ('Rp ' . number_format($pkg['harga'], 0, ',', '.')),
-                                            'harga_triple' => !empty($pkg['harga_triple']) ? 'Rp ' . number_format($pkg['harga_triple'], 0, ',', '.') : '-',
-                                            'harga_double' => !empty($pkg['harga_double']) ? 'Rp ' . number_format($pkg['harga_double'], 0, ',', '.') : '-',
-                                            'seat_tersedia' => (int)($pkg['seat_tersedia'] ?? 0),
-                                            'includes' => !empty($pkg['includes']) ? (json_decode($pkg['includes'], true) ?: []) : [],
-                                            'excludes' => !empty($pkg['excludes']) ? (json_decode($pkg['excludes'], true) ?: []) : [],
-                                            'deskripsi' => $pkg['deskripsi'] ?? '',
-                                            'gambar' => !empty($pkg['gambar']) ? base_url('uploads/packages/' . esc($pkg['gambar'])) : null
-                                        ]), ENT_QUOTES, 'UTF-8');
-                                        ?>
                                         <tr class="hover:bg-slate-50/70 transition duration-150 package-list-row"
                                             data-nama="<?= strtolower(esc($pkg['nama'])) ?>"
                                             data-harga="<?= (int)$pkg['harga'] ?>"
@@ -327,7 +308,7 @@
                                             <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap text-right">
                                                 <div class="flex items-center justify-end gap-1.5">
                                                     <button type="button" 
-                                                            onclick="openDetailModal(<?= $pkgDetailJson ?>)"
+                                                            onclick="showPackageDetail(<?= $pkg['id'] ?>)"
                                                             class="btn-interactive inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition"
                                                             title="Detail Paket">
                                                         <i class="fas fa-info-circle text-xs"></i>
@@ -481,6 +462,12 @@
                 <button type="button" onclick="closeDetailModal()" class="btn-interactive px-5 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
                     Tutup
                 </button>
+                <?php if (in_array($userRole, ['mitra', 'manager_mitra', 'cabang'])): ?>
+                    <button type="button" id="detailModalOrderBtn" class="btn-interactive px-5 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fas fa-shopping-cart text-xs"></i>
+                        <span>Pesan Paket</span>
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -551,31 +538,138 @@
 
 <script>
 let currentPrice = 0;
+const packagesRegistry = <?= json_encode($packagesJsRegistry ?? [], JSON_UNESCAPED_UNICODE) ?>;
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showPackageDetail(packageId) {
+    const pkg = packagesRegistry.find(p => String(p.id) === String(packageId));
+    if (!pkg) {
+        console.error('Package not found:', packageId);
+        return;
+    }
+    openDetailModal(pkg);
+}
 
 function openDetailModal(pkg) {
+    if (!pkg) return;
     const modal = document.getElementById('detailModal');
+    if (!modal) return;
     const imgContainer = document.getElementById('detailImageContainer');
     
-    if (pkg.gambar) {
-        imgContainer.innerHTML = `
-            <img src="${pkg.gambar}" alt="${pkg.nama}" class="w-full h-full object-cover">
-            <button type="button" onclick="closeDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center transition">
-                <i class="fas fa-times text-xs"></i>
-            </button>
-        `;
-    } else {
-        imgContainer.innerHTML = `
-            <i class="fas fa-kaaba text-5xl opacity-80"></i>
-            <button type="button" onclick="closeDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center transition">
-                <i class="fas fa-times text-xs"></i>
-            </button>
-        `;
+    if (imgContainer) {
+        if (pkg.gambar) {
+            imgContainer.innerHTML = `
+                <img src="${pkg.gambar}" alt="${escapeHtml(pkg.nama)}" class="w-full h-full object-cover">
+                <button type="button" onclick="closeDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center transition">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            `;
+        } else {
+            imgContainer.innerHTML = `
+                <i class="fas fa-kaaba text-5xl opacity-80"></i>
+                <button type="button" onclick="closeDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center transition">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            `;
+        }
     }
 
-    document.getElementById('detailKategori').textContent = pkg.kategori || 'Umroh';
-    document.getElementById('detailNama').textContent = pkg.nama || '';
-    document.getElementById('detailHarga').textContent = pkg.harga_fmt || '';
-    document.getElementById('detailDeskripsi').textContent = pkg.deskripsi || 'Tidak ada deskripsi detail tambahan untuk paket ini.';
+    const katEl = document.getElementById('detailKategori');
+    if (katEl) katEl.textContent = pkg.kategori || 'Umroh';
+
+    const progEl = document.getElementById('detailProgram');
+    if (progEl) {
+        if (pkg.program_durasi) {
+            progEl.textContent = pkg.program_durasi;
+            progEl.classList.remove('hidden');
+        } else {
+            progEl.classList.add('hidden');
+        }
+    }
+
+    const namaEl = document.getElementById('detailNama');
+    if (namaEl) namaEl.textContent = pkg.nama || '';
+
+    const tglEl = document.getElementById('detailTanggal');
+    if (tglEl) tglEl.textContent = pkg.tanggal_keberangkatan || '-';
+
+    const airEl = document.getElementById('detailMaskapai');
+    if (airEl) airEl.textContent = pkg.maskapai || '-';
+
+    const hmekEl = document.getElementById('detailHotelMekkah');
+    if (hmekEl) hmekEl.textContent = pkg.hotel_mekkah || 'Sesuai Standar Bintang';
+
+    const hmadEl = document.getElementById('detailHotelMadinah');
+    if (hmadEl) hmadEl.textContent = pkg.hotel_madinah || 'Sesuai Standar Bintang';
+
+    const seatEl = document.getElementById('detailSeat');
+    if (seatEl) {
+        seatEl.textContent = pkg.seat_tersedia ? (pkg.seat_tersedia + ' Seat Tersedia') : 'Seat Tersedia';
+    }
+
+    const hQuadEl = document.getElementById('detailHargaQuad');
+    if (hQuadEl) hQuadEl.textContent = pkg.harga_quad || pkg.harga_fmt || '-';
+
+    const hTripEl = document.getElementById('detailHargaTriple');
+    if (hTripEl) hTripEl.textContent = pkg.harga_triple || '-';
+
+    const hDblEl = document.getElementById('detailHargaDouble');
+    if (hDblEl) hDblEl.textContent = pkg.harga_double || '-';
+
+    // Includes
+    const incListEl = document.getElementById('detailIncludeList');
+    if (incListEl) {
+        incListEl.innerHTML = '';
+        if (Array.isArray(pkg.includes) && pkg.includes.length > 0) {
+            pkg.includes.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-1.5';
+                li.innerHTML = `<i class="fas fa-check text-emerald-600 mt-0.5 text-[10px] shrink-0"></i><span>${escapeHtml(item)}</span>`;
+                incListEl.appendChild(li);
+            });
+        } else {
+            incListEl.innerHTML = '<li class="text-slate-400 italic">Termasuk fasilitas standar paket.</li>';
+        }
+    }
+
+    // Excludes
+    const excListEl = document.getElementById('detailExcludeList');
+    if (excListEl) {
+        excListEl.innerHTML = '';
+        if (Array.isArray(pkg.excludes) && pkg.excludes.length > 0) {
+            pkg.excludes.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-1.5';
+                li.innerHTML = `<i class="fas fa-times text-rose-500 mt-0.5 text-[10px] shrink-0"></i><span>${escapeHtml(item)}</span>`;
+                excListEl.appendChild(li);
+            });
+        } else {
+            excListEl.innerHTML = '<li class="text-slate-400 italic">Tidak ada rincian exclude khusus.</li>';
+        }
+    }
+
+    const deskEl = document.getElementById('detailDeskripsi');
+    if (deskEl) deskEl.textContent = pkg.deskripsi || 'Tidak ada deskripsi detail tambahan untuk paket ini.';
+
+    // Order CTA inside modal
+    const modalOrderBtn = document.getElementById('detailModalOrderBtn');
+    if (modalOrderBtn) {
+        modalOrderBtn.onclick = function() {
+            closeDetailModal();
+            openOrderModal({
+                id: pkg.id,
+                nama: pkg.nama,
+                harga: pkg.harga,
+                harga_fmt: pkg.harga_fmt
+            });
+        };
+    }
 
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';

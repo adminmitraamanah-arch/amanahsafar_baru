@@ -87,6 +87,31 @@
                     </div>
 
                     <?php if (!empty($packages)): ?>
+                        <?php
+                        $packagesJsRegistry = [];
+                        foreach ($packages as $pItem) {
+                            $packagesJsRegistry[] = [
+                                'id' => (int)$pItem['id'],
+                                'nama' => $pItem['nama'],
+                                'kategori' => $pItem['kategori'] ?? 'Umroh',
+                                'program_durasi' => $pItem['program_durasi'] ?? '',
+                                'tanggal_keberangkatan' => !empty($pItem['tanggal_keberangkatan']) ? date('d M Y', strtotime($pItem['tanggal_keberangkatan'])) : '',
+                                'maskapai' => $pItem['maskapai'] ?? '',
+                                'hotel_mekkah' => $pItem['hotel_mekkah'] ?? '',
+                                'hotel_madinah' => $pItem['hotel_madinah'] ?? '',
+                                'harga' => (float)$pItem['harga'],
+                                'harga_fmt' => 'Rp ' . number_format($pItem['harga'], 0, ',', '.'),
+                                'harga_quad' => !empty($pItem['harga_quad']) ? 'Rp ' . number_format($pItem['harga_quad'], 0, ',', '.') : ('Rp ' . number_format($pItem['harga'], 0, ',', '.')),
+                                'harga_triple' => !empty($pItem['harga_triple']) ? 'Rp ' . number_format($pItem['harga_triple'], 0, ',', '.') : '-',
+                                'harga_double' => !empty($pItem['harga_double']) ? 'Rp ' . number_format($pItem['harga_double'], 0, ',', '.') : '-',
+                                'seat_tersedia' => (int)($pItem['seat_tersedia'] ?? 0),
+                                'includes' => !empty($pItem['includes']) ? (json_decode($pItem['includes'], true) ?: []) : [],
+                                'excludes' => !empty($pItem['excludes']) ? (json_decode($pItem['excludes'], true) ?: []) : [],
+                                'deskripsi' => $pItem['deskripsi'] ?? '',
+                                'gambar' => !empty($pItem['gambar']) ? base_url('uploads/packages/' . esc($pItem['gambar'])) : null
+                            ];
+                        }
+                        ?>
                         <?php foreach ($packages as $pkg): ?>
                             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col hover:shadow-md transition duration-200 package-card-item"
                                  data-nama="<?= strtolower(esc($pkg['nama'])) ?>"
@@ -163,14 +188,19 @@
                                     </div>
 
                                     <div class="flex gap-2 pt-1">
+                                        <button type="button" 
+                                                onclick="showPackageDetail(<?= $pkg['id'] ?>)"
+                                                class="btn-interactive flex-1 text-center bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 px-2.5 py-2 rounded-xl text-xs font-bold transition">
+                                            <i class="fas fa-info-circle mr-1"></i> Detail
+                                        </button>
                                         <a href="<?= base_url('/admin/packages/' . $pkg['id'] . '/edit') ?>" 
-                                            class="btn-interactive flex-1 text-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200/80 px-3 py-2 rounded-xl text-xs font-bold transition">
+                                            class="btn-interactive flex-1 text-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200/80 px-2.5 py-2 rounded-xl text-xs font-bold transition">
                                             <i class="fas fa-edit mr-1"></i> Edit
                                         </a>
                                         <form method="POST" action="<?= base_url('/admin/packages/' . $pkg['id'] . '/delete') ?>" style="flex:1;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus paket <?= esc($pkg['nama']) ?>?')">
                                             <?= csrf_field() ?>
                                             <button type="submit" 
-                                                    class="btn-interactive w-full bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/80 px-3 py-2 rounded-xl text-xs font-bold transition">
+                                                    class="btn-interactive w-full bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200/80 px-2.5 py-2 rounded-xl text-xs font-bold transition">
                                                 <i class="fas fa-trash-alt mr-1"></i> Hapus
                                             </button>
                                         </form>
@@ -273,6 +303,12 @@
                                             </td>
                                             <td class="py-3.5 px-4 sm:px-6 whitespace-nowrap text-right">
                                                 <div class="flex items-center justify-end gap-1.5">
+                                                    <button type="button" 
+                                                            onclick="showPackageDetail(<?= $pkg['id'] ?>)"
+                                                            class="btn-interactive inline-flex items-center justify-center p-2 rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200 text-xs font-bold transition"
+                                                            title="Detail Paket">
+                                                        <i class="fas fa-info-circle"></i>
+                                                    </button>
                                                     <a href="<?= base_url('/admin/packages/' . $pkg['id'] . '/edit') ?>" 
                                                        class="btn-interactive inline-flex items-center justify-center p-2 rounded-lg bg-purple-50 text-[#5e0078] hover:bg-purple-100 border border-purple-200/80 text-xs font-bold transition"
                                                        title="Edit Paket">
@@ -317,7 +353,241 @@
     </div>
 </div>
 
+<!-- Modal Detail Paket (Admin) -->
+<div id="detailModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeDetailModal()"></div>
+    <div class="flex min-h-full items-center justify-center p-3 sm:p-4">
+        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden transform transition-all my-8 max-h-[90vh] flex flex-col">
+            <!-- Header Image -->
+            <div id="detailImageContainer" class="h-44 sm:h-52 w-full bg-[#5e0078] flex items-center justify-center text-white relative shrink-0 overflow-hidden">
+                <i class="fas fa-kaaba text-5xl opacity-80"></i>
+                <button type="button" onclick="closeDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center transition">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1">
+                <div>
+                    <div class="flex items-center gap-2 mb-1 flex-wrap">
+                        <span id="detailKategori" class="text-[11px] font-bold text-[#5e0078] uppercase tracking-wider bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-100"></span>
+                        <span id="detailProgram" class="text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md hidden"></span>
+                    </div>
+                    <h3 id="detailNama" class="text-lg sm:text-xl font-extrabold text-slate-900"></h3>
+                </div>
+
+                <!-- Info Grid: Tanggal, Maskapai, Hotel, Seat -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                        <span class="text-[10px] text-slate-400 font-semibold block uppercase">Keberangkatan</span>
+                        <span id="detailTanggal" class="font-bold text-slate-800 mt-0.5 block truncate">-</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                        <span class="text-[10px] text-slate-400 font-semibold block uppercase">Maskapai</span>
+                        <span id="detailMaskapai" class="font-bold text-slate-800 mt-0.5 block truncate">-</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                        <span class="text-[10px] text-slate-400 font-semibold block uppercase">Hotel Mekkah</span>
+                        <span id="detailHotelMekkah" class="font-bold text-slate-800 mt-0.5 block truncate">-</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                        <span class="text-[10px] text-slate-400 font-semibold block uppercase">Hotel Madinah</span>
+                        <span id="detailHotelMadinah" class="font-bold text-slate-800 mt-0.5 block truncate">-</span>
+                    </div>
+                </div>
+
+                <!-- Harga Kamar: Quad, Triple, Double -->
+                <div class="p-4 bg-purple-50/60 rounded-2xl border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-[#5e0078] uppercase tracking-wide">Pilihan Tipe Kamar & Biaya</span>
+                        <span id="detailSeat" class="text-xs font-bold text-slate-700"></span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                        <div class="p-2.5 bg-white rounded-xl border border-purple-100 flex flex-col">
+                            <span class="text-[10px] text-slate-400 font-medium">Quad (4 Orang)</span>
+                            <span id="detailHargaQuad" class="font-extrabold text-[#5e0078] text-sm mt-0.5">-</span>
+                        </div>
+                        <div class="p-2.5 bg-white rounded-xl border border-purple-100 flex flex-col">
+                            <span class="text-[10px] text-slate-400 font-medium">Triple (3 Orang)</span>
+                            <span id="detailHargaTriple" class="font-extrabold text-[#5e0078] text-sm mt-0.5">-</span>
+                        </div>
+                        <div class="p-2.5 bg-white rounded-xl border border-purple-100 flex flex-col">
+                            <span class="text-[10px] text-slate-400 font-medium">Double (2 Orang)</span>
+                            <span id="detailHargaDouble" class="font-extrabold text-[#5e0078] text-sm mt-0.5">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Include & Exclude Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/70">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-1.5 text-xs text-emerald-700">
+                            <i class="fas fa-check-circle"></i> Termasuk (Include)
+                        </h4>
+                        <ul id="detailIncludeList" class="space-y-1.5 text-slate-600 pl-1">
+                            <!-- JS populated -->
+                        </ul>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200/70">
+                        <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-1.5 text-xs text-rose-700">
+                            <i class="fas fa-times-circle"></i> Tidak Termasuk (Exclude)
+                        </h4>
+                        <ul id="detailExcludeList" class="space-y-1.5 text-slate-600 pl-1">
+                            <!-- JS populated -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Deskripsi / Catatan Tambahan -->
+                <div>
+                    <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">Catatan & Deskripsi:</h4>
+                    <div id="detailDeskripsi" class="text-xs text-slate-600 leading-relaxed whitespace-pre-line bg-slate-50 p-3.5 rounded-xl border border-slate-200/80"></div>
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="p-4 bg-slate-50/75 border-t border-slate-100 flex items-center justify-end gap-2 shrink-0">
+                <button type="button" onclick="closeDetailModal()" class="btn-interactive px-5 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+const packagesRegistry = <?= json_encode($packagesJsRegistry ?? [], JSON_UNESCAPED_UNICODE) ?>;
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function showPackageDetail(packageId) {
+    const pkg = packagesRegistry.find(p => String(p.id) === String(packageId));
+    if (!pkg) {
+        console.error('Package not found:', packageId);
+        return;
+    }
+    openDetailModal(pkg);
+}
+
+function openDetailModal(pkg) {
+    if (!pkg) return;
+    const modal = document.getElementById('detailModal');
+    if (!modal) return;
+    const imgContainer = document.getElementById('detailImageContainer');
+    
+    if (imgContainer) {
+        if (pkg.gambar) {
+            imgContainer.innerHTML = `
+                <img src="${pkg.gambar}" alt="${escapeHtml(pkg.nama)}" class="w-full h-full object-cover">
+                <button type="button" onclick="closeDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center transition">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            `;
+        } else {
+            imgContainer.innerHTML = `
+                <i class="fas fa-kaaba text-5xl opacity-80"></i>
+                <button type="button" onclick="closeDetailModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white hover:bg-black/60 flex items-center justify-center transition">
+                    <i class="fas fa-times text-xs"></i>
+                </button>
+            `;
+        }
+    }
+
+    const katEl = document.getElementById('detailKategori');
+    if (katEl) katEl.textContent = pkg.kategori || 'Umroh';
+
+    const progEl = document.getElementById('detailProgram');
+    if (progEl) {
+        if (pkg.program_durasi) {
+            progEl.textContent = pkg.program_durasi;
+            progEl.classList.remove('hidden');
+        } else {
+            progEl.classList.add('hidden');
+        }
+    }
+
+    const namaEl = document.getElementById('detailNama');
+    if (namaEl) namaEl.textContent = pkg.nama || '';
+
+    const tglEl = document.getElementById('detailTanggal');
+    if (tglEl) tglEl.textContent = pkg.tanggal_keberangkatan || '-';
+
+    const airEl = document.getElementById('detailMaskapai');
+    if (airEl) airEl.textContent = pkg.maskapai || '-';
+
+    const hmekEl = document.getElementById('detailHotelMekkah');
+    if (hmekEl) hmekEl.textContent = pkg.hotel_mekkah || 'Sesuai Standar Bintang';
+
+    const hmadEl = document.getElementById('detailHotelMadinah');
+    if (hmadEl) hmadEl.textContent = pkg.hotel_madinah || 'Sesuai Standar Bintang';
+
+    const seatEl = document.getElementById('detailSeat');
+    if (seatEl) {
+        seatEl.textContent = pkg.seat_tersedia ? (pkg.seat_tersedia + ' Seat Tersedia') : 'Seat Tersedia';
+    }
+
+    const hQuadEl = document.getElementById('detailHargaQuad');
+    if (hQuadEl) hQuadEl.textContent = pkg.harga_quad || pkg.harga_fmt || '-';
+
+    const hTripEl = document.getElementById('detailHargaTriple');
+    if (hTripEl) hTripEl.textContent = pkg.harga_triple || '-';
+
+    const hDblEl = document.getElementById('detailHargaDouble');
+    if (hDblEl) hDblEl.textContent = pkg.harga_double || '-';
+
+    // Includes
+    const incListEl = document.getElementById('detailIncludeList');
+    if (incListEl) {
+        incListEl.innerHTML = '';
+        if (Array.isArray(pkg.includes) && pkg.includes.length > 0) {
+            pkg.includes.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-1.5';
+                li.innerHTML = `<i class="fas fa-check text-emerald-600 mt-0.5 text-[10px] shrink-0"></i><span>${escapeHtml(item)}</span>`;
+                incListEl.appendChild(li);
+            });
+        } else {
+            incListEl.innerHTML = '<li class="text-slate-400 italic">Termasuk fasilitas standar paket.</li>';
+        }
+    }
+
+    // Excludes
+    const excListEl = document.getElementById('detailExcludeList');
+    if (excListEl) {
+        excListEl.innerHTML = '';
+        if (Array.isArray(pkg.excludes) && pkg.excludes.length > 0) {
+            pkg.excludes.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'flex items-start gap-1.5';
+                li.innerHTML = `<i class="fas fa-times text-rose-500 mt-0.5 text-[10px] shrink-0"></i><span>${escapeHtml(item)}</span>`;
+                excListEl.appendChild(li);
+            });
+        } else {
+            excListEl.innerHTML = '<li class="text-slate-400 italic">Tidak ada rincian exclude khusus.</li>';
+        }
+    }
+
+    const deskEl = document.getElementById('detailDeskripsi');
+    if (deskEl) deskEl.textContent = pkg.deskripsi || 'Tidak ada deskripsi detail tambahan untuk paket ini.';
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDetailModal() {
+    const modal = document.getElementById('detailModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const gridContainer = document.getElementById('adminPackagesGridContainer');
     const listContainer = document.getElementById('adminPackagesListContainer');
