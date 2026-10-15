@@ -71,6 +71,21 @@ assertCondition("Checkbox dicentang ('on') diizinkan", validateAgreementServerSi
 assertCondition("Checkbox kosong/tidak dicentang (null) ditolak", validateAgreementServerSide(null) === false);
 assertCondition("Checkbox kosong string ('') ditolak", validateAgreementServerSide('') === false);
 
+// 2b. Uji Kesesuaian Nama Pemilik Rekening dengan Nama KTP
+echo "\n[2b] Pengujian Kesesuaian Nama Pemilik Rekening dengan Nama KTP:\n";
+function validateRekeningOwnerMatchServerSide($namaKtp, $namaPemilik) {
+    if (empty($namaKtp) || empty($namaPemilik)) return false;
+    $cleanKtp = trim(preg_replace('/\s+/', ' ', mb_strtoupper($namaKtp)));
+    $cleanPemilik = trim(preg_replace('/\s+/', ' ', mb_strtoupper($namaPemilik)));
+    return $cleanKtp === $cleanPemilik;
+}
+assertCondition("Nama persis huruf kapital sama ('AHMAD DAHLAN' vs 'AHMAD DAHLAN') diterima", validateRekeningOwnerMatchServerSide('AHMAD DAHLAN', 'AHMAD DAHLAN') === true);
+assertCondition("Nama beda huruf kecil/besar ('Ahmad Dahlan' vs 'AHMAD DAHLAN') diterima", validateRekeningOwnerMatchServerSide('Ahmad Dahlan', 'AHMAD DAHLAN') === true);
+assertCondition("Nama dengan spasi ganda dinormalisasi (' AHMAD   DAHLAN ' vs 'AHMAD DAHLAN') diterima", validateRekeningOwnerMatchServerSide(' AHMAD   DAHLAN ', 'AHMAD DAHLAN') === true);
+assertCondition("Nama berbeda ('AHMAD DAHLAN' vs 'MIRA SETIAWAN') ditolak", validateRekeningOwnerMatchServerSide('AHMAD DAHLAN', 'MIRA SETIAWAN') === false);
+assertCondition("Nama pemilik rekening kosong ditolak", validateRekeningOwnerMatchServerSide('AHMAD DAHLAN', '') === false);
+assertCondition("Nama KTP kosong ditolak", validateRekeningOwnerMatchServerSide('', 'AHMAD DAHLAN') === false);
+
 // 3. Uji Validasi Gambar KTP Fisik & Dimensi
 echo "\n[3] Pengujian Validasi Citra KTP & Resolusi Minimum (400x250):\n";
 
@@ -141,6 +156,8 @@ assertCondition("Urutan form lengkap: Upload -> Status -> Nama -> NIK -> Bank ->
 assertCondition("CDN Tesseract.js dimuat untuk client-side OCR", strpos($viewContent, 'tesseract.min.js') !== false);
 assertCondition("Terdapat tombol Salin dari Nama KTP", strpos($viewContent, 'copyKtpName()') !== false);
 assertCondition("Terdapat tombol Gunakan NIK dari KTP", strpos($viewContent, 'btnApplyNik') !== false);
+assertCondition("Terdapat elemen peringatan ketidaksesuaian pemilik rekening", strpos($viewContent, 'rekeningOwnerError') !== false);
+assertCondition("Terdapat fungsi validasi checkRekeningOwnerMatch", strpos($viewContent, 'checkRekeningOwnerMatch') !== false);
 
 echo "\n===================================================================\n";
 echo "RINGKASAN: {$passed} BERHASIL, {$failed} GAGAL\n";

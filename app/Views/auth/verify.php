@@ -748,6 +748,10 @@
                                     class="input-pill"
                                     placeholder="Nama lengkap sesuai KTP">
                             </div>
+                            <span id="rekeningOwnerError" class="hidden text-[10px] text-rose-600 font-semibold mt-1 flex items-center gap-1">
+                                <i class="fas fa-circle-exclamation"></i> Nama pemilik rekening harus sama persis dengan nama pada KTP.
+                            </span>
+                            <span class="block text-[10px] text-slate-400 mt-1">Nama pemilik rekening bank wajib sama persis dengan nama identitas KTP Anda.</span>
                         </div>
 
                         <!-- 8. Checkbox Persetujuan Kebenaran Data -->
@@ -803,12 +807,41 @@ const systemState = {
     currentScanId: 0
 };
 
+// Pemeriksaan Kesesuaian Nama Pemilik Rekening dengan Nama KTP
+function checkRekeningOwnerMatch() {
+    const namaKtpEl = document.getElementById('namaKtp');
+    const namaPemilikEl = document.getElementById('namaPemilikRekening');
+    const errorEl = document.getElementById('rekeningOwnerError');
+    if (!namaKtpEl || !namaPemilikEl) return true;
+
+    const valKtp = namaKtpEl.value.trim().toUpperCase().replace(/\s+/g, ' ');
+    const valPemilik = namaPemilikEl.value.trim().toUpperCase().replace(/\s+/g, ' ');
+
+    if (!valPemilik) {
+        if (errorEl) errorEl.classList.add('hidden');
+        namaPemilikEl.classList.remove('border-rose-500', 'bg-rose-50/40');
+        return false;
+    }
+
+    if (valKtp && valPemilik && valKtp !== valPemilik) {
+        if (errorEl) errorEl.classList.remove('hidden');
+        namaPemilikEl.classList.add('border-rose-500', 'bg-rose-50/40');
+        return false;
+    } else {
+        if (errorEl) errorEl.classList.add('hidden');
+        namaPemilikEl.classList.remove('border-rose-500', 'bg-rose-50/40');
+        return true;
+    }
+}
+
 // Salin Nama KTP ke Nama Pemilik Rekening
 function copyKtpName() {
     const namaKtpInput = document.getElementById('namaKtp');
     const targetInput = document.getElementById('namaPemilikRekening');
     if (namaKtpInput && targetInput) {
         targetInput.value = namaKtpInput.value.trim();
+        checkRekeningOwnerMatch();
+        refreshSubmitButton();
     }
 }
 
@@ -889,8 +922,9 @@ function refreshSubmitButton() {
     const submitBtn = document.getElementById('submitBtn');
     const agreeCheck = document.getElementById('agreeVerification');
     const isAgree = agreeCheck ? agreeCheck.checked : false;
+    const isRekeningMatch = checkRekeningOwnerMatch();
 
-    if (systemState.isKtpValid && isAgree) {
+    if (systemState.isKtpValid && isAgree && isRekeningMatch) {
         submitBtn.removeAttribute('disabled');
         submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
     } else {
@@ -1432,6 +1466,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (systemState.fileSelected) {
                 validateIdentityMatch();
             }
+            checkRekeningOwnerMatch();
+            refreshSubmitButton();
+        });
+    }
+
+    const namaPemilikInput = document.getElementById('namaPemilikRekening');
+    if (namaPemilikInput) {
+        namaPemilikInput.addEventListener('input', function() {
+            checkRekeningOwnerMatch();
+            refreshSubmitButton();
         });
     }
 
@@ -1472,6 +1516,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Dokumen KTP belum terverifikasi atau data identitas belum sesuai. Mohon periksa kembali dokumen KTP dan formulir Anda.');
                 const box = document.getElementById('ktpStatusBox');
                 if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
+            // Validasi Kesesuaian Nama Pemilik Rekening dengan Nama KTP
+            if (!checkRekeningOwnerMatch()) {
+                e.preventDefault();
+                alert('Nama pemilik rekening harus sama persis dengan Nama sesuai KTP.');
+                if (namaPemilikInput) {
+                    namaPemilikInput.focus();
+                }
                 return false;
             }
 

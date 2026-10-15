@@ -251,6 +251,18 @@ class Auth extends BaseController
                 return redirect()->back()->with('error', 'Nama lengkap sesuai KTP wajib diisi.')->withInput();
             }
 
+            // Validasi Nama Pemilik Rekening Wajib Diisi dan Harus Sesuai dengan Nama KTP
+            if (empty($nama_pemilik)) {
+                return redirect()->back()->with('error', 'Nama pemilik rekening wajib diisi.')->withInput();
+            }
+
+            $cleanNamaKtp = trim(preg_replace('/\s+/', ' ', mb_strtoupper($nama_ktp)));
+            $cleanNamaPemilik = trim(preg_replace('/\s+/', ' ', mb_strtoupper($nama_pemilik)));
+
+            if ($cleanNamaKtp !== $cleanNamaPemilik) {
+                return redirect()->back()->with('error', 'Nama pemilik rekening harus sesuai dengan nama yang tertera pada KTP. Rekening wajib atas nama pribadi Anda.')->withInput();
+            }
+
             // Validasi Nama Bank Wajib Diisi
             if (empty($nama_bank) || $nama_bank === 'Lainnya') {
                 return redirect()->back()->with('error', 'Silakan pilih nama bank atau ketik nama bank Anda jika memilih opsi Lainnya.')->withInput();
