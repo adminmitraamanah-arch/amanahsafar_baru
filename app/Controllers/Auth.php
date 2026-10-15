@@ -239,6 +239,12 @@ class Auth extends BaseController
             }
             $nomor_rekening = trim($this->request->getPost('nomor_rekening') ?? '');
             $nama_pemilik = trim($this->request->getPost('nama_pemilik_rekening') ?? '');
+            $agree = $this->request->getPost('agree_verification');
+
+            // 0. Validasi Persetujuan Pernyataan
+            if (!$agree) {
+                return redirect()->back()->with('error', 'Anda wajib mencentang persetujuan pernyataan kebenaran data identitas dan rekening sebelum melanjutkan.')->withInput();
+            }
 
             // Validasi Nama Sesuai KTP Wajib Diisi
             if (empty($nama_ktp)) {
@@ -250,9 +256,23 @@ class Auth extends BaseController
                 return redirect()->back()->with('error', 'Silakan pilih nama bank atau ketik nama bank Anda jika memilih opsi Lainnya.')->withInput();
             }
 
-            // 1. Validasi NIK (Wajib 16 digit angka)
-            if (!preg_match('/^[0-9]{16}$/', $nik)) {
-                return redirect()->back()->with('error', 'Nomor Induk Kependudukan (NIK) wajib 16 digit angka sesuai KTP resmi.')->withInput();
+            // 1. Validasi NIK (Wajib 16 digit angka, tidak diawali angka 0, dan kode provinsi Indonesia valid)
+            if (!preg_match('/^[1-9][0-9]{15}$/', $nik)) {
+                return redirect()->back()->with('error', 'Nomor Induk Kependudukan (NIK) wajib 16 digit angka sesuai KTP resmi dan tidak boleh diawali angka 0.')->withInput();
+            }
+
+            $provCode = (int) substr($nik, 0, 2);
+            $validProvCodes = [
+                11, 12, 13, 14, 15, 16, 17, 18, 19, 21,
+                31, 32, 33, 34, 35, 36,
+                51, 52, 53,
+                61, 62, 63, 64, 65,
+                71, 72, 73, 74, 75, 76,
+                81, 82,
+                91, 92, 93, 94, 95, 96
+            ];
+            if (!in_array($provCode, $validProvCodes, true)) {
+                return redirect()->back()->with('error', 'Format NIK tidak valid. Dua digit awal harus merupakan kode wilayah provinsi Indonesia yang sah.')->withInput();
             }
 
             // 2. Validasi NIK Unik di antara akun AKTIF (tidak boleh ganda)
@@ -286,16 +306,46 @@ class Auth extends BaseController
                 return redirect()->back()->with('error', 'Keamanan Sistem: Nomor rekening bank ini sudah terdaftar pada akun mitra aktif lain. Mohon gunakan rekening bank atas nama pribadi Anda.')->withInput();
             }
 
-            // Handle file uploads
+            // 4. Validasi dan Penanganan Dokumen KTP
+            $existing = $this->verificationModel->where('user_id', $user_id)->first();
             $ktp = $this->request->getFile('ktp');
-
             $ktp_path = null;
 
-            if ($ktp && $ktp->isValid() && !$ktp->hasMoved()) {
-                $ktp_path = $ktp->store('uploads/verifikasi');
+            if (empty($existing['ktp_path']) && (!$ktp || !$ktp->isValid())) {
+                return redirect()->back()->with('error', 'Dokumen identitas KTP wajib diunggah.')->withInput();
             }
 
-            $existing = $this->verificationModel->where('user_id', $user_id)->first();
+            if ($ktp && $ktp->isValid() && !$ktp->hasMoved()) {
+                // Validasi ukuran maksimal (5MB)
+                if ($ktp->getSize() > 5 * 1024 * 1024) {
+                    return redirect()->back()->with('error', 'Ukuran foto KTP melebihi batas maksimal 5MB.')->withInput();
+                }
+
+                // Validasi ekstensi dan MIME type
+                $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+                $allowedExts  = ['jpg', 'jpeg', 'png', 'webp'];
+                $mimeType     = $ktp->getMimeType();
+                $extension    = strtolower($ktp->getClientExtension() ?: $ktp->getExtension() ?: '');
+
+                if (!in_array($mimeType, $allowedMimes, true) || !in_array($extension, $allowedExts, true)) {
+                    return redirect()->back()->with('error', 'Format dokumen tidak didukung atau bukan format gambar resmi (JPG, PNG, WEBP).')->withInput();
+                }
+
+                // Validasi integritas dan resolusi gambar fisik
+                $tempPath = $ktp->getTempName();
+                $imageInfo = @getimagesize($tempPath);
+                if ($imageInfo === false) {
+                    return redirect()->back()->with('error', 'File yang diunggah rusak atau bukan file gambar yang valid.')->withInput();
+                }
+
+                $width = $imageInfo[0];
+                $height = $imageInfo[1];
+                if ($width < 400 || $height < 250) {
+                    return redirect()->back()->with('error', 'Resolusi gambar KTP terlalu kecil atau tidak jelas. Mohon unggah foto KTP dengan resolusi lebih tinggi (minimal 400x250 piksel).')->withInput();
+                }
+
+                $ktp_path = $ktp->store('uploads/verifikasi');
+            }
             $dataToSave = [
                 'nik'                   => $nik,
                 'nama_bank'             => $nama_bank,

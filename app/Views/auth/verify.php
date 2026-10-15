@@ -166,6 +166,15 @@
         background-color: #430057;
         transform: scale(0.99);
     }
+    .btn-brand-primary:disabled,
+    .btn-brand-primary[disabled] {
+        background-color: #a8a29e !important;
+        color: #f5f5f4 !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: none !important;
+        opacity: 0.65 !important;
+    }
     .nav-pill-btn {
         display: inline-flex;
         align-items: center;
@@ -534,10 +543,85 @@
                     <?php endif; ?>
 
                     <!-- Form Verifikasi Data -->
-                    <form method="POST" action="<?= base_url('/verify') ?>" enctype="multipart/form-data" class="mt-5">
+                    <form id="verificationForm" method="POST" action="<?= base_url('/verify') ?>" enctype="multipart/form-data" class="mt-5">
                         <?= csrf_field() ?>
 
-                        <!-- Bagian Identitas: Nama Sesuai KTP -->
+                        <!-- 1. BAGIAN UPLOAD KTP (POSISI PALING ATAS FORM) -->
+                        <div class="form-group-spaced">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-bold text-slate-700">
+                                    Dokumen Identitas KTP <span class="text-rose-500">*</span>
+                                </label>
+                                <?php if (!empty($verification['ktp_path'])): ?>
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                        <i class="fas fa-check-circle text-[10px]"></i> KTP Tersimpan
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div id="ktpDropzone" class="upload-dropzone rounded-2xl p-4 sm:p-5 text-center cursor-pointer group relative border-2 border-dashed border-slate-300 hover:border-[#6b008a] transition-all bg-slate-50/60"
+                                 onclick="document.getElementById('ktpInput').click()">
+                                <input type="file" id="ktpInput" name="ktp" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" <?= empty($verification['ktp_path']) ? 'required' : '' ?> class="hidden">
+                                
+                                <div id="ktpPreview" class="<?= empty($verification['ktp_path']) ? 'hidden' : '' ?> mb-2 relative inline-block">
+                                    <img id="ktpImageElement" src="<?= !empty($verification['ktp_path']) ? base_url($verification['ktp_path']) : '' ?>" alt="KTP Preview" class="max-h-36 max-w-full mx-auto rounded-xl object-contain shadow-sm border border-slate-200 bg-white p-1">
+                                    <span class="inline-block mt-2 text-[11px] font-semibold text-purple-700 hover:text-purple-900 underline">Klik untuk ganti dokumen KTP</span>
+                                </div>
+                                <div id="ktpDefaultIcon" class="<?= !empty($verification['ktp_path']) ? 'hidden' : '' ?> w-12 h-12 rounded-2xl bg-purple-50 text-[#6b008a] flex items-center justify-center mx-auto mb-2.5 group-hover:scale-105 transition-transform shadow-sm">
+                                    <i class="fas fa-id-card text-lg"></i>
+                                </div>
+                                <div id="ktpTextPrompt" class="<?= !empty($verification['ktp_path']) ? 'hidden' : '' ?>">
+                                    <span id="ktpFileName" class="block text-xs font-bold text-slate-800">Pilih atau Tarik Foto / Scan KTP ke Sini</span>
+                                    <span class="block text-[11px] text-slate-400 mt-1">Format JPG, PNG, atau WEBP • Maksimal 5MB • Foto asli penuh & jelas</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. HASIL PEMERIKSAAN DOKUMEN & STATUS VALIDASI (STATUS BOX) -->
+                        <div id="ktpStatusContainer" class="form-group-spaced">
+                            <div id="ktpStatusBox" class="p-3.5 rounded-2xl border transition-all duration-200 <?= !empty($verification['ktp_path']) ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700' ?>">
+                                <div class="flex items-start gap-3">
+                                    <div id="ktpStatusIcon" class="mt-0.5 text-base shrink-0 <?= !empty($verification['ktp_path']) ? 'text-emerald-600' : 'text-purple-600' ?>">
+                                        <i class="fas <?= !empty($verification['ktp_path']) ? 'fa-circle-check' : 'fa-circle-info' ?>"></i>
+                                    </div>
+                                    <div class="flex-grow text-xs space-y-1.5">
+                                        <div class="flex items-center justify-between">
+                                            <span id="ktpStatusTitle" class="font-bold text-xs <?= !empty($verification['ktp_path']) ? 'text-emerald-900' : 'text-slate-800' ?>">
+                                                <?= !empty($verification['ktp_path']) ? 'Dokumen KTP Sebelumnya Telah Terunggah' : 'Pemeriksaan Identitas Otomatis' ?>
+                                            </span>
+                                            <span id="ktpStatusBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full <?= !empty($verification['ktp_path']) ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-[#6b008a] border border-purple-200' ?>">
+                                                <?= !empty($verification['ktp_path']) ? 'Siap Lanjut' : 'Menunggu Berkas' ?>
+                                            </span>
+                                        </div>
+                                        <p id="ktpStatusDesc" class="text-[11px] leading-relaxed text-slate-600">
+                                            <?= !empty($verification['ktp_path']) ? 'KTP Anda telah tersimpan di sistem. Unggah berkas baru apabila Anda ingin mengganti dokumen KTP.' : 'Unggah foto KTP asli Anda pada kotak di atas. Sistem akan memeriksa format citra, memastikan dokumen KTP Indonesia yang sah, serta mencocokkan NIK dan Nama Anda secara otomatis.' ?>
+                                        </p>
+                                        
+                                        <!-- Ringkasan Ekstraksi Dokumen Terbaca -->
+                                        <div id="ktpExtractedSummary" class="hidden mt-2 p-2.5 rounded-xl bg-white/80 border border-slate-200/80 text-[11px] space-y-1">
+                                            <div class="flex items-center justify-between font-mono">
+                                                <span class="text-slate-500 font-sans">NIK Terdeteksi:</span>
+                                                <span id="extractedNikText" class="font-bold text-slate-800 tracking-wider">-</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-slate-500">Nama Terdeteksi:</span>
+                                                <span id="extractedNamaText" class="font-bold text-slate-800 uppercase">-</span>
+                                            </div>
+                                            <div id="quickSyncButtons" class="pt-1.5 flex flex-wrap gap-1.5 border-t border-slate-200/60 mt-1">
+                                                <button type="button" id="btnApplyNik" class="text-[10px] font-bold px-2 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors">
+                                                    <i class="fas fa-arrow-down mr-1"></i> Gunakan NIK dari KTP
+                                                </button>
+                                                <button type="button" id="btnApplyNama" class="text-[10px] font-bold px-2 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors">
+                                                    <i class="fas fa-arrow-down mr-1"></i> Gunakan Nama dari KTP
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. BAGIAN IDENTITAS: NAMA SESUAI KTP -->
                         <div class="form-group-spaced">
                             <label for="namaKtp" class="block text-xs font-bold text-slate-700 mb-1.5">
                                 Nama Sesuai KTP <span class="text-rose-500">*</span>
@@ -554,7 +638,7 @@
                             <span class="block text-[10px] text-slate-400 mt-1">Pastikan nama lengkap persis seperti yang tertera pada kartu identitas KTP Anda.</span>
                         </div>
 
-                        <!-- Bagian Identitas: Nomor Induk Kependudukan (NIK) -->
+                        <!-- 4. BAGIAN IDENTITAS: NOMOR INDUK KEPENDUDUKAN (NIK) -->
                         <div class="form-group-spaced">
                             <label for="nikInput" class="block text-xs font-bold text-slate-700 mb-1.5">
                                 Nomor Induk Kependudukan (NIK KTP - 16 Digit) <span class="text-rose-500">*</span>
@@ -572,27 +656,7 @@
                             <span class="block text-[10px] text-slate-400 mt-1">Wajib 16 digit angka sesuai KTP resmi. 1 NIK hanya berlaku untuk 1 akun kemitraan.</span>
                         </div>
 
-                        <!-- Bagian Upload: Upload KTP -->
-                        <div class="form-group-spaced">
-                            <label class="block text-xs font-bold text-slate-700 mb-1.5">
-                                Dokumen Identitas KTP <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="upload-dropzone rounded-xl p-4 text-center cursor-pointer group relative"
-                                 onclick="document.getElementById('ktpInput').click()">
-                                <input type="file" id="ktpInput" name="ktp" accept="image/*" <?= empty($verification['ktp_path']) ? 'required' : '' ?> class="hidden" onchange="previewUpload(this, 'ktpPreview', 'ktpFileName', 'ktpDefaultIcon')">
-                                
-                                <div id="ktpPreview" class="hidden mb-2">
-                                    <img src="" alt="KTP Preview" class="h-20 mx-auto rounded-lg object-cover shadow-sm border border-slate-200">
-                                </div>
-                                <div id="ktpDefaultIcon" class="w-10 h-10 rounded-xl bg-purple-50 text-[#6b008a] flex items-center justify-center mx-auto mb-2 group-hover:scale-105 transition-transform">
-                                    <i class="fas fa-id-card text-base"></i>
-                                </div>
-                                <span id="ktpFileName" class="block text-xs font-bold text-slate-800">Pilih Foto / Scan KTP</span>
-                                <span class="block text-[10px] text-slate-400 mt-0.5">Format JPG, PNG, atau WEBP (Maksimal 5MB)</span>
-                            </div>
-                        </div>
-
-                        <!-- Bagian Rekening: Nama Bank & Nomor Rekening -->
+                        <!-- 5. BAGIAN REKENING: NAMA BANK & NOMOR REKENING -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 form-group-spaced">
                             <!-- Nama Bank -->
                             <div>
@@ -648,7 +712,7 @@
                                 <input type="hidden" id="namaBankFinal" name="nama_bank" value="<?= esc($verification['nama_bank'] ?? '') ?>" required>
                             </div>
 
-                            <!-- Nomor Rekening -->
+                            <!-- 6. Nomor Rekening -->
                             <div>
                                 <label for="noRek" class="block text-xs font-bold text-slate-700 mb-1.5">
                                     Nomor Rekening <span class="text-rose-500">*</span>
@@ -658,13 +722,14 @@
                                         <i class="fas fa-credit-card"></i>
                                     </span>
                                     <input type="text" id="noRek" name="nomor_rekening" required pattern="[0-9]{5,25}"
+                                        value="<?= esc($verification['nomor_rekening'] ?? '') ?>"
                                         class="input-pill font-mono"
                                         placeholder="Contoh: 1234567890">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Nama Pemilik Rekening -->
+                        <!-- 7. Nama Pemilik Rekening -->
                         <div class="form-group-spaced">
                             <div class="flex items-center justify-between mb-1.5">
                                 <label for="namaPemilikRekening" class="block text-xs font-bold text-slate-700">
@@ -685,20 +750,20 @@
                             </div>
                         </div>
 
-                        <!-- Checkbox Persetujuan Kebenaran Data -->
+                        <!-- 8. Checkbox Persetujuan Kebenaran Data -->
                         <div class="pt-1 mb-5">
                             <label class="flex items-start gap-2.5 cursor-pointer select-none">
-                                <input type="checkbox" name="agree_verification" required class="mt-1 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
+                                <input type="checkbox" id="agreeVerification" name="agree_verification" value="1" required class="mt-1 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
                                 <span class="text-xs text-slate-600 leading-relaxed">
                                     Saya menyatakan data identitas dan informasi rekening di atas adalah benar, sah, dan milik saya pribadi.
                                 </span>
                             </label>
                         </div>
 
-                        <!-- Tombol Utama Verifikasi (Kalimat Asli Sistem: Lanjutkan ke Perjanjian) -->
+                        <!-- 9. Tombol Utama Verifikasi (Disabled/Terkunci Sampai KTP & Data Valid) -->
                         <div class="auth-submit-wrap">
-                            <button type="submit" class="btn-brand-primary">
-                                <span>Lanjutkan ke Perjanjian</span>
+                            <button type="submit" id="submitBtn" class="btn-brand-primary" <?= empty($verification['ktp_path']) ? 'disabled' : '' ?>>
+                                <span id="submitBtnText">Lanjutkan ke Perjanjian</span>
                                 <i class="fas fa-arrow-right text-xs"></i>
                             </button>
                         </div>
@@ -713,7 +778,7 @@
         </div>
     </main>
 
-    <!-- Bottom Page Footer (Persis Referensi: Alur Pendaftaran • Persyaratan • Bantuan & Kontak) -->
+    <!-- Bottom Page Footer -->
     <footer class="auth-bottom-footer">
         <a href="<?= base_url('/') ?>">Alur Pendaftaran</a>
         <span>•</span>
@@ -723,7 +788,22 @@
     </footer>
 </div>
 
+<!-- Tesseract.js via CDN untuk Pemindaian OCR KTP Sisi Klien -->
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
 <script>
+// State Identitas & Status Dokumen
+const systemState = {
+    hasExistingKtp: <?= !empty($verification['ktp_path']) ? 'true' : 'false' ?>,
+    fileSelected: false,
+    isProcessing: false,
+    isKtpValid: <?= !empty($verification['ktp_path']) ? 'true' : 'false' ?>,
+    extractedNik: null,
+    extractedNama: null,
+    currentScanId: 0
+};
+
+// Salin Nama KTP ke Nama Pemilik Rekening
 function copyKtpName() {
     const namaKtpInput = document.getElementById('namaKtp');
     const targetInput = document.getElementById('namaPemilikRekening');
@@ -734,43 +814,18 @@ function copyKtpName() {
     }
 }
 
-function copyUserName() {
-    copyKtpName();
-}
-
-function previewUpload(input, previewContainerId, labelId, defaultIconId) {
-    if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const reader = new FileReader();
-        const container = document.getElementById(previewContainerId);
-        const img = container.querySelector('img');
-        const label = document.getElementById(labelId);
-        const icon = document.getElementById(defaultIconId);
-
-        reader.onload = function(e) {
-            img.src = e.target.result;
-            container.classList.remove('hidden');
-            if (icon) icon.classList.add('hidden');
-            label.textContent = file.name;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Logika Pilihan Bank & Opsi 'Lainnya'
+// Logika Bank & Opsi Lainnya
 function handleBankSelection(value) {
     const manualContainer = document.getElementById('bankManualContainer');
     const manualInput = document.getElementById('namaBankManual');
     const finalInput = document.getElementById('namaBankFinal');
 
     if (value === 'Lainnya') {
-        // Tampilkan kolom input dan langsung fokus agar pengguna bisa langsung mengetik
         manualContainer.classList.remove('hidden');
         manualInput.required = true;
         setTimeout(() => manualInput.focus(), 50);
         finalInput.value = manualInput.value.trim();
     } else {
-        // Jika memilih dari select, tidak bisa diketik ulang (terkunci pada opsi select)
         manualContainer.classList.add('hidden');
         manualInput.required = false;
         manualInput.value = '';
@@ -782,15 +837,614 @@ function syncBankValue(value) {
     document.getElementById('namaBankFinal').value = value.trim();
 }
 
-// Inisialisasi Bank saat DOM selesai dimuat (jika ada data tersimpan sebelumnya)
+// Update Tampilan Status Box
+function updateStatusBox(type, title, desc, badgeText) {
+    const box = document.getElementById('ktpStatusBox');
+    const icon = document.getElementById('ktpStatusIcon');
+    const titleEl = document.getElementById('ktpStatusTitle');
+    const descEl = document.getElementById('ktpStatusDesc');
+    const badgeEl = document.getElementById('ktpStatusBadge');
+
+    // Reset styles
+    box.className = 'p-3.5 rounded-2xl border transition-all duration-200';
+    badgeEl.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full border';
+
+    if (type === 'loading') {
+        box.classList.add('bg-purple-50/80', 'border-purple-200', 'text-purple-900');
+        icon.className = 'mt-0.5 text-base shrink-0 text-[#6b008a]';
+        icon.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+        titleEl.className = 'font-bold text-xs text-purple-950';
+        badgeEl.classList.add('bg-purple-100', 'text-[#6b008a]', 'border-purple-300');
+    } else if (type === 'error') {
+        box.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-900');
+        icon.className = 'mt-0.5 text-base shrink-0 text-rose-600';
+        icon.innerHTML = '<i class="fas fa-circle-xmark"></i>';
+        titleEl.className = 'font-bold text-xs text-rose-800';
+        badgeEl.classList.add('bg-rose-100', 'text-rose-800', 'border-rose-300');
+    } else if (type === 'warning') {
+        box.classList.add('bg-amber-50', 'border-amber-300', 'text-amber-900');
+        icon.className = 'mt-0.5 text-base shrink-0 text-amber-600';
+        icon.innerHTML = '<i class="fas fa-triangle-exclamation"></i>';
+        titleEl.className = 'font-bold text-xs text-amber-800';
+        badgeEl.classList.add('bg-amber-100', 'text-amber-800', 'border-amber-300');
+    } else if (type === 'success') {
+        box.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-900');
+        icon.className = 'mt-0.5 text-base shrink-0 text-emerald-600';
+        icon.innerHTML = '<i class="fas fa-circle-check"></i>';
+        titleEl.className = 'font-bold text-xs text-emerald-800';
+        badgeEl.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+    } else {
+        box.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-700');
+        icon.className = 'mt-0.5 text-base shrink-0 text-purple-600';
+        icon.innerHTML = '<i class="fas fa-circle-info"></i>';
+        titleEl.className = 'font-bold text-xs text-slate-800';
+        badgeEl.classList.add('bg-purple-100', 'text-[#6b008a]', 'border-purple-200');
+    }
+
+    titleEl.textContent = title;
+    descEl.textContent = desc;
+    badgeEl.textContent = badgeText;
+}
+
+// Update Status Tombol Submit
+function refreshSubmitButton() {
+    const submitBtn = document.getElementById('submitBtn');
+    const agreeCheck = document.getElementById('agreeVerification');
+    const isAgree = agreeCheck ? agreeCheck.checked : false;
+
+    if (systemState.isKtpValid && isAgree) {
+        submitBtn.removeAttribute('disabled');
+        submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+    } else {
+        submitBtn.setAttribute('disabled', 'disabled');
+        submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+    }
+}
+
+// Analisis Kualitas & Citra Gambar di Canvas
+function analyzeImageQuality(img) {
+    return new Promise((resolve) => {
+        const width = img.naturalWidth || img.width;
+        const height = img.naturalHeight || img.height;
+
+        // 1. Validasi Dimensi Minimum
+        if (width < 400 || height < 250) {
+            return resolve({
+                valid: false,
+                reason: 'Resolusi gambar KTP terlalu kecil atau tidak jelas. Mohon unggah foto KTP dengan resolusi lebih tinggi.'
+            });
+        }
+
+        // 2. Validasi Aspek Rasio (Standar KTP 85.6mm x 53.98mm = ~1.58, tolerir rotasi/crop 0.65 - 2.8)
+        const ratio = width / height;
+        if (ratio < 0.65 || ratio > 2.8) {
+            return resolve({
+                valid: false,
+                reason: 'Proporsi dokumen tidak proporsional untuk kartu identitas KTP. Mohon pastikan foto berorientasi mendatar/landscape.'
+            });
+        }
+
+        // 3. Analisis Kecerahan & Kontras Citra di In-Memory Canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const sampleW = 200;
+        const sampleH = Math.round(200 / (ratio || 1.58));
+        canvas.width = sampleW;
+        canvas.height = sampleH;
+
+        try {
+            ctx.drawImage(img, 0, 0, sampleW, sampleH);
+            const imgData = ctx.getImageData(0, 0, sampleW, sampleH);
+            const d = imgData.data;
+            let totalLum = 0;
+            const step = 4;
+            const pixelCount = d.length / 4;
+
+            for (let i = 0; i < d.length; i += step * 4) {
+                const r = d[i];
+                const g = d[i + 1];
+                const b = d[i + 2];
+                totalLum += (0.299 * r + 0.587 * g + 0.114 * b);
+            }
+
+            const sampledCount = Math.floor(pixelCount / step);
+            const avgLum = totalLum / sampledCount;
+
+            // Foto terlalu gelap (underexposed)
+            if (avgLum < 30) {
+                return resolve({
+                    valid: false,
+                    reason: 'Foto KTP terlalu gelap atau buram. Pastikan foto diambil dalam pencahayaan yang cukup.'
+                });
+            }
+
+            // Foto silau / putih total (overexposed / flash glare)
+            if (avgLum > 248) {
+                return resolve({
+                    valid: false,
+                    reason: 'Foto KTP terlalu silau atau terdapat pantulan cahaya berlebih. Mohon ambil foto tanpa pantulan cahaya.'
+                });
+            }
+
+            resolve({ valid: true, canvas: canvas });
+        } catch (e) {
+            // Jika canvas ter-taint (CORS), lanjutkan tanpa menghentikan proses
+            resolve({ valid: true });
+        }
+    });
+}
+
+// Pembersihan & Normalisasi String untuk Komparasi
+function normalizeText(str) {
+    if (!str) return '';
+    return str.toString()
+        .toUpperCase()
+        .replace(/[^A-Z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+// Ekstraksi Kata Kunci KTP Indonesia
+function checkIndonesianKtpKeywords(rawText) {
+    const text = normalizeText(rawText);
+    const keywords = [
+        'REPUBLIK', 'INDONESIA', 'KARTU', 'TANDA', 'PENDUDUK',
+        'NIK', 'PROVINSI', 'KABUPATEN', 'KOTA', 'AGAMA',
+        'STATUS', 'PERKAWINAN', 'PEKERJAAN', 'KEWARGANEGARAAN',
+        'BERLAKU', 'DARAH', 'ALAMAT', 'TEMPAT', 'LAHIR', 'KELURAHAN', 'KECAMATAN'
+    ];
+
+    let matchCount = 0;
+    const foundKeywords = [];
+
+    keywords.forEach(kw => {
+        if (text.includes(kw)) {
+            matchCount++;
+            foundKeywords.push(kw);
+        }
+    });
+
+    // Indikasi kuat KTP: Ada 'NIK' atau kombinasi nama negara/provinsi/tanda penduduk
+    const hasCoreAnchor = text.includes('NIK') || (text.includes('PENDUDUK') && text.includes('INDONESIA')) || (text.includes('PROVINSI') && text.includes('KABUPATEN'));
+    const isIndonesianKtp = matchCount >= 2 || (hasCoreAnchor && matchCount >= 1);
+
+    return {
+        isKtp: isIndonesianKtp,
+        matchCount: matchCount,
+        foundKeywords: foundKeywords
+    };
+}
+
+// Ekstraksi 16 Digit NIK dan Nama dari Teks OCR
+function extractKtpData(rawText) {
+    let nik = null;
+    let nama = null;
+
+    // 1. Ekstraksi NIK (Pola 16 Digit Angka)
+    // Coba regex langsung
+    const rawMatches = rawText.match(/\b([1-9][0-9]{15})\b/g);
+    if (rawMatches && rawMatches.length > 0) {
+        nik = rawMatches[0];
+    } else {
+        // Coba cari di baris yang mengandung 'NIK' dan normalisasi OCR typos (misal O -> 0, I -> 1)
+        const lines = rawText.split('\n');
+        for (let line of lines) {
+            if (/NIK/i.test(line)) {
+                let candidate = line.replace(/NIK/gi, '')
+                    .replace(/[:\-=_]/g, '')
+                    .replace(/[oOD]/g, '0')
+                    .replace(/[Il|!]/g, '1')
+                    .replace(/[Ss]/g, '5')
+                    .replace(/[B]/g, '8')
+                    .replace(/[^0-9]/g, '');
+                if (candidate.length >= 16) {
+                    nik = candidate.slice(0, 16);
+                    break;
+                }
+            }
+        }
+    }
+
+    // 2. Ekstraksi Nama Sesuai KTP
+    const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+    for (let i = 0; i < lines.length; i++) {
+        const lineUpper = lines[i].toUpperCase();
+        if (lineUpper.includes('NAMA')) {
+            // Ambil teks di sebelah kata NAMA atau di baris berikutnya
+            let candidate = lineUpper.replace(/.*NAMA\s*[:\-=]?\s*/i, '').trim();
+            // Bersihkan label KTP yang tidak sengaja terbawa
+            candidate = candidate.replace(/\b(TEMPAT|LAHIR|GOL|DARAH|ALAMAT)\b.*/i, '').trim();
+            if (candidate.length >= 3 && !/^(KTP|NIK|REPUBLIK|INDONESIA|PROVINSI)/i.test(candidate)) {
+                nama = candidate;
+                break;
+            } else if (i + 1 < lines.length) {
+                let nextLine = lines[i + 1].toUpperCase().replace(/.*[:\-=]?\s*/, '').trim();
+                nextLine = nextLine.replace(/\b(TEMPAT|LAHIR|GOL|DARAH|ALAMAT)\b.*/i, '').trim();
+                if (nextLine.length >= 3 && !/^(TEMPAT|LAHIR|GOL|ALAMAT|AGAMA|STATUS)/i.test(nextLine)) {
+                    nama = nextLine;
+                    break;
+                }
+            }
+        }
+    }
+
+    return { nik, nama };
+}
+
+// Validasi Kesesuaian Identitas (Input Pengguna vs Ekstraksi KTP)
+function validateIdentityMatch() {
+    // Jika belum ada file atau masih loading, serahkan ke handler terkait
+    if (!systemState.fileSelected && !systemState.hasExistingKtp) {
+        refreshSubmitButton();
+        return;
+    }
+
+    // Jika KTP lama masih berlaku dan tidak ada file baru dipilih
+    if (!systemState.fileSelected && systemState.hasExistingKtp) {
+        systemState.isKtpValid = true;
+        refreshSubmitButton();
+        return;
+    }
+
+    const nikInput = document.getElementById('nikInput');
+    const namaInput = document.getElementById('namaKtp');
+    const valNik = nikInput ? nikInput.value.trim() : '';
+    const valNama = namaInput ? namaInput.value.trim() : '';
+
+    // Jika tidak ada data yang berhasil diekstrak (KTP blur/terpotong)
+    if (!systemState.extractedNik && !systemState.extractedNama) {
+        updateStatusBox('warning', 'KTP Terdeteksi Namun Teks Kurang Jelas',
+            'KTP terdeteksi namun NIK/Nama tidak dapat dibaca jelas. Pastikan seluruh bagian KTP terlihat penuh tanpa terpotong atau silau.',
+            'Teks Kurang Jelas'
+        );
+        systemState.isKtpValid = false;
+        refreshSubmitButton();
+        return;
+    }
+
+    // 1. Validasi NIK
+    let nikMismatch = false;
+    if (systemState.extractedNik) {
+        if (valNik && valNik !== systemState.extractedNik) {
+            nikMismatch = true;
+        }
+    }
+
+    if (nikMismatch) {
+        updateStatusBox('error', 'Kesesuaian NIK Tidak Cocok',
+            'NIK yang Anda masukkan tidak sesuai dengan NIK yang tertera pada dokumen KTP.',
+            'NIK Tidak Sesuai'
+        );
+        systemState.isKtpValid = false;
+        refreshSubmitButton();
+        return;
+    }
+
+    // 2. Validasi Nama
+    let namaMismatch = false;
+    if (systemState.extractedNama && valNama) {
+        const normInput = normalizeText(valNama);
+        const normExtracted = normalizeText(systemState.extractedNama);
+
+        // Periksa apakah nama input mengandung nama KTP atau sebaliknya
+        const isMatch = normInput.includes(normExtracted) || 
+                        normExtracted.includes(normInput) ||
+                        calculateSimilarity(normInput, normExtracted) >= 0.65;
+
+        if (!isMatch) {
+            namaMismatch = true;
+        }
+    }
+
+    if (namaMismatch) {
+        updateStatusBox('warning', 'Nama Perlu Disesuaikan',
+            'Nama yang dimasukkan berbeda dengan nama pada dokumen KTP. Mohon sesuaikan.',
+            'Nama Tidak Cocok'
+        );
+        systemState.isKtpValid = false;
+        refreshSubmitButton();
+        return;
+    }
+
+    // Jika NIK belum lengkap 16 digit
+    if (valNik.length !== 16) {
+        updateStatusBox('warning', 'NIK Belum Lengkap',
+            'Masukkan 16 digit NIK lengkap sesuai KTP Anda.',
+            'Menunggu NIK'
+        );
+        systemState.isKtpValid = false;
+        refreshSubmitButton();
+        return;
+    }
+
+    // Semua Verifikasi Sukses
+    updateStatusBox('success', 'Dokumen KTP Terverifikasi & Sesuai',
+        'Dokumen KTP dan data identitas berhasil diverifikasi dan sesuai.',
+        'KTP Sesuai'
+    );
+    systemState.isKtpValid = true;
+    refreshSubmitButton();
+}
+
+// Algoritma Kemiripan Teks Sederhana (Jaccard similarity on character bigrams)
+function calculateSimilarity(str1, str2) {
+    if (!str1 || !str2) return 0;
+    if (str1 === str2) return 1.0;
+    const getBigrams = str => {
+        const s = new Set();
+        for (let i = 0; i < str.length - 1; i++) s.add(str.slice(i, i + 2));
+        return s;
+    };
+    const b1 = getBigrams(str1);
+    const b2 = getBigrams(str2);
+    let intersection = 0;
+    b1.forEach(bg => { if (b2.has(bg)) intersection++; });
+    const union = b1.size + b2.size - intersection;
+    return union === 0 ? 0 : intersection / union;
+}
+
+// Eksekusi Pemindaian KTP Lengkap (File Input Handler)
+async function handleKtpFile(file) {
+    if (!file) return;
+
+    systemState.fileSelected = true;
+    systemState.isKtpValid = false;
+    systemState.extractedNik = null;
+    systemState.extractedNama = null;
+    const scanId = ++systemState.currentScanId;
+
+    // Reset tombol submit
+    refreshSubmitButton();
+
+    // 1. Validasi Tipe & Ukuran File
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+        updateStatusBox('error', 'Format File Tidak Didukung',
+            'Format dokumen tidak didukung atau bukan format gambar resmi. Gunakan JPG, PNG, atau WEBP.',
+            'Format Ditolak'
+        );
+        return;
+    }
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+        updateStatusBox('error', 'Ukuran Berkas Melebihi Batas',
+            'Format dokumen tidak didukung atau ukuran melebihi batas 5MB.',
+            'Ukuran Terlalu Besar'
+        );
+        return;
+    }
+
+    // Tampilkan Nama File pada Dropzone
+    const fileNameEl = document.getElementById('ktpFileName');
+    if (fileNameEl) fileNameEl.textContent = file.name;
+
+    // Preview Gambar
+    const imgEl = document.getElementById('ktpImageElement');
+    const previewContainer = document.getElementById('ktpPreview');
+    const defaultIcon = document.getElementById('ktpDefaultIcon');
+    const textPrompt = document.getElementById('ktpTextPrompt');
+
+    const fileReader = new FileReader();
+    fileReader.onload = async function(e) {
+        if (scanId !== systemState.currentScanId) return;
+
+        imgEl.src = e.target.result;
+        previewContainer.classList.remove('hidden');
+        if (defaultIcon) defaultIcon.classList.add('hidden');
+        if (textPrompt) textPrompt.classList.add('hidden');
+
+        // Mulai Pemeriksaan Kualitas
+        updateStatusBox('loading', 'Memeriksa Dokumen...',
+            'Tahap 1/2: Menganalisis resolusi, kualitas foto, dan format citra...',
+            'Memeriksa Citra'
+        );
+
+        // Buat objek Image untuk analisis dimensi dan kualitas citra
+        const tempImg = new Image();
+        tempImg.onload = async function() {
+            if (scanId !== systemState.currentScanId) return;
+
+            const quality = await analyzeImageQuality(tempImg);
+            if (!quality.valid) {
+                updateStatusBox('error', 'Kualitas Dokumen Belum Memenuhi Syarat',
+                    quality.reason,
+                    'Kualitas Ditolak'
+                );
+                systemState.isKtpValid = false;
+                refreshSubmitButton();
+                return;
+            }
+
+            // Tahap 2: Deteksi KTP Indonesia & Ekstraksi OCR
+            updateStatusBox('loading', 'Memindai Teks KTP...',
+                'Tahap 2/2: Memverifikasi dokumen KTP Indonesia serta membaca NIK & Nama...',
+                'Membaca KTP'
+            );
+
+            try {
+                // Periksa kesiapan Tesseract
+                if (typeof Tesseract === 'undefined') {
+                    throw new Error('Modul OCR belum selesai dimuat. Silakan periksa koneksi internet Anda.');
+                }
+
+                const result = await Tesseract.recognize(tempImg, 'eng', {
+                    logger: m => {
+                        if (m.status === 'recognizing text' && scanId === systemState.currentScanId) {
+                            const pct = Math.round(m.progress * 100);
+                            const badge = document.getElementById('ktpStatusBadge');
+                            if (badge) badge.textContent = `OCR ${pct}%`;
+                        }
+                    }
+                });
+
+                if (scanId !== systemState.currentScanId) return;
+
+                const ocrText = result.data.text || '';
+
+                // Validasi Kata Kunci KTP Indonesia
+                const ktpCheck = checkIndonesianKtpKeywords(ocrText);
+                if (!ktpCheck.isKtp) {
+                    updateStatusBox('error', 'Dokumen Bukan KTP Indonesia',
+                        'Dokumen yang diunggah bukan KTP Indonesia. Silakan unggah foto KTP yang benar.',
+                        'Bukan KTP'
+                    );
+                    systemState.isKtpValid = false;
+                    refreshSubmitButton();
+                    return;
+                }
+
+                // Ekstraksi NIK & Nama
+                const extracted = extractKtpData(ocrText);
+                systemState.extractedNik = extracted.nik;
+                systemState.extractedNama = extracted.nama;
+
+                // Tampilkan summary di status box
+                const summaryBox = document.getElementById('ktpExtractedSummary');
+                const nikText = document.getElementById('extractedNikText');
+                const namaText = document.getElementById('extractedNamaText');
+
+                if (summaryBox) summaryBox.classList.remove('hidden');
+                if (nikText) nikText.textContent = extracted.nik || '(Tidak terbaca otomatis)';
+                if (namaText) namaText.textContent = extracted.nama || '(Tidak terbaca otomatis)';
+
+                // Auto-fill jika form masih kosong atau default
+                const nikInput = document.getElementById('nikInput');
+                const namaInput = document.getElementById('namaKtp');
+
+                if (extracted.nik && nikInput && (!nikInput.value.trim() || nikInput.value.trim() === '')) {
+                    nikInput.value = extracted.nik;
+                }
+
+                if (extracted.nama && namaInput && (!namaInput.value.trim() || namaInput.value.trim() === 'Mitra')) {
+                    namaInput.value = extracted.nama;
+                }
+
+                // Cocokkan data input dengan KTP
+                validateIdentityMatch();
+
+            } catch (err) {
+                if (scanId !== systemState.currentScanId) return;
+                console.error('OCR Error:', err);
+                updateStatusBox('warning', 'Pemeriksaan Otomatis Terkendala',
+                    'Sistem tidak dapat memindai KTP secara otomatis (' + (err.message || 'Koneksi OCR terputus') + '). Pastikan data yang Anda isi di bawah telah sesuai dengan foto KTP.',
+                    'Pemeriksaan Manual'
+                );
+                // Berikan toleransi jika OCR engine gagal termuat di browser
+                systemState.isKtpValid = true;
+                refreshSubmitButton();
+            }
+        };
+
+        tempImg.onerror = function() {
+            if (scanId !== systemState.currentScanId) return;
+            updateStatusBox('error', 'File Rusak',
+                'File gambar tidak dapat dibaca oleh browser. Pastikan file tidak rusak.',
+                'Gagal Membaca'
+            );
+        };
+
+        tempImg.src = e.target.result;
+    };
+
+    fileReader.readAsDataURL(file);
+}
+
+// Inisialisasi Event Listener saat DOM siap
 document.addEventListener('DOMContentLoaded', function() {
-    const savedBank = <?= json_encode($verification['nama_bank'] ?? '') ?>;
+    const ktpInput = document.getElementById('ktpInput');
+    const ktpDropzone = document.getElementById('ktpDropzone');
+    const nikInput = document.getElementById('nikInput');
+    const namaInput = document.getElementById('namaKtp');
+    const agreeCheck = document.getElementById('agreeVerification');
     const select = document.getElementById('selectBank');
     const manualContainer = document.getElementById('bankManualContainer');
     const manualInput = document.getElementById('namaBankManual');
     const finalInput = document.getElementById('namaBankFinal');
+    const btnApplyNik = document.getElementById('btnApplyNik');
+    const btnApplyNama = document.getElementById('btnApplyNama');
+    const form = document.getElementById('verificationForm');
 
-    if (savedBank) {
+    // 1. File Input Change Listener
+    if (ktpInput) {
+        ktpInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                handleKtpFile(this.files[0]);
+            }
+        });
+    }
+
+    // 2. Drag & Drop Listener pada Dropzone
+    if (ktpDropzone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            ktpDropzone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                ktpDropzone.classList.add('border-[#6b008a]', 'bg-purple-50/50');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            ktpDropzone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                ktpDropzone.classList.remove('border-[#6b008a]', 'bg-purple-50/50');
+            }, false);
+        });
+
+        ktpDropzone.addEventListener('drop', e => {
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+                const file = e.dataTransfer.files[0];
+                if (ktpInput) ktpInput.files = e.dataTransfer.files;
+                handleKtpFile(file);
+            }
+        }, false);
+    }
+
+    // 3. Tombol Terapkan NIK & Nama dari KTP
+    if (btnApplyNik) {
+        btnApplyNik.addEventListener('click', function() {
+            if (systemState.extractedNik && nikInput) {
+                nikInput.value = systemState.extractedNik;
+                validateIdentityMatch();
+            }
+        });
+    }
+
+    if (btnApplyNama) {
+        btnApplyNama.addEventListener('click', function() {
+            if (systemState.extractedNama && namaInput) {
+                namaInput.value = systemState.extractedNama;
+                validateIdentityMatch();
+            }
+        });
+    }
+
+    // 4. Real-time Cross Check saat User Mengetik di NIK atau Nama
+    if (nikInput) {
+        nikInput.addEventListener('input', function() {
+            if (systemState.fileSelected) {
+                validateIdentityMatch();
+            }
+        });
+    }
+
+    if (namaInput) {
+        namaInput.addEventListener('input', function() {
+            if (systemState.fileSelected) {
+                validateIdentityMatch();
+            }
+        });
+    }
+
+    // 5. Checkbox Persetujuan
+    if (agreeCheck) {
+        agreeCheck.addEventListener('change', refreshSubmitButton);
+    }
+
+    // 6. Inisialisasi Bank
+    const savedBank = <?= json_encode($verification['nama_bank'] ?? '') ?>;
+    if (savedBank && select) {
         let matched = false;
         for (let i = 0; i < select.options.length; i++) {
             if (select.options[i].value === savedBank) {
@@ -801,7 +1455,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        if (!matched) {
+        if (!matched && select.options.length > 0) {
             select.value = 'Lainnya';
             manualContainer.classList.remove('hidden');
             manualInput.required = true;
@@ -811,10 +1465,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Pastikan nilai valid sebelum form dikirimkan
-    const form = document.querySelector('form');
+    // 7. Gating pada Pengiriman Form (Submit Protection)
     if (form) {
         form.addEventListener('submit', function(e) {
+            // Cek apakah KTP valid
+            if (!systemState.isKtpValid) {
+                e.preventDefault();
+                alert('Dokumen KTP belum terverifikasi atau data identitas belum sesuai. Mohon periksa kembali dokumen KTP dan formulir Anda.');
+                const box = document.getElementById('ktpStatusBox');
+                if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return false;
+            }
+
+            // Validasi Bank
             if (select.value === 'Lainnya') {
                 finalInput.value = manualInput.value.trim();
                 if (!finalInput.value) {
@@ -831,8 +1494,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Silakan pilih nama bank terlebih dahulu.');
                 return false;
             }
+
+            // Validasi Checkbox
+            if (!agreeCheck.checked) {
+                e.preventDefault();
+                agreeCheck.focus();
+                alert('Anda wajib menyetujui pernyataan kebenaran data identitas dan rekening.');
+                return false;
+            }
         });
     }
+
+    // Refresh state awal tombol submit
+    refreshSubmitButton();
 });
 </script>
 <?= $this->endSection() ?>
