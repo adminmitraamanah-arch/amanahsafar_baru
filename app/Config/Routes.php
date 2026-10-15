@@ -6,30 +6,31 @@ use CodeIgniter\Router\RouteCollection;
 
 // Public routes
 $routes->get('/', 'Home::index');
-$routes->get('/login', 'Auth::login');
-$routes->post('/login', 'Auth::login');
-$routes->get('/register', 'Auth::register');
-$routes->post('/register', 'Auth::register');
+$routes->get('/maintenance', 'Maintenance::index');
+$routes->get('/login', 'Auth::login', ['filter' => 'portalMaintenance']);
+$routes->post('/login', 'Auth::login', ['filter' => 'portalMaintenance']);
+$routes->get('/register', 'Auth::register', ['filter' => 'portalMaintenance']);
+$routes->post('/register', 'Auth::register', ['filter' => 'portalMaintenance']);
 $routes->get('/logout', 'Auth::logout');
 
 // Auth required
-$routes->get('/verify', 'Auth::verify');
-$routes->post('/verify', 'Auth::verify');
-$routes->get('/agreement', 'Auth::agreement');
-$routes->post('/agreement', 'Auth::agreement');
+$routes->get('/verify', 'Auth::verify', ['filter' => 'portalMaintenance']);
+$routes->post('/verify', 'Auth::verify', ['filter' => 'portalMaintenance']);
+$routes->get('/agreement', 'Auth::agreement', ['filter' => 'portalMaintenance']);
+$routes->post('/agreement', 'Auth::agreement', ['filter' => 'portalMaintenance']);
 
 // Partners Flow (New)
-$routes->get('/partners/login', 'Partners::login');
-$routes->post('/partners/login', 'Partners::login');
-$routes->get('/partners/register', 'Partners::register');
-$routes->post('/partners/register', 'Partners::register');
-$routes->get('/partners/verification', 'Partners::verification');
-$routes->post('/partners/verification', 'Partners::verification');
-$routes->get('/partners/agreement', 'Partners::agreement');
-$routes->post('/partners/agreement', 'Partners::agreement');
+$routes->get('/partners/login', 'Partners::login', ['filter' => 'portalMaintenance']);
+$routes->post('/partners/login', 'Partners::login', ['filter' => 'portalMaintenance']);
+$routes->get('/partners/register', 'Partners::register', ['filter' => 'portalMaintenance']);
+$routes->post('/partners/register', 'Partners::register', ['filter' => 'portalMaintenance']);
+$routes->get('/partners/verification', 'Partners::verification', ['filter' => 'portalMaintenance']);
+$routes->post('/partners/verification', 'Partners::verification', ['filter' => 'portalMaintenance']);
+$routes->get('/partners/agreement', 'Partners::agreement', ['filter' => 'portalMaintenance']);
+$routes->post('/partners/agreement', 'Partners::agreement', ['filter' => 'portalMaintenance']);
 
 // Dashboard
-$routes->get('/dashboard', 'Dashboard::index');
+$routes->get('/dashboard', 'Dashboard::index', ['filter' => 'portalMaintenance']);
 
 // Profil Saya
 $routes->get('/profile', 'Profile::index', ['filter' => 'roleFilter']);
@@ -142,7 +143,7 @@ $routes->group('admin', ['filter' => 'roleFilter:admin,pusat'], function($routes
 });
 
 // Member (Pusat, Cabang, Manager, Mitra)
-$routes->group('app', ['filter' => 'roleFilter:pusat,cabang,manager_mitra,mitra'], function($routes) {
+$routes->group('app', ['filter' => ['portalMaintenance', 'roleFilter:pusat,cabang,manager_mitra,mitra']], function($routes) {
     $routes->get('dashboard', 'Member\Dashboard::index');
     $routes->get('packages', 'Member\Package::index');
     $routes->post('packages/order', 'Member\Package::order');

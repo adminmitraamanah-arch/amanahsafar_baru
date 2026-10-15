@@ -544,6 +544,15 @@
                         </div>
                     <?php endif; ?>
 
+                    <?php if (!empty($isMaintenance) && !empty($isAdminAccess)): ?>
+                        <div class="mt-4 p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-center gap-3 shadow-xs">
+                            <i class="fas fa-shield-alt text-amber-600 text-base shrink-0"></i>
+                            <div>
+                                <strong class="font-bold">Mode Pemeliharaan Aktif:</strong> Portal member sedang terkunci. Halaman login ini dibatasi khusus untuk verifikasi hak akses <strong>Super Admin</strong>.
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
                     <!-- Form Login -->
                     <form method="POST" action="<?= base_url('/login') ?>" class="mt-6">
                         <?= csrf_field() ?>

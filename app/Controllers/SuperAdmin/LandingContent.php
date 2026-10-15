@@ -97,6 +97,29 @@ class LandingContent extends BaseController
             return redirect()->to('/superadmin/landing')->with('success', 'Pengaturan Announcement Bar tersimpan');
         }
 
+        if ($formType === 'portal_maintenance') {
+            $active = $this->request->getPost('portal_maintenance_active') ? '1' : '0';
+            LandingSettingModel::setVal('portal_maintenance_active', $active);
+
+            $title = $this->request->getPost('portal_maintenance_title');
+            if ($title !== null) {
+                LandingSettingModel::setVal('portal_maintenance_title', trim($title));
+            }
+
+            $message = $this->request->getPost('portal_maintenance_message');
+            if ($message !== null) {
+                LandingSettingModel::setVal('portal_maintenance_message', trim($message));
+            }
+
+            $estimatedEnd = $this->request->getPost('portal_maintenance_estimated_end');
+            if ($estimatedEnd !== null) {
+                LandingSettingModel::setVal('portal_maintenance_estimated_end', trim($estimatedEnd));
+            }
+
+            $statusText = ($active === '1') ? 'DIAKTIFKAN (Portal Member Dialihkan ke Maintenance)' : 'DINONAKTIFKAN (Portal Member Normal)';
+            return redirect()->to('/superadmin/landing')->with('success', 'Status Mode Pemeliharaan Portal berhasil ' . $statusText);
+        }
+
         // Pengaturan Durasi Slide & Kontak Umum
         $seconds = $this->request->getPost('slide_interval_seconds');
         if (is_numeric($seconds) && (int)$seconds >= 1) {

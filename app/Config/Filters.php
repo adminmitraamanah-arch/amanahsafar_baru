@@ -36,6 +36,7 @@ class Filters extends BaseFilters
         'performance'   => PerformanceMetrics::class,
         'roleFilter'    => \App\Filters\RoleFilter::class,
         'activeUser'    => \App\Filters\ActiveUserFilter::class,
+        'portalMaintenance' => \App\Filters\PortalMaintenanceFilter::class,
     ];
 
     /**

@@ -21,6 +21,16 @@ class Auth extends BaseController
 
     public function login()
     {
+        $isMaintenance = \App\Models\LandingSettingModel::getVal('portal_maintenance_active', '0') === '1';
+        $isAdminAccess = $this->request->getGet('admin') !== null || $this->request->getGet('superadmin') !== null;
+
+        // Jika mode maintenance aktif dan kunjungan biasa (bukan akses admin), alihkan ke maintenance
+        if ($isMaintenance && !$isAdminAccess && !session('logged_in')) {
+            if (!$this->request->is('post')) {
+                return redirect()->to('/maintenance');
+            }
+        }
+
         if ($this->request->is('post')) {
             $email = trim($this->request->getPost('email') ?? '');
             $password = $this->request->getPost('password');
@@ -37,6 +47,12 @@ class Auth extends BaseController
 
             if ($user['status'] === 'nonaktif') {
                 return redirect()->back()->with('error', 'Akun anda di nonaktifkan');
+            }
+
+            // Jika mode pemeliharaan portal aktif, tolak akses pengguna non-superadmin
+            $isSuperAdmin = in_array($user['role'], ['super_admin', 'superadmin'], true);
+            if ($isMaintenance && !$isSuperAdmin) {
+                return redirect()->to('/maintenance')->with('error', 'Portal saat ini sedang dalam pemeliharaan sistem berkala. Akses login kemitraan dinonaktifkan sementara.');
             }
 
             // Login success - active users can login directly to dashboard
@@ -64,11 +80,18 @@ class Auth extends BaseController
             return redirect()->to($targetUrl)->with('success', 'Berhasil masuk ke akun');
         }
 
-        return view('auth/login');
+        return view('auth/login', [
+            'isMaintenance' => $isMaintenance,
+            'isAdminAccess' => $isAdminAccess,
+        ]);
     }
 
     public function register()
     {
+        $isMaintenance = \App\Models\LandingSettingModel::getVal('portal_maintenance_active', '0') === '1';
+        if ($isMaintenance) {
+            return redirect()->to('/maintenance');
+        }
         if ($this->request->is('post')) {
             $nama = $this->request->getPost('nama_lengkap');
             $email = $this->request->getPost('email');

@@ -29,6 +29,93 @@
                     </div>
                 </div>
 
+                <!-- CARD: KONTROL PEMELIHARAAN PORTAL (MAINTENANCE MODE) -->
+                <?php $isMaintenanceActive = (($settings['portal_maintenance_active'] ?? '0') === '1'); ?>
+                <div class="bg-white rounded-xl shadow-sm border <?= $isMaintenanceActive ? 'border-amber-300 ring-2 ring-amber-100' : 'border-gray-200' ?> overflow-hidden transition-all">
+                    <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 <?= $isMaintenanceActive ? 'bg-amber-50/50' : '' ?>">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg <?= $isMaintenanceActive ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700' ?> flex items-center justify-center font-bold text-lg">
+                                <i class="fas fa-tools"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-lg font-bold text-gray-900">Mode Pemeliharaan Portal (Maintenance)</h2>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-purple-100 text-[#5e0078]">Khusus Member/Mitra</span>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-0.5">Kunci akses pendaftaran dan login mitra/cabang, sementara <strong>Landing Page utama tetap normal</strong>.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold <?= $isMaintenanceActive ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' ?>">
+                                <span class="w-2 h-2 rounded-full <?= $isMaintenanceActive ? 'bg-amber-500 animate-ping' : 'bg-emerald-500' ?>"></span>
+                                <span><?= $isMaintenanceActive ? '🔴 MAINTENANCE AKTIF' : '🟢 SISTEM NORMAL' ?></span>
+                            </span>
+                            <a href="<?= base_url('/maintenance') ?>" target="_blank" class="px-3 py-1 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg shadow-2xs flex items-center gap-1.5 transition">
+                                <i class="fas fa-eye text-gray-400"></i> Pratinjau
+                            </a>
+                        </div>
+                    </div>
+
+                    <form action="<?= base_url('/superadmin/landing/settings') ?>" method="POST" class="p-6 space-y-5">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="form_type" value="portal_maintenance">
+
+                        <!-- Toggle Switch -->
+                        <div class="flex items-center justify-between p-4 rounded-xl <?= $isMaintenanceActive ? 'bg-amber-50 border border-amber-200' : 'bg-slate-50 border border-slate-200/80' ?>">
+                            <div class="space-y-0.5 pr-4">
+                                <label for="portal_maintenance_active" class="text-sm font-bold text-gray-900 cursor-pointer">
+                                    Aktifkan Mode Pemeliharaan Portal
+                                </label>
+                                <p class="text-xs text-gray-500">
+                                    Jika dicentang, pengguna yang mengakses halaman <code>/register</code>, <code>/login</code>, dan dashboard mitra akan dialihkan ke halaman maintenance.
+                                </p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                <input type="checkbox" name="portal_maintenance_active" id="portal_maintenance_active" value="1" <?= $isMaintenanceActive ? 'checked' : '' ?> class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                            </label>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                    Judul Halaman Maintenance
+                                </label>
+                                <input type="text" name="portal_maintenance_title" value="<?= esc($settings['portal_maintenance_title'] ?? 'Portal Sedang Dalam Pemeliharaan') ?>" class="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#5e0078] focus:border-transparent transition" placeholder="Contoh: Portal Sedang Dalam Pemeliharaan">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                    Estimasi Selesai (Opsional)
+                                </label>
+                                <input type="text" name="portal_maintenance_estimated_end" value="<?= esc($settings['portal_maintenance_estimated_end'] ?? '') ?>" class="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#5e0078] focus:border-transparent transition" placeholder="Contoh: 15 Oktober 2026, 15:00 WIB">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                                Pesan Penjelasan untuk Jamaah & Mitra
+                            </label>
+                            <textarea name="portal_maintenance_message" rows="3" class="w-full px-3.5 py-2.5 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#5e0078] focus:border-transparent transition" placeholder="Tuliskan pesan penjelasan di sini..."><?= esc($settings['portal_maintenance_message'] ?? 'Layanan pendaftaran baru dan dashboard kemitraan sedang ditingkatkan untuk kenyamanan Anda. Kami akan segera kembali beroperasi secara normal.') ?></textarea>
+                        </div>
+
+                        <!-- Info Banner -->
+                        <div class="p-3.5 rounded-lg bg-blue-50 border border-blue-200/80 flex items-start gap-2.5 text-xs text-blue-900 leading-relaxed">
+                            <i class="fas fa-info-circle text-blue-600 mt-0.5 shrink-0 text-sm"></i>
+                            <div>
+                                <strong>Keamanan Akses Super Admin:</strong> Anda (Super Admin) tetap dapat masuk ke dashboard dan mengelola sistem meskipun mode ini aktif. Jika Anda keluar (logout), gunakan tombol <em>"Masuk Super Admin"</em> di bagian bawah halaman maintenance untuk login kembali.
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex justify-end pt-2">
+                            <button type="submit" class="btn-interactive px-5 py-2.5 bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs sm:text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2 transition">
+                                <i class="fas fa-save"></i> Simpan Status Pemeliharaan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- CARD 1: PENGATURAN ANNOUNCEMENT BAR (HEADER ATAS) -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                     <div class="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
