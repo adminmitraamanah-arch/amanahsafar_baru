@@ -40,11 +40,14 @@ class VoucherModel extends Model
     }
 
     /**
-     * Validasi mendalam voucher untuk pendaftaran Mitra:
+     * Validasi mendalam voucher untuk pendaftaran (Cabang, Manager Mitra, Mitra):
      * - Status voucher harus 'tersedia'
-     * - Role tujuan wajib 'mitra'
+     * - Role tujuan wajib 'cabang', 'manager_mitra', atau 'mitra'
      * - Belum kedaluwarsa jika ada expired_at
-     * - Akun pembina langsung wajib ada, aktif, dan valid (Pusat / Cabang / Manager Mitra)
+     * - Akun pembina langsung wajib ada, aktif, dan sesuai hierarki role:
+     *   * Cabang: pembina wajib Kantor Pusat ('pusat')
+     *   * Manager Mitra: pembina wajib Kantor Pusat ('pusat') atau Cabang ('cabang')
+     *   * Mitra: pembina wajib Pusat, Cabang, atau Manager Mitra
      * - Jika pembina Manager Mitra, relasi induknya (Pusat / Cabang) wajib valid dan aktif
      */
     public function validateForRegistration($kode)
@@ -70,8 +73,9 @@ class VoucherModel extends Model
             return ['valid' => false, 'message' => 'Kode voucher telah kedaluwarsa', 'voucher' => $voucher, 'pembina' => null];
         }
 
-        if ($voucher['role_tujuan'] !== 'mitra') {
-            return ['valid' => false, 'message' => 'Voucher ini tidak diperuntukkan bagi pendaftaran Mitra', 'voucher' => $voucher, 'pembina' => null];
+        $validRoles = ['cabang', 'manager_mitra', 'mitra'];
+        if (!in_array($voucher['role_tujuan'], $validRoles, true)) {
+            return ['valid' => false, 'message' => 'Role tujuan pada voucher tidak valid untuk pendaftaran akun', 'voucher' => $voucher, 'pembina' => null];
         }
 
         if (empty($voucher['pembina_id'])) {
@@ -93,24 +97,38 @@ class VoucherModel extends Model
             return ['valid' => false, 'message' => 'Akun pembina pada voucher ini sedang dinonaktifkan', 'voucher' => $voucher, 'pembina' => $pembina];
         }
 
-        if (!in_array($pembina['role'], ['pusat', 'cabang', 'manager_mitra'])) {
-            return ['valid' => false, 'message' => 'Role pembina pada voucher tidak valid', 'voucher' => $voucher, 'pembina' => $pembina];
-        }
-
-        // Jika pembina adalah manager_mitra, periksa relasi induknya (Pusat atau Cabang)
-        if ($pembina['role'] === 'manager_mitra') {
-            if (empty($pembina['pembina_id'])) {
-                return ['valid' => false, 'message' => 'Manager Mitra pembina tidak memiliki akun induk yang sah', 'voucher' => $voucher, 'pembina' => $pembina];
+        // Validasi aturan hierarki berdasarkan role tujuan voucher
+        if ($voucher['role_tujuan'] === 'cabang') {
+            // Cabang wajib dibina oleh Kantor Pusat
+            if ($pembina['role'] !== 'pusat') {
+                return ['valid' => false, 'message' => 'Voucher untuk pendaftaran Cabang wajib dibina langsung oleh Kantor Pusat', 'voucher' => $voucher, 'pembina' => $pembina];
+            }
+        } elseif ($voucher['role_tujuan'] === 'manager_mitra') {
+            // Manager Mitra wajib dibina oleh Kantor Pusat atau Cabang
+            if (!in_array($pembina['role'], ['pusat', 'cabang'])) {
+                return ['valid' => false, 'message' => 'Voucher untuk pendaftaran Manager Mitra wajib dibina langsung oleh Kantor Pusat atau Cabang', 'voucher' => $voucher, 'pembina' => $pembina];
+            }
+        } elseif ($voucher['role_tujuan'] === 'mitra') {
+            // Mitra dapat dibina oleh Pusat, Cabang, atau Manager Mitra
+            if (!in_array($pembina['role'], ['pusat', 'cabang', 'manager_mitra'])) {
+                return ['valid' => false, 'message' => 'Role pembina pada voucher tidak valid untuk pendaftaran Mitra', 'voucher' => $voucher, 'pembina' => $pembina];
             }
 
-            $induk = $db->table('users')
-                ->where('id', (int)$pembina['pembina_id'])
-                ->where('deleted_at', null)
-                ->get()
-                ->getRowArray();
+            // Jika pembina adalah manager_mitra, periksa relasi induknya (Pusat atau Cabang)
+            if ($pembina['role'] === 'manager_mitra') {
+                if (empty($pembina['pembina_id'])) {
+                    return ['valid' => false, 'message' => 'Manager Mitra pembina tidak memiliki akun induk yang sah', 'voucher' => $voucher, 'pembina' => $pembina];
+                }
 
-            if (!$induk || $induk['status'] !== 'aktif' || !in_array($induk['role'], ['pusat', 'cabang'])) {
-                return ['valid' => false, 'message' => 'Akun induk dari Manager Mitra pembina tidak aktif atau tidak valid', 'voucher' => $voucher, 'pembina' => $pembina];
+                $induk = $db->table('users')
+                    ->where('id', (int)$pembina['pembina_id'])
+                    ->where('deleted_at', null)
+                    ->get()
+                    ->getRowArray();
+
+                if (!$induk || $induk['status'] !== 'aktif' || !in_array($induk['role'], ['pusat', 'cabang'])) {
+                    return ['valid' => false, 'message' => 'Akun induk dari Manager Mitra pembina tidak aktif atau tidak valid', 'voucher' => $voucher, 'pembina' => $pembina];
+                }
             }
         }
 
@@ -133,12 +151,18 @@ class VoucherModel extends Model
     }
 
     /**
-     * Mem-parsing kode voucher berformat MIT-[JENIS]-[KODE]-[URUT]
+     * Mem-parsing kode voucher berformat [ROLE]-[JENIS]-[KODE]-[URUT]
+     * Mendukung: CBG, MGR, MIT
      */
     public function parseKodeVoucher($kode)
     {
         $kode = strtoupper(trim((string)$kode));
-        if (preg_match('/^MIT-(PS|CB|MG)-([0-9]{3})-([0-9]{4})$/', $kode, $matches)) {
+        if (preg_match('/^(CBG|MGR|MIT)-(PS|CB|MG)-([0-9]{3})-([0-9]{4})$/', $kode, $matches)) {
+            $roleMap = [
+                'CBG' => ['role' => 'cabang', 'nama' => 'Cabang'],
+                'MGR' => ['role' => 'manager_mitra', 'nama' => 'Manager Mitra'],
+                'MIT' => ['role' => 'mitra', 'nama' => 'Mitra'],
+            ];
             $jenisMap = [
                 'PS' => ['nama' => 'Kantor Pusat', 'role' => 'pusat'],
                 'CB' => ['nama' => 'Cabang', 'role' => 'cabang'],
@@ -147,13 +171,15 @@ class VoucherModel extends Model
 
             return [
                 'is_structured' => true,
-                'prefix' => 'MIT',
-                'jenis_kode' => $matches[1],
-                'jenis_nama' => $jenisMap[$matches[1]]['nama'] ?? $matches[1],
-                'jenis_role' => $jenisMap[$matches[1]]['role'] ?? null,
-                'kode_pembina' => $matches[2],
-                'nomor_urut' => $matches[3],
-                'nomor_urut_int' => (int)$matches[3],
+                'prefix_role' => $matches[1],
+                'role_tujuan' => $roleMap[$matches[1]]['role'] ?? 'mitra',
+                'role_tujuan_nama' => $roleMap[$matches[1]]['nama'] ?? $matches[1],
+                'jenis_kode' => $matches[2],
+                'jenis_nama' => $jenisMap[$matches[2]]['nama'] ?? $matches[2],
+                'jenis_role' => $jenisMap[$matches[2]]['role'] ?? null,
+                'kode_pembina' => $matches[3],
+                'nomor_urut' => $matches[4],
+                'nomor_urut_int' => (int)$matches[4],
             ];
         }
 
@@ -164,11 +190,26 @@ class VoucherModel extends Model
     }
 
     /**
-     * Membuat voucher berformat terstruktur (MIT-[JENIS]-[KODE]-[URUT]) secara aman dan atomik.
+     * Membuat voucher berformat terstruktur ([ROLE]-[JENIS]-[KODE]-[URUT]) secara aman dan atomik.
      * Menggunakan locking SELECT FOR UPDATE untuk mencegah duplikasi nomor urut saat konkurensi tinggi.
      */
-    public function generateStructuredVouchers($pembinaId, $qty, $expiredAt = null, $createdBy = null)
+    public function generateStructuredVouchers($roleTujuan, $pembinaId = null, $qty = 1, $expiredAt = null, $createdBy = null)
     {
+        // Dukungan backwards compatibility jika dipanggil dengan format lama: ($pembinaId, $qty, $expiredAt, $createdBy)
+        if (is_numeric($roleTujuan) && !is_string($pembinaId)) {
+            $createdBy = $expiredAt;
+            $expiredAt = $qty;
+            $qty = (int)$pembinaId;
+            $pembinaId = (int)$roleTujuan;
+            $roleTujuan = 'mitra';
+        }
+
+        $validRoles = ['cabang', 'manager_mitra', 'mitra'];
+        $roleTujuan = strtolower(trim((string)$roleTujuan));
+        if (!in_array($roleTujuan, $validRoles, true)) {
+            $roleTujuan = 'mitra';
+        }
+
         $db = \Config\Database::connect();
         $userModel = new UserModel();
 
@@ -187,49 +228,61 @@ class VoucherModel extends Model
             return ['status' => false, 'message' => 'Akun pembina tidak ditemukan atau sedang dinonaktifkan.'];
         }
 
-        if (!in_array($pembina['role'], ['pusat', 'cabang', 'manager_mitra'])) {
-            return ['status' => false, 'message' => 'Role pembina tidak valid untuk penerbitan voucher.'];
+        // Validasi pembina berdasarkan hierarki role tujuan
+        if ($roleTujuan === 'cabang') {
+            if ($pembina['role'] !== 'pusat') {
+                return ['status' => false, 'message' => 'Penerbitan voucher Cabang wajib memilih akun Kantor Pusat sebagai pembina langsung.'];
+            }
+        } elseif ($roleTujuan === 'manager_mitra') {
+            if (!in_array($pembina['role'], ['pusat', 'cabang'])) {
+                return ['status' => false, 'message' => 'Penerbitan voucher Manager Mitra wajib memilih Kantor Pusat atau Cabang sebagai pembina langsung.'];
+            }
+        } elseif ($roleTujuan === 'mitra') {
+            if (!in_array($pembina['role'], ['pusat', 'cabang', 'manager_mitra'])) {
+                return ['status' => false, 'message' => 'Role pembina tidak valid untuk penerbitan voucher Mitra.'];
+            }
+
+            // Jika pembina adalah manager_mitra, pastikan relasi induknya sah
+            if ($pembina['role'] === 'manager_mitra') {
+                if (empty($pembina['pembina_id'])) {
+                    return ['status' => false, 'message' => 'Manager Mitra tidak memiliki akun induk yang sah.'];
+                }
+                $induk = $db->table('users')
+                    ->where('id', (int)$pembina['pembina_id'])
+                    ->where('status', 'aktif')
+                    ->where('deleted_at', null)
+                    ->whereIn('role', ['pusat', 'cabang'])
+                    ->get()
+                    ->getRowArray();
+                if (!$induk) {
+                    return ['status' => false, 'message' => 'Akun induk Manager Mitra tidak aktif atau tidak valid.'];
+                }
+            }
         }
 
-        // Jika pembina adalah manager_mitra, pastikan relasi induknya sah
-        if ($pembina['role'] === 'manager_mitra') {
-            if (empty($pembina['pembina_id'])) {
-                return ['status' => false, 'message' => 'Manager Mitra tidak memiliki akun induk yang sah.'];
-            }
-            $induk = $db->table('users')
-                ->where('id', (int)$pembina['pembina_id'])
-                ->where('status', 'aktif')
-                ->where('deleted_at', null)
-                ->whereIn('role', ['pusat', 'cabang'])
-                ->get()
-                ->getRowArray();
-            if (!$induk) {
-                return ['status' => false, 'message' => 'Akun induk Manager Mitra tidak aktif atau tidak valid.'];
-            }
-        }
-
-        // 2. Dapatkan atau inisialisasi kode pembina permanen (3 digit)
-        $kodePembina = $userModel->getOrAssignKodePembina($pembinaId);
+        // 2. Tentukan prefix role tujuan dan prefix jenis pembina
+        $rolePrefix = UserModel::getPrefixRoleTujuan($roleTujuan);
         $jenisCode = UserModel::getPrefixJenisPembina($pembina['role']);
+        $kodePembina = $userModel->getOrAssignKodePembina($pembinaId);
 
         // 3. Mulai transaksi database untuk mengunci dan menghitung nomor urut
         $db->transStart();
 
         try {
-            // Pessimistic lock pada tabel vouchers untuk pembina ini guna mengamankan nomor urut
+            // Pessimistic lock pada tabel vouchers untuk pembina dan role_tujuan ini
             $maxRow = $db->query(
-                "SELECT MAX(nomor_urut) AS max_urut FROM vouchers WHERE pembina_id = ? FOR UPDATE",
-                [$pembinaId]
+                "SELECT MAX(nomor_urut) AS max_urut FROM vouchers WHERE pembina_id = ? AND role_tujuan = ? FOR UPDATE",
+                [$pembinaId, $roleTujuan]
             )->getRowArray();
 
             $lastUrut = (int)($maxRow['max_urut'] ?? 0);
 
-            // Fallback jika belum pernah ada nomor_urut tetapi sudah ada voucher berformat MIT-XX-XXX-XXXX
+            // Fallback jika belum ada nomor_urut tetapi sudah ada voucher berformat [ROLE]-[JENIS]-[KODE]-XXXX
             if ($lastUrut === 0) {
-                $prefixLike = "MIT-{$jenisCode}-{$kodePembina}-%";
+                $prefixLike = "{$rolePrefix}-{$jenisCode}-{$kodePembina}-%";
                 $lastVoucher = $db->query(
-                    "SELECT kode FROM vouchers WHERE pembina_id = ? AND kode LIKE ? ORDER BY id DESC LIMIT 1 FOR UPDATE",
-                    [$pembinaId, $prefixLike]
+                    "SELECT kode FROM vouchers WHERE pembina_id = ? AND role_tujuan = ? AND kode LIKE ? ORDER BY id DESC LIMIT 1 FOR UPDATE",
+                    [$pembinaId, $roleTujuan, $prefixLike]
                 )->getRowArray();
 
                 if ($lastVoucher && preg_match('/-(\d{4})$/', $lastVoucher['kode'], $m)) {
@@ -243,11 +296,11 @@ class VoucherModel extends Model
             for ($i = 1; $i <= $qty; $i++) {
                 $currentUrut = $lastUrut + $i;
                 $strUrut = sprintf('%04d', $currentUrut);
-                $kodeVoucher = "MIT-{$jenisCode}-{$kodePembina}-{$strUrut}";
+                $kodeVoucher = "{$rolePrefix}-{$jenisCode}-{$kodePembina}-{$strUrut}";
 
                 $batchData[] = [
                     'kode' => $kodeVoucher,
-                    'role_tujuan' => 'mitra',
+                    'role_tujuan' => $roleTujuan,
                     'pembina_id' => $pembinaId,
                     'nomor_urut' => $currentUrut,
                     'status' => 'tersedia',
@@ -272,6 +325,8 @@ class VoucherModel extends Model
                 'status' => true,
                 'count' => $qty,
                 'pembina' => $pembina,
+                'roleTujuan' => $roleTujuan,
+                'rolePrefix' => $rolePrefix,
                 'jenisCode' => $jenisCode,
                 'kodePembina' => $kodePembina,
                 'startUrut' => $lastUrut + 1,

@@ -15,6 +15,11 @@ class OrderModel extends Model
         'user_id',
         'status',
         'total',
+        'tipe_pembayaran_pilihan',
+        'nominal_dp_minimal',
+        'total_dibayar',
+        'sisa_tagihan',
+        'status_pembayaran',
         'bukti_transfer',
         'catatan'
     ];
@@ -53,6 +58,14 @@ class OrderModel extends Model
             ->getResultArray();
 
         $order['items'] = $items;
+
+        $payments = $db->table('order_payments')
+            ->where('order_id', $orderId)
+            ->orderBy('id', 'ASC')
+            ->get()
+            ->getResultArray();
+        $order['payments'] = $payments;
+
         return $order;
     }
 }

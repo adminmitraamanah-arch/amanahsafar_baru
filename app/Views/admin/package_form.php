@@ -271,6 +271,162 @@ if (!$isEdit) {
                         </div>
                     </div>
 
+                    <!-- SECTION 4.1: ALOKASI KOMISI HIERARKI & DEFAULT UANG MUKA (DP) -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-7 shadow-xs space-y-5">
+                        <div class="flex items-center gap-2.5 pb-4 border-b border-slate-100">
+                            <div class="w-8 h-8 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center font-bold text-sm">
+                                <i class="fas fa-handshake text-xs"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-sm sm:text-base font-bold text-slate-900 leading-snug">Alokasi Komisi Hierarki & Default DP</h2>
+                                <p class="text-[11px] text-slate-400">Atur jatah komisi per pax untuk setiap peran dalam jaringan dan minimal uang muka standar.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <!-- Komisi Mitra -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                    Komisi Mitra Langsung <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                                    <input type="number" name="komisi_mitra" id="komisiMitraInput" required step="1" oninput="calculateCommissionPool()"
+                                        value="<?= (int)($package['komisi_mitra'] ?? 2000000) ?>" placeholder="2000000"
+                                        class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
+                                </div>
+                                <span class="text-[10px] text-slate-400 mt-1 block">Komisi closing mitra per pax</span>
+                            </div>
+
+                            <!-- Komisi Manager -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                    Komisi Manager Mitra <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                                    <input type="number" name="komisi_manager" id="komisiManagerInput" required step="1" oninput="calculateCommissionPool()"
+                                        value="<?= (int)($package['komisi_manager'] ?? 500000) ?>" placeholder="500000"
+                                        class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
+                                </div>
+                                <span class="text-[10px] text-slate-400 mt-1 block">Override pembina manager per pax</span>
+                            </div>
+
+                            <!-- Komisi Cabang / Override Pusat -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                    Komisi Cabang / Pusat <span class="text-rose-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                                    <input type="number" name="komisi_cabang_pusat" id="komisiCabangInput" required step="1" oninput="calculateCommissionPool()"
+                                        value="<?= (int)($package['komisi_cabang_pusat'] ?? 500000) ?>" placeholder="500000"
+                                        class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
+                                </div>
+                                <span class="text-[10px] text-slate-400 mt-1 block">Hak cabang / limpahan pusat</span>
+                            </div>
+
+                            <!-- Total Pool Komisi (Auto Calculated) -->
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                                    Total Pool Komisi Paket
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                                    <input type="number" name="total_pool_komisi" id="totalPoolInput" readonly
+                                        value="<?= (int)($package['total_pool_komisi'] ?? 3000000) ?>"
+                                        class="w-full pl-10 pr-3 py-2.5 bg-purple-50/70 border border-purple-200 rounded-xl text-xs sm:text-sm font-extrabold text-[#5e0078] focus:outline-none cursor-not-allowed">
+                                </div>
+                                <span class="text-[10px] text-emerald-600 font-semibold mt-1 block flex items-center gap-1">
+                                    <i class="fas fa-check-circle"></i> Mitra + Manager + Cabang/Pusat
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Minimal DP Default -->
+                        <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 block">Default Minimal DP Reguler</span>
+                                <span class="text-[11px] text-slate-400">Berlaku otomatis jika waktu order di luar periode promo kalender di bawah.</span>
+                            </div>
+                            <div class="relative w-full sm:w-64">
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
+                                <input type="number" name="minimal_dp_default" step="1"
+                                    value="<?= (int)($package['minimal_dp_default'] ?? 5000000) ?>" placeholder="5000000"
+                                    class="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 4.2: ATURAN PROMO UANG MUKA BERDASARKAN TANGGAL KALENDER (MODEL A) -->
+                    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-7 shadow-xs space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm">
+                                    <i class="fas fa-calendar-alt text-xs"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-sm sm:text-base font-bold text-slate-900 leading-snug">Aturan Promo Uang Muka (DP) Kalender (Model A)</h2>
+                                    <p class="text-[11px] text-slate-400">Atur nominal DP berbeda berdasarkan tanggal pemesanan (misal: Bulan 1-3 DP Rp 2 Juta, Bulan 4-5 DP Rp 5 Juta).</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="addDpRuleRow()" 
+                                    class="btn-interactive inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 text-xs font-bold border border-amber-200 transition">
+                                <i class="fas fa-plus text-[10px]"></i>
+                                <span>Tambah Periode Promo DP</span>
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs" id="dpRulesTable">
+                                <thead>
+                                    <tr class="bg-slate-50/70 border-b border-slate-200/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                        <th class="px-3.5 py-2.5">Nama Promo / Keterangan</th>
+                                        <th class="px-3.5 py-2.5">Tanggal Mulai</th>
+                                        <th class="px-3.5 py-2.5">Tanggal Selesai</th>
+                                        <th class="px-3.5 py-2.5">Nominal Min DP per Pax</th>
+                                        <th class="px-3.5 py-2.5 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dpRulesContainer" class="divide-y divide-slate-100">
+                                    <?php if (!empty($dpRules)): ?>
+                                        <?php foreach ($dpRules as $rule): ?>
+                                            <tr class="dp-rule-row">
+                                                <td class="px-3.5 py-2.5">
+                                                    <input type="text" name="dp_rule_keterangan[]" value="<?= esc($rule['keterangan'] ?? '') ?>" placeholder="Contoh: Promo Early Bird Jan-Mar"
+                                                           class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+                                                </td>
+                                                <td class="px-3.5 py-2.5">
+                                                    <input type="date" name="dp_rule_tgl_mulai[]" value="<?= esc($rule['tanggal_mulai'] ?? '') ?>" required
+                                                           class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+                                                </td>
+                                                <td class="px-3.5 py-2.5">
+                                                    <input type="date" name="dp_rule_tgl_selesai[]" value="<?= esc($rule['tanggal_selesai'] ?? '') ?>" required
+                                                           class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+                                                </td>
+                                                <td class="px-3.5 py-2.5">
+                                                    <div class="relative">
+                                                        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400">Rp</span>
+                                                        <input type="number" name="dp_rule_nominal[]" step="1" value="<?= (int)($rule['nominal_dp'] ?? '') ?>" required placeholder="2000000"
+                                                               class="w-full pl-8 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+                                                    </div>
+                                                </td>
+                                                <td class="px-3.5 py-2.5 text-right">
+                                                    <button type="button" onclick="this.closest('.dp-rule-row').remove()" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus Periode">
+                                                        <i class="fas fa-trash-alt text-xs"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                            <div id="dpRulesEmptyHint" class="text-center py-4 text-slate-400 text-xs <?= !empty($dpRules) ? 'hidden' : '' ?>">
+                                Belum ada aturan tanggal khusus. Klik "Tambah Periode Promo DP" untuk menambahkan rentang tanggal promo DP.
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- SECTION 5: FASILITAS INCLUDE & EXCLUDE (INPUT DINAMIS) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Kolom Include -->
@@ -424,6 +580,50 @@ function addExcludeItem(value = '') {
     container.appendChild(row);
     const input = row.querySelector('input');
     if (!value) input.focus();
+}
+
+function calculateCommissionPool() {
+    const mitra = parseFloat(document.getElementById('komisiMitraInput').value) || 0;
+    const manager = parseFloat(document.getElementById('komisiManagerInput').value) || 0;
+    const cabang = parseFloat(document.getElementById('komisiCabangInput').value) || 0;
+    const pool = mitra + manager + cabang;
+    document.getElementById('totalPoolInput').value = pool;
+}
+
+function addDpRuleRow() {
+    const container = document.getElementById('dpRulesContainer');
+    const emptyHint = document.getElementById('dpRulesEmptyHint');
+    if (emptyHint) emptyHint.classList.add('hidden');
+
+    const tr = document.createElement('tr');
+    tr.className = 'dp-rule-row';
+    tr.innerHTML = `
+        <td class="px-3.5 py-2.5">
+            <input type="text" name="dp_rule_keterangan[]" placeholder="Contoh: Promo Early Bird Jan-Mar"
+                   class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+        </td>
+        <td class="px-3.5 py-2.5">
+            <input type="date" name="dp_rule_tgl_mulai[]" required
+                   class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+        </td>
+        <td class="px-3.5 py-2.5">
+            <input type="date" name="dp_rule_tgl_selesai[]" required
+                   class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+        </td>
+        <td class="px-3.5 py-2.5">
+            <div class="relative">
+                <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-[11px] font-bold text-slate-400">Rp</span>
+                <input type="number" name="dp_rule_nominal[]" step="1" required placeholder="2000000"
+                       class="w-full pl-8 pr-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#5e0078]">
+            </div>
+        </td>
+        <td class="px-3.5 py-2.5 text-right">
+            <button type="button" onclick="this.closest('.dp-rule-row').remove()" class="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition" title="Hapus Periode">
+                <i class="fas fa-trash-alt text-xs"></i>
+            </button>
+        </td>
+    `;
+    container.appendChild(tr);
 }
 </script>
 <?= $this->endSection() ?>

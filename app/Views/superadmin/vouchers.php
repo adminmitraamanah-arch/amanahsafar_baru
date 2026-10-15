@@ -25,47 +25,164 @@
 
                 <!-- Table Card -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-                    <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+                    <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 bg-white">
                         <div>
                             <h2 class="text-sm font-bold text-slate-900">Daftar Voucher Registrasi</h2>
                             <p class="text-xs text-slate-400 mt-0.5">Voucher khusus untuk pendaftaran akun Mitra dengan relasi pembina hierarki.</p>
                         </div>
-                        <span class="text-xs text-slate-500 font-medium bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">
+                        <span class="text-xs text-slate-500 font-medium bg-slate-50 px-3 py-1 rounded-xl border border-slate-200 shrink-0">
                             Total: <strong class="text-slate-900"><?= count($vouchers ?? []) ?></strong> Voucher
                         </span>
                     </div>
 
+                    <!-- Toolbar (Search bar & Filter controls) -->
+                    <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row items-center justify-between gap-3 bg-slate-50/50">
+                        <div class="relative w-full md:w-80">
+                            <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="vouchersSearchInput" placeholder="Cari kode voucher, pembina..." 
+                                   class="w-full pl-9 pr-12 py-2 bg-white border border-slate-200/90 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-400 bg-slate-100 border border-slate-200/80 rounded px-1.5 py-0.5 pointer-events-none">⌘K</span>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
+                            <!-- Sort By -->
+                            <select id="voucherSortSelect" class="px-3 py-2 bg-white border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="created_desc">Urutkan: Dibuat (Terbaru)</option>
+                                <option value="created_asc">Urutkan: Dibuat (Terlama)</option>
+                                <option value="kode_asc">Urutkan: Kode (A - Z)</option>
+                                <option value="kode_desc">Urutkan: Kode (Z - A)</option>
+                                <option value="pembina_asc">Urutkan: Pembina (A - Z)</option>
+                                <option value="pembina_desc">Urutkan: Pembina (Z - A)</option>
+                                <option value="status_asc">Urutkan: Status (A - Z)</option>
+                                <option value="status_desc">Urutkan: Status (Z - A)</option>
+                                <option value="expired_asc">Urutkan: Masa Berlaku (Terdekat)</option>
+                                <option value="expired_desc">Urutkan: Masa Berlaku (Terjauh)</option>
+                            </select>
+
+                            <!-- Filter Role Tujuan -->
+                            <select id="voucherRoleFilter" class="px-3 py-2 bg-white border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="all">Semua Role Tujuan</option>
+                                <option value="cabang">Role: Cabang</option>
+                                <option value="manager_mitra">Role: Manager Mitra</option>
+                                <option value="mitra">Role: Mitra</option>
+                            </select>
+
+                            <!-- Filter Status -->
+                            <select id="voucherStatusFilter" class="px-3 py-2 bg-white border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="all">Semua Status</option>
+                                <option value="tersedia">Status: Tersedia</option>
+                                <option value="terpakai">Status: Terpakai</option>
+                                <option value="dinonaktifkan">Status: Nonaktif</option>
+                            </select>
+
+                            <!-- Per Page Size -->
+                            <select id="voucherPageSizeSelect" class="px-3 py-2 bg-white border border-slate-200/90 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#5e0078] transition">
+                                <option value="10">10 / halaman</option>
+                                <option value="25">25 / halaman</option>
+                                <option value="50">50 / halaman</option>
+                                <option value="100">100 / halaman</option>
+                            </select>
+
+                            <!-- Reset Button -->
+                            <button type="button" id="resetVoucherFiltersBtn" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition text-xs" title="Reset Filter">
+                                <i class="fas fa-redo-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Floating Bulk Action Bar (Konsisten di Seluruh Halaman Super Admin) -->
+                    <div id="voucherBulkActionBar" 
+                         class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden bg-white text-slate-800 shadow-2xl rounded-2xl px-5 py-3 border border-slate-200/90 backdrop-blur-md flex items-center gap-4 transition-all duration-200"
+                         style="background-color: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" style="background-color: #10b981;"></span>
+                            <span class="text-xs font-semibold text-slate-600" style="color: #475569;">
+                                <strong id="selectedVouchersCount" class="text-slate-900 font-extrabold text-sm" style="color: #0f172a;">0</strong> voucher dipilih
+                            </span>
+                        </div>
+                        <div class="h-4 w-px bg-slate-200" style="background-color: #cbd5e1;"></div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="cancelVoucherSelectionBtn" 
+                                    class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold transition text-xs border border-slate-200/80 cursor-pointer"
+                                    style="background-color: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
+                                Batal
+                            </button>
+                            <button type="button" id="bulkDeleteVouchersBtn" 
+                                    class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold transition text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+                                    style="background-color: #e11d48; color: #ffffff;">
+                                <i class="fas fa-trash-alt text-xs"></i>
+                                <span>Hapus Terpilih</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Bulk Delete Form -->
+                    <form id="voucherBulkDeleteForm" method="POST" action="<?= base_url('/superadmin/vouchers/bulk-delete') ?>" class="hidden">
+                        <?= csrf_field() ?>
+                        <div id="voucherBulkDeleteInputs"></div>
+                    </form>
+
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse" id="vouchersTable">
                             <thead>
                                 <tr class="bg-slate-50/70 border-b border-slate-200/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                                    <th class="px-5 py-3.5">Kode Voucher</th>
+                                    <th class="px-4 py-3.5 w-12 text-center">
+                                        <input type="checkbox" id="selectAllVouchers" class="w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" title="Pilih Semua Voucher">
+                                    </th>
+                                    <th class="px-5 py-3.5" data-sort-asc="kode_asc" data-sort-desc="kode_desc">Kode Voucher</th>
                                     <th class="px-5 py-3.5">Role Tujuan</th>
-                                    <th class="px-5 py-3.5">Pembina Langsung</th>
-                                    <th class="px-5 py-3.5">Status</th>
-                                    <th class="px-5 py-3.5">Masa Berlaku</th>
-                                    <th class="px-5 py-3.5">Dibuat Pada</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="pembina_asc" data-sort-desc="pembina_desc">Pembina Langsung</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="status_asc" data-sort-desc="status_desc">Status</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="expired_asc" data-sort-desc="expired_desc">Masa Berlaku</th>
+                                    <th class="px-5 py-3.5" data-sort-asc="created_asc" data-sort-desc="created_desc">Dibuat Pada</th>
                                     <th class="px-5 py-3.5 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
                                 <?php if (empty($vouchers)): ?>
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-12 text-center text-slate-400 text-xs">
+                                    <tr id="emptyVoucherRow">
+                                        <td colspan="8" class="px-6 py-12 text-center text-slate-400 text-xs">
                                             <i class="fas fa-ticket-alt text-3xl mb-2 text-slate-300 block"></i>
                                             Belum ada voucher yang dibuat. Klik tombol di atas untuk membuat voucher baru.
                                         </td>
                                     </tr>
                                 <?php else: ?>
+                                    <tr id="emptyVoucherRow" style="display: none;">
+                                        <td colspan="8" class="px-6 py-12 text-center text-slate-400 text-xs">
+                                            <i class="fas fa-search text-3xl mb-2 text-slate-300 block"></i>
+                                            Tidak ada voucher yang cocok dengan filter atau kata kunci pencarian.
+                                        </td>
+                                    </tr>
                                     <?php foreach ($vouchers as $voucher): ?>
-                                        <tr class="hover:bg-purple-50/30 transition-colors">
+                                        <tr class="hover:bg-purple-50/30 transition-colors voucher-table-row"
+                                            data-id="<?= esc($voucher['id']) ?>"
+                                            data-kode="<?= strtolower(esc($voucher['kode'])) ?>"
+                                            data-role="<?= esc($voucher['role_tujuan'] ?? 'mitra') ?>"
+                                            data-pembina="<?= strtolower(esc($voucher['nama_pembina'] ?? '')) ?>"
+                                            data-status="<?= esc($voucher['status']) ?>"
+                                            data-expired="<?= !empty($voucher['expired_at']) ? strtotime($voucher['expired_at']) : 9999999999 ?>"
+                                            data-created="<?= strtotime($voucher['created_at']) ?>"
+                                            data-search="<?= strtolower(esc($voucher['kode'] . ' ' . ($voucher['nama_pembina'] ?? '') . ' ' . $voucher['status'] . ' ' . ($voucher['role_pembina'] ?? '') . ' ' . ($voucher['nama_pengguna'] ?? '') . ' ' . ($voucher['role_tujuan'] ?? ''))) ?>">
+                                            <td class="px-4 py-4 text-center">
+                                                <input type="checkbox" class="voucher-row-checkbox w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" value="<?= esc($voucher['id']) ?>" data-kode="<?= esc($voucher['kode']) ?>">
+                                            </td>
                                             <td class="px-5 py-4 font-mono font-bold text-slate-900 text-xs sm:text-sm">
                                                 <span class="px-2.5 py-1 bg-slate-100 rounded-lg text-slate-800 border border-slate-200/70 select-all"><?= esc($voucher['kode']) ?></span>
                                             </td>
                                             <td class="px-5 py-4">
-                                                <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-[#5e0078] border border-purple-200 uppercase tracking-wider">
-                                                    <?= esc($voucher['role_tujuan'] ?? 'mitra') ?>
-                                                </span>
+                                                <?php if (($voucher['role_tujuan'] ?? '') === 'cabang'): ?>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">
+                                                        <i class="fas fa-code-branch text-[9px]"></i> Cabang
+                                                    </span>
+                                                <?php elseif (($voucher['role_tujuan'] ?? '') === 'manager_mitra'): ?>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider">
+                                                        <i class="fas fa-user-tie text-[9px]"></i> Manager
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-purple-50 text-[#5e0078] border border-purple-200 uppercase tracking-wider">
+                                                        <i class="fas fa-user text-[9px]"></i> Mitra
+                                                    </span>
+                                                <?php endif; ?>
                                             </td>
                                             <td class="px-5 py-4">
                                                 <?php if (!empty($voucher['pembina_id']) && !empty($voucher['nama_pembina'])): ?>
@@ -121,15 +238,16 @@
                                             </td>
                                             <td class="px-5 py-4 text-right">
                                                 <div class="flex items-center justify-end gap-1.5 whitespace-nowrap">
-                                                    <?php if ($voucher['status'] === 'tersedia'): ?>
-                                                        <form method="POST" action="<?= base_url('/superadmin/vouchers/disable/' . $voucher['id']) ?>" class="inline-block" onsubmit="return confirm('Nonaktifkan voucher <?= esc($voucher['kode']) ?>? Voucher tidak akan dapat digunakan lagi.')">
-                                                            <?= csrf_field() ?>
-                                                            <button type="submit" class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 border border-amber-200 transition shadow-xs" title="Nonaktifkan Voucher" aria-label="Nonaktifkan Voucher">
-                                                                <i class="fas fa-ban text-xs"></i>
-                                                            </button>
-                                                        </form>
-                                                    <?php endif; ?>
+                                                    <!-- Tombol Salin Kode Voucher -->
+                                                    <button type="button" 
+                                                            onclick="copyVoucherCode('<?= esc($voucher['kode'], 'js') ?>', this)" 
+                                                            class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 hover:text-[#4c0062] border border-purple-200 transition shadow-xs" 
+                                                            title="Salin Kode Voucher" 
+                                                            aria-label="Salin Kode Voucher">
+                                                        <i class="fas fa-copy text-xs"></i>
+                                                    </button>
 
+                                                    <!-- Tombol Hapus Voucher Permanen -->
                                                     <form method="POST" action="<?= base_url('/superadmin/vouchers/delete/' . $voucher['id']) ?>" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus voucher <?= esc($voucher['kode']) ?> secara permanen? Tindakan ini tidak dapat dibatalkan.')">
                                                         <?= csrf_field() ?>
                                                         <button type="submit" class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs" title="Hapus Voucher" aria-label="Hapus Voucher">
@@ -144,6 +262,22 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Table Pagination Footer -->
+                    <div class="px-5 py-3.5 border-t border-slate-100 bg-white flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                        <span id="voucherCountSummary">Menampilkan <?= count($vouchers ?? []) ?> voucher</span>
+                        <div class="flex items-center gap-1 select-none" id="voucherPaginationControls">
+                            <button type="button" id="prevVoucherBtn" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs flex items-center gap-1 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                <i class="fas fa-arrow-left text-[10px]"></i> Previous
+                            </button>
+                            <div id="voucherPaginationNumbers" class="flex items-center gap-1">
+                                <!-- Generated by JS -->
+                            </div>
+                            <button type="button" id="nextVoucherBtn" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs flex items-center gap-1 transition disabled:opacity-40 disabled:cursor-not-allowed">
+                                Next <i class="fas fa-arrow-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -156,8 +290,8 @@
     <div class="bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border border-slate-100 my-8">
         <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
             <div>
-                <h2 class="text-lg font-bold text-slate-900">Generate Voucher Mitra</h2>
-                <p class="text-xs text-slate-500 mt-0.5">Tentukan pembina langsung sebelum membuat voucher pendaftaran.</p>
+                <h2 class="text-lg font-bold text-slate-900">Generate Voucher Registrasi</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Tentukan role tujuan dan pembina langsung untuk akses pendaftaran.</p>
             </div>
             <button type="button" onclick="closeGenerateModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm transition">
                 <i class="fas fa-times"></i>
@@ -167,15 +301,16 @@
         <form method="POST" action="<?= base_url('/superadmin/vouchers/generate') ?>" class="space-y-4" onsubmit="return validateGenerateForm()">
             <?= csrf_field() ?>
             
-            <!-- Info Role Tujuan (Mitra) -->
-            <div class="p-3 bg-purple-50/70 rounded-xl border border-purple-100 flex items-center justify-between text-xs">
-                <div>
-                    <span class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">Role Tujuan Registrasi:</span>
-                    <span class="font-bold text-slate-800 text-sm">Mitra</span>
-                </div>
-                <span class="px-2.5 py-1 bg-white rounded-lg border border-purple-200 text-[#5e0078] text-xs font-bold">
-                    <i class="fas fa-lock text-[10px] mr-1"></i> Khusus Mitra
-                </span>
+            <!-- Pilihan 1: Role Tujuan Registrasi -->
+            <div>
+                <label for="role_tujuan" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">1. Role Tujuan Registrasi <span class="text-rose-500">*</span></label>
+                <select id="role_tujuan" name="role_tujuan" required onchange="onRoleTujuanChange()"
+                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] focus:bg-white focus:outline-none transition">
+                    <option value="mitra">Mitra</option>
+                    <option value="manager_mitra">Manager Mitra</option>
+                    <option value="cabang">Cabang</option>
+                </select>
+                <p id="roleTujuanHint" class="text-[11px] text-slate-400 mt-1">Voucher ini akan otomatis menentukan hak akses & role akun saat pendaftar registrasi.</p>
             </div>
 
             <!-- Jumlah Voucher -->
@@ -186,9 +321,9 @@
                 <p class="text-[11px] text-slate-400 mt-1">Maksimal 100 voucher per pembuatan.</p>
             </div>
 
-            <!-- Pilihan 1: Jenis Pembina -->
+            <!-- Pilihan 2: Jenis Pembina -->
             <div>
-                <label for="jenis_pembina" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">1. Pilih Jenis Pembina <span class="text-rose-500">*</span></label>
+                <label for="jenis_pembina" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">2. Jenis Pembina Langsung <span class="text-rose-500">*</span></label>
                 <select id="jenis_pembina" name="jenis_pembina" required onchange="onJenisPembinaChange()"
                         class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] focus:bg-white focus:outline-none transition">
                     <option value="">-- Pilih Jenis Pembina --</option>
@@ -196,12 +331,12 @@
                     <option value="cabang">Cabang</option>
                     <option value="manager_mitra">Manager Mitra</option>
                 </select>
-                <p class="text-[11px] text-slate-400 mt-1">Pilih entitas pembina: Pusat, Cabang, atau Manager Mitra.</p>
+                <p id="jenisPembinaHint" class="text-[11px] text-slate-400 mt-1">Pilih entitas pembina langsung.</p>
             </div>
 
-            <!-- Pilihan 2: Akun Pembina Langsung -->
+            <!-- Pilihan 3: Akun Pembina Langsung -->
             <div>
-                <label for="pembina_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">2. Akun Pembina Langsung <span class="text-rose-500">*</span></label>
+                <label for="pembina_id" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">3. Akun Pembina Langsung <span class="text-rose-500">*</span></label>
                 <select id="pembina_id" name="pembina_id" required disabled onchange="updateVoucherPreview()"
                         class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] focus:bg-white focus:outline-none transition disabled:opacity-60 disabled:cursor-not-allowed">
                     <option value="">-- Pilih Jenis Pembina Terlebih Dahulu --</option>
@@ -227,7 +362,7 @@
                     <span id="previewQtyBadge" class="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">1 Voucher</span>
                 </div>
                 <p class="text-[10.5px] text-slate-400 mt-1.5 leading-relaxed">
-                    Format: <code class="text-slate-600 font-mono">MIT-[JENIS]-[KODE]-[URUT]</code>. Nomor urut bertambah otomatis per pembina.
+                    Format: <code class="text-slate-600 font-mono">[ROLE]-[JENIS]-[KODE]-[URUT]</code>. Nomor urut bertambah otomatis per pembina & role tujuan.
                 </p>
             </div>
 
@@ -262,7 +397,7 @@ const managerAccounts = <?= json_encode($managerAccounts ?? []) ?>;
 function openGenerateModal() {
     document.getElementById('generateModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
-    updateVoucherPreview();
+    onRoleTujuanChange();
 }
 
 function closeGenerateModal() {
@@ -270,11 +405,79 @@ function closeGenerateModal() {
     document.body.style.overflow = '';
 }
 
+function onRoleTujuanChange() {
+    const roleSelect = document.getElementById('role_tujuan');
+    const jenisSelect = document.getElementById('jenis_pembina');
+    const roleHint = document.getElementById('roleTujuanHint');
+    const jenisHint = document.getElementById('jenisPembinaHint');
+    const selectedRole = roleSelect ? roleSelect.value : 'mitra';
+
+    jenisSelect.innerHTML = '';
+
+    if (selectedRole === 'cabang') {
+        // Cabang wajib dibina oleh Kantor Pusat
+        let optPusat = document.createElement('option');
+        optPusat.value = 'pusat';
+        optPusat.textContent = 'Kantor Pusat (Otomatis)';
+        jenisSelect.appendChild(optPusat);
+        jenisSelect.value = 'pusat';
+        jenisHint.textContent = 'Pendaftaran Cabang otomatis dan wajib dibina langsung oleh Kantor Pusat.';
+        roleHint.textContent = 'Menghasilkan voucher ber-prefix CBG-... untuk pendaftaran akun Cabang.';
+    } else if (selectedRole === 'manager_mitra') {
+        // Manager Mitra bisa dibina Pusat atau Cabang
+        let defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = '-- Pilih Jenis Pembina (Pusat / Cabang) --';
+        jenisSelect.appendChild(defaultOpt);
+
+        let optPusat = document.createElement('option');
+        optPusat.value = 'pusat';
+        optPusat.textContent = 'Kantor Pusat';
+        jenisSelect.appendChild(optPusat);
+
+        let optCabang = document.createElement('option');
+        optCabang.value = 'cabang';
+        optCabang.textContent = 'Cabang';
+        jenisSelect.appendChild(optCabang);
+
+        jenisHint.textContent = 'Manager Mitra dapat dibina langsung oleh Kantor Pusat atau Cabang.';
+        roleHint.textContent = 'Menghasilkan voucher ber-prefix MGR-... untuk pendaftaran akun Manager Mitra.';
+    } else {
+        // Mitra bisa dibina Pusat, Cabang, atau Manager Mitra
+        let defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = '-- Pilih Jenis Pembina --';
+        jenisSelect.appendChild(defaultOpt);
+
+        let optPusat = document.createElement('option');
+        optPusat.value = 'pusat';
+        optPusat.textContent = 'Kantor Pusat';
+        jenisSelect.appendChild(optPusat);
+
+        let optCabang = document.createElement('option');
+        optCabang.value = 'cabang';
+        optCabang.textContent = 'Cabang';
+        jenisSelect.appendChild(optCabang);
+
+        let optManager = document.createElement('option');
+        optManager.value = 'manager_mitra';
+        optManager.textContent = 'Manager Mitra';
+        jenisSelect.appendChild(optManager);
+
+        jenisHint.textContent = 'Mitra dapat dibina oleh Kantor Pusat, Cabang, atau Manager Mitra.';
+        roleHint.textContent = 'Menghasilkan voucher ber-prefix MIT-... untuk pendaftaran akun Mitra.';
+    }
+
+    onJenisPembinaChange();
+}
+
 function onJenisPembinaChange() {
+    const roleSelect = document.getElementById('role_tujuan');
     const jenisSelect = document.getElementById('jenis_pembina');
     const pembinaSelect = document.getElementById('pembina_id');
     const hint = document.getElementById('pembinaHint');
     const selectedJenis = jenisSelect.value;
+    const selectedRole = roleSelect ? roleSelect.value : 'mitra';
 
     pembinaSelect.innerHTML = '';
 
@@ -316,12 +519,27 @@ function onJenisPembinaChange() {
     defaultOpt.textContent = '-- Pilih Akun ' + (selectedJenis === 'pusat' ? 'Pusat' : (selectedJenis === 'cabang' ? 'Cabang' : 'Manager Mitra')) + ' --';
     pembinaSelect.appendChild(defaultOpt);
 
+    const prefixMap = {
+        'cabang': 'CBG',
+        'manager_mitra': 'MGR',
+        'mitra': 'MIT'
+    };
+    const currentPrefixRole = prefixMap[selectedRole] || 'MIT';
+
     accounts.forEach(acc => {
         let opt = document.createElement('option');
         opt.value = acc.id;
-        opt.dataset.prefix = `MIT-${acc.jenis_prefix}-${acc.kode_pembina}`;
-        opt.dataset.nextUrut = acc.next_urut;
-        opt.dataset.preview = acc.preview_code;
+
+        // Ambil nextUrut sesuai role tujuan yang dipilih
+        let nextUrut = acc.next_urut_mit || 1;
+        if (selectedRole === 'cabang') {
+            nextUrut = acc.next_urut_cbg || 1;
+        } else if (selectedRole === 'manager_mitra') {
+            nextUrut = acc.next_urut_mgr || 1;
+        }
+
+        opt.dataset.prefix = `${currentPrefixRole}-${acc.jenis_prefix}-${acc.kode_pembina}`;
+        opt.dataset.nextUrut = nextUrut;
 
         if (selectedJenis === 'pusat') {
             opt.textContent = `[PS-${acc.kode_pembina}] ${acc.nama_lengkap} (Kantor Pusat)`;
@@ -341,10 +559,16 @@ function onJenisPembinaChange() {
         hint.textContent = 'Pilih akun pembina. Format kode dan nomor urut akan ditentukan otomatis.';
     }
 
+    // Jika hanya ada 1 pilihan di akun (misal Pusat), auto-pilih
+    if (accounts.length === 1) {
+        pembinaSelect.selectedIndex = 1;
+    }
+
     updateVoucherPreview();
 }
 
 function updateVoucherPreview() {
+    const roleSelect = document.getElementById('role_tujuan');
     const pembinaSelect = document.getElementById('pembina_id');
     const previewBox = document.getElementById('voucherPreviewBox');
     const previewCode = document.getElementById('previewVoucherCode');
@@ -354,6 +578,7 @@ function updateVoucherPreview() {
 
     const selectedOption = pembinaSelect.options[pembinaSelect.selectedIndex];
     const qty = Math.max(1, Math.min(100, parseInt(qtyInput ? qtyInput.value : 1) || 1));
+    const roleName = roleSelect ? (roleSelect.options[roleSelect.selectedIndex]?.text?.trim() || 'Mitra') : 'Mitra';
 
     if (!selectedOption || !selectedOption.value || !selectedOption.dataset.prefix) {
         previewBox.classList.add('hidden');
@@ -372,10 +597,10 @@ function updateVoucherPreview() {
 
     if (qty === 1) {
         previewCode.textContent = `${prefix}-${startFmt}`;
-        previewDesc.textContent = `Urutan voucher #${startFmt} untuk pembina ini`;
+        previewDesc.textContent = `Voucher pendaftaran ${roleName} #${startFmt} untuk pembina ini`;
     } else {
         previewCode.textContent = `${prefix}-${startFmt} s/d ${prefix}-${endFmt}`;
-        previewDesc.textContent = `Urutan voucher #${startFmt} s/d #${endFmt} (${qty} voucher berurutan)`;
+        previewDesc.textContent = `Voucher pendaftaran ${roleName} #${startFmt} s/d #${endFmt} (${qty} voucher berurutan)`;
     }
 }
 
@@ -403,5 +628,189 @@ window.addEventListener('keydown', function(e) {
         closeGenerateModal();
     }
 });
+
+// AmanahTable Initialization (Search, Filtering, Sorting & Pagination)
+document.addEventListener('DOMContentLoaded', function() {
+    AmanahTable.init({
+        containerId: 'vouchersTable',
+        rowSelector: 'tbody tr.voucher-table-row',
+        entityName: 'voucher',
+        defaultPageSize: 10,
+        searchInputId: 'vouchersSearchInput',
+        sortSelectId: 'voucherSortSelect',
+        pageSizeSelectId: 'voucherPageSizeSelect',
+        summaryId: 'voucherCountSummary',
+        prevBtnId: 'prevVoucherBtn',
+        nextBtnId: 'nextVoucherBtn',
+        numbersId: 'voucherPaginationNumbers',
+        emptyStateId: 'emptyVoucherRow',
+        resetBtnId: 'resetVoucherFiltersBtn',
+        defaultSort: 'created_desc',
+        filters: [
+            { selectId: 'voucherRoleFilter', key: 'role', defaultValue: 'all' },
+            { selectId: 'voucherStatusFilter', key: 'status', defaultValue: 'all' }
+        ],
+        sortDefinitions: {
+            created_desc: (a, b) => ((parseInt(b.getAttribute('data-created'), 10) || 0) - (parseInt(a.getAttribute('data-created'), 10) || 0)) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+            created_asc: (a, b) => ((parseInt(a.getAttribute('data-created'), 10) || 0) - (parseInt(b.getAttribute('data-created'), 10) || 0)) || ((parseInt(a.getAttribute('data-id'), 10) || 0) - (parseInt(b.getAttribute('data-id'), 10) || 0)),
+            kode_asc: (a, b) => (a.getAttribute('data-kode') || '').localeCompare(b.getAttribute('data-kode') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+            kode_desc: (a, b) => (b.getAttribute('data-kode') || '').localeCompare(a.getAttribute('data-kode') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+            pembina_asc: (a, b) => (a.getAttribute('data-pembina') || '').localeCompare(b.getAttribute('data-pembina') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+            pembina_desc: (a, b) => (b.getAttribute('data-pembina') || '').localeCompare(a.getAttribute('data-pembina') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+            status_asc: (a, b) => (a.getAttribute('data-status') || '').localeCompare(b.getAttribute('data-status') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+            status_desc: (a, b) => (b.getAttribute('data-status') || '').localeCompare(a.getAttribute('data-status') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0)),
+            expired_asc: (a, b) => ((parseInt(a.getAttribute('data-expired'), 10) || 0) - (parseInt(b.getAttribute('data-expired'), 10) || 0)) || ((parseInt(a.getAttribute('data-id'), 10) || 0) - (parseInt(b.getAttribute('data-id'), 10) || 0)),
+            expired_desc: (a, b) => ((parseInt(b.getAttribute('data-expired'), 10) || 0) - (parseInt(a.getAttribute('data-expired'), 10) || 0)) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0))
+        }
+    });
+
+    // Bulk Selection & Bulk Delete Handler for Vouchers
+    const selectAllCheckbox = document.getElementById('selectAllVouchers');
+    const bulkBar = document.getElementById('voucherBulkActionBar');
+    const countEl = document.getElementById('selectedVouchersCount');
+    const cancelBtn = document.getElementById('cancelVoucherSelectionBtn');
+    const deleteBtn = document.getElementById('bulkDeleteVouchersBtn');
+    const form = document.getElementById('voucherBulkDeleteForm');
+    const inputsContainer = document.getElementById('voucherBulkDeleteInputs');
+
+    if (selectAllCheckbox && bulkBar) {
+        function getVisibleRowCheckboxes() {
+            const rows = document.querySelectorAll('tbody tr.voucher-table-row');
+            const visibleCheckboxes = [];
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const cb = row.querySelector('.voucher-row-checkbox');
+                    if (cb) visibleCheckboxes.push(cb);
+                }
+            });
+            return visibleCheckboxes;
+        }
+
+        function getAllCheckedBoxes() {
+            return document.querySelectorAll('tbody .voucher-row-checkbox:checked');
+        }
+
+        function updateBulkBarState() {
+            const checked = getAllCheckedBoxes();
+            const count = checked.length;
+            if (count > 0) {
+                countEl.textContent = count;
+                bulkBar.classList.remove('hidden');
+            } else {
+                bulkBar.classList.add('hidden');
+            }
+
+            const visible = getVisibleRowCheckboxes();
+            if (visible.length > 0) {
+                const allVisibleChecked = visible.every(cb => cb.checked);
+                const someVisibleChecked = visible.some(cb => cb.checked);
+                selectAllCheckbox.checked = allVisibleChecked;
+                selectAllCheckbox.indeterminate = !allVisibleChecked && someVisibleChecked;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            }
+        }
+
+        selectAllCheckbox.addEventListener('change', function() {
+            const visible = getVisibleRowCheckboxes();
+            visible.forEach(cb => {
+                cb.checked = selectAllCheckbox.checked;
+            });
+            updateBulkBarState();
+        });
+
+        document.getElementById('vouchersTable').addEventListener('change', function(e) {
+            if (e.target && e.target.classList.contains('voucher-row-checkbox')) {
+                updateBulkBarState();
+            }
+        });
+
+        cancelBtn.addEventListener('click', function() {
+            document.querySelectorAll('tbody .voucher-row-checkbox').forEach(cb => cb.checked = false);
+            selectAllCheckbox.checked = false;
+            selectAllCheckbox.indeterminate = false;
+            updateBulkBarState();
+        });
+
+        deleteBtn.addEventListener('click', function() {
+            const checked = getAllCheckedBoxes();
+            const count = checked.length;
+            if (count === 0) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus ${count} voucher yang dipilih secara permanen? Tindakan ini tidak dapat dibatalkan.`)) {
+                inputsContainer.innerHTML = '';
+                checked.forEach(cb => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = cb.value;
+                    inputsContainer.appendChild(input);
+                });
+                form.submit();
+            }
+        });
+
+        const resetBtn = document.getElementById('resetVoucherFiltersBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                setTimeout(updateBulkBarState, 100);
+            });
+        }
+    }
+});
+
+// Auto Copy Voucher Code Handler
+function copyVoucherCode(code, btn) {
+    if (!code) return;
+
+    function onCopied() {
+        if (btn) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check text-xs text-emerald-600"></i>';
+            btn.classList.remove('bg-purple-50', 'text-[#5e0078]', 'border-purple-200');
+            btn.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
+                btn.classList.add('bg-purple-50', 'text-[#5e0078]', 'border-purple-200');
+            }, 1500);
+        }
+
+        if (window.toast && window.toast.success) {
+            window.toast.success(`Kode voucher ${code} berhasil disalin ke clipboard!`, 'Berhasil Disalin');
+        } else if (window.showToast) {
+            window.showToast({
+                message: `Kode voucher ${code} berhasil disalin ke clipboard!`,
+                title: 'Berhasil Disalin',
+                type: 'green'
+            });
+        }
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(onCopied).catch(() => fallbackCopy(code, onCopied));
+    } else {
+        fallbackCopy(code, onCopied);
+    }
+}
+
+function fallbackCopy(text, callback) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        const successful = document.execCommand('copy');
+        if (successful && callback) callback();
+    } catch (err) {
+        prompt('Salin kode voucher secara manual:', text);
+    }
+    document.body.removeChild(textArea);
+}
 </script>
 <?= $this->endSection() ?>

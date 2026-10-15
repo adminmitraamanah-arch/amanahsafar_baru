@@ -31,6 +31,8 @@
                     'admin' => [
                         ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'url' => '/admin/'],
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/admin/packages'],
+                        ['icon' => 'fas fa-shopping-cart', 'label' => 'Kelola Pesanan', 'url' => '/admin/orders'],
+                        ['icon' => 'fas fa-handshake', 'label' => 'Komisi', 'url' => '/admin/commissions'],
                         ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/admin/tasks'],
                     ],
                     'superadmin' => [
@@ -38,8 +40,10 @@
                         ['icon' => 'fas fa-desktop', 'label' => 'Landing Page', 'url' => '/superadmin/landing'],
                         ['icon' => 'fas fa-ticket-alt', 'label' => 'Vouchers', 'url' => '/superadmin/vouchers'],
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/superadmin/packages'],
+                        ['icon' => 'fas fa-shopping-cart', 'label' => 'Kelola Pesanan', 'url' => '/superadmin/orders'],
                         ['icon' => 'fas fa-users', 'label' => 'Users', 'url' => '/superadmin/users'],
-                        ['icon' => 'fas fa-handshake', 'label' => 'Commissions', 'url' => '/superadmin/commissions'],
+                        ['icon' => 'fas fa-handshake', 'label' => 'Komisi', 'url' => '/superadmin/commissions'],
+                        ['icon' => 'fas fa-wallet', 'label' => 'Penarikan Dana', 'url' => '/superadmin/withdrawals'],
                         ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/superadmin/tasks'],
                         ['icon' => 'fas fa-check-circle', 'label' => 'Verifications', 'url' => '/superadmin/verifications'],
                     ],
@@ -48,6 +52,7 @@
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/admin/packages'],
                         ['icon' => 'fas fa-users', 'label' => 'Binaan', 'url' => '/app/binaan'],
                         ['icon' => 'fas fa-shopping-cart', 'label' => 'Orders', 'url' => '/app/orders'],
+                        ['icon' => 'fas fa-receipt', 'label' => 'Mutasi & Komisi', 'url' => '/app/commissions'],
                         ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/app/tasks'],
                     ],
                     'member' => [
@@ -55,6 +60,7 @@
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/app/packages'],
                         ['icon' => 'fas fa-users', 'label' => 'Binaan', 'url' => '/app/binaan'],
                         ['icon' => 'fas fa-shopping-cart', 'label' => 'Orders', 'url' => '/app/orders'],
+                        ['icon' => 'fas fa-receipt', 'label' => 'Mutasi & Komisi', 'url' => '/app/commissions'],
                         ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/app/tasks'],
                     ]
                 ];

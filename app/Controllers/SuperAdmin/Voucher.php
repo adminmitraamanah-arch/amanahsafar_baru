@@ -34,7 +34,7 @@ class Voucher extends BaseController
             ->get()
             ->getResultArray();
 
-        // Helper untuk memperkaya data akun pembina dengan kode_pembina & nomor urut berikutnya
+        // Helper untuk memperkaya data akun pembina dengan kode_pembina & nomor urut berikutnya per role tujuan
         $enrichAccounts = function (array $accounts) use ($db, $userModel) {
             foreach ($accounts as &$acc) {
                 if (empty($acc['kode_pembina'])) {
@@ -42,24 +42,32 @@ class Voucher extends BaseController
                 }
                 $acc['jenis_prefix'] = \App\Models\UserModel::getPrefixJenisPembina($acc['role']);
 
-                $maxRow = $db->query(
-                    "SELECT MAX(nomor_urut) AS max_urut FROM vouchers WHERE pembina_id = ?",
-                    [$acc['id']]
-                )->getRowArray();
-                $lastUrut = (int)($maxRow['max_urut'] ?? 0);
-
-                if ($lastUrut === 0) {
-                    $prefixLike = "MIT-{$acc['jenis_prefix']}-{$acc['kode_pembina']}-%";
-                    $lastV = $db->query(
-                        "SELECT kode FROM vouchers WHERE pembina_id = ? AND kode LIKE ? ORDER BY id DESC LIMIT 1",
-                        [$acc['id'], $prefixLike]
+                $getNextUrut = function($accId, $roleTujuan, $rolePrefix, $jenisPrefix, $kodePembina) use ($db) {
+                    $maxRow = $db->query(
+                        "SELECT MAX(nomor_urut) AS max_urut FROM vouchers WHERE pembina_id = ? AND role_tujuan = ?",
+                        [$accId, $roleTujuan]
                     )->getRowArray();
-                    if ($lastV && preg_match('/-(\d{4})$/', $lastV['kode'], $m)) {
-                        $lastUrut = (int)$m[1];
-                    }
-                }
+                    $lastUrut = (int)($maxRow['max_urut'] ?? 0);
 
-                $acc['next_urut'] = $lastUrut + 1;
+                    if ($lastUrut === 0) {
+                        $prefixLike = "{$rolePrefix}-{$jenisPrefix}-{$kodePembina}-%";
+                        $lastV = $db->query(
+                            "SELECT kode FROM vouchers WHERE pembina_id = ? AND role_tujuan = ? AND kode LIKE ? ORDER BY id DESC LIMIT 1",
+                            [$accId, $roleTujuan, $prefixLike]
+                        )->getRowArray();
+                        if ($lastV && preg_match('/-(\d{4})$/', $lastV['kode'], $m)) {
+                            $lastUrut = (int)$m[1];
+                        }
+                    }
+                    return $lastUrut + 1;
+                };
+
+                $acc['next_urut_cbg'] = $getNextUrut($acc['id'], 'cabang', 'CBG', $acc['jenis_prefix'], $acc['kode_pembina']);
+                $acc['next_urut_mgr'] = $getNextUrut($acc['id'], 'manager_mitra', 'MGR', $acc['jenis_prefix'], $acc['kode_pembina']);
+                $acc['next_urut_mit'] = $getNextUrut($acc['id'], 'mitra', 'MIT', $acc['jenis_prefix'], $acc['kode_pembina']);
+
+                // Default untuk Mitra
+                $acc['next_urut'] = $acc['next_urut_mit'];
                 $acc['next_urut_fmt'] = sprintf('%04d', $acc['next_urut']);
                 $acc['preview_code'] = "MIT-{$acc['jenis_prefix']}-{$acc['kode_pembina']}-{$acc['next_urut_fmt']}";
             }
@@ -124,6 +132,11 @@ class Voucher extends BaseController
             return redirect()->back();
         }
 
+        $roleTujuan = strtolower(trim((string)$this->request->getPost('role_tujuan')));
+        if (!in_array($roleTujuan, ['cabang', 'manager_mitra', 'mitra'], true)) {
+            $roleTujuan = 'mitra';
+        }
+
         $qty = max(1, min(100, (int)$this->request->getPost('qty')));
         $pembinaId = (int)$this->request->getPost('pembina_id');
         $expiredAtInput = $this->request->getPost('expired_at');
@@ -142,8 +155,9 @@ class Voucher extends BaseController
             }
         }
 
-        // Panggil method pembuatan voucher terstruktur aman konkurensi
+        // Panggil method pembuatan voucher terstruktur multi-role aman konkurensi
         $result = $this->voucherModel->generateStructuredVouchers(
+            $roleTujuan,
             $pembinaId,
             $qty,
             $expiredAt,
@@ -159,8 +173,9 @@ class Voucher extends BaseController
         $codeRange = ($qty === 1) ? $firstCode : "{$firstCode} s/d {$lastCode}";
         $pembina = $result['pembina'];
         $pembinaLabel = esc($pembina['nama_lengkap']) . ' (' . ucfirst(str_replace('_', ' ', $pembina['role'])) . ')';
+        $roleLabel = \App\Models\UserModel::getRoleTujuanLabel($roleTujuan);
 
-        return redirect()->back()->with('success', "Berhasil menerbitkan {$qty} voucher [{$codeRange}] untuk pembina langsung: {$pembinaLabel}");
+        return redirect()->back()->with('success', "Berhasil menerbitkan {$qty} voucher [{$codeRange}] untuk pendaftaran {$roleLabel} (Pembina: {$pembinaLabel})");
     }
 
     public function disable($id)
@@ -193,5 +208,31 @@ class Voucher extends BaseController
         $this->voucherModel->delete($id);
 
         return redirect()->back()->with('deleted', "Voucher [{$kode}] berhasil dihapus");
+    }
+
+    public function bulkDelete()
+    {
+        if (!session('logged_in') || !in_array(session('role'), ['super_admin', 'superadmin'])) {
+            return redirect()->to('/login');
+        }
+
+        if (!$this->request->is('post')) {
+            return redirect()->to('/superadmin/vouchers')->with('error', 'Metode request tidak diizinkan');
+        }
+
+        $ids = $this->request->getPost('ids');
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada data voucher yang dipilih untuk dihapus');
+        }
+
+        $cleanIds = array_values(array_filter(array_map('intval', $ids), fn($id) => $id > 0));
+        if (empty($cleanIds)) {
+            return redirect()->back()->with('error', 'Daftar ID voucher tidak valid');
+        }
+
+        $this->voucherModel->whereIn('id', $cleanIds)->delete();
+        $total = count($cleanIds);
+
+        return redirect()->back()->with('deleted', "Berhasil menghapus {$total} voucher secara massal");
     }
 }

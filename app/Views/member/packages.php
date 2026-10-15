@@ -37,6 +37,26 @@
                     </div>
                 </div>
 
+                <!-- Gatekeeper Verification / PKS Warning Banner -->
+                <?php if (!empty($canOrder) && !$canOrder['allowed']): ?>
+                    <div class="bg-amber-50/90 border border-amber-200/90 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-start gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                                <i class="fas fa-exclamation-triangle text-base"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs sm:text-sm font-bold text-amber-900 leading-snug">Pemesanan Paket Memerlukan Verifikasi Data & PKS</h3>
+                                <p class="text-xs text-amber-700 mt-1"><?= esc($canOrder['message']) ?></p>
+                            </div>
+                        </div>
+                        <a href="<?= base_url(!empty($canOrder['need_agreement']) ? '/agreement' : '/verify') ?>" 
+                           class="btn-interactive inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shrink-0 transition shadow-xs">
+                            <i class="fas fa-clipboard-check text-xs"></i>
+                            <span><?= !empty($canOrder['need_agreement']) ? 'Setujui PKS Sekarang' : 'Lengkapi Verifikasi Sekarang' ?></span>
+                        </a>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Toolbar (Search, Filter, Sort, Per-Page) -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-3">
                     <div class="relative w-full md:w-80">
@@ -116,6 +136,8 @@
                                 'harga_quad' => !empty($pItem['harga_quad']) ? 'Rp ' . number_format($pItem['harga_quad'], 0, ',', '.') : ('Rp ' . number_format($pItem['harga'], 0, ',', '.')),
                                 'harga_triple' => !empty($pItem['harga_triple']) ? 'Rp ' . number_format($pItem['harga_triple'], 0, ',', '.') : '-',
                                 'harga_double' => !empty($pItem['harga_double']) ? 'Rp ' . number_format($pItem['harga_double'], 0, ',', '.') : '-',
+                                'min_dp_per_pax' => (float)($pItem['dp_info']['per_pax'] ?? 0),
+                                'dp_keterangan' => $pItem['dp_info']['keterangan'] ?? '',
                                 'seat_tersedia' => (int)($pItem['seat_tersedia'] ?? 0),
                                 'includes' => !empty($pItem['includes']) ? (json_decode($pItem['includes'], true) ?: []) : [],
                                 'excludes' => !empty($pItem['excludes']) ? (json_decode($pItem['excludes'], true) ?: []) : [],
@@ -512,13 +534,33 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Pilihan Rencana Pembayaran</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer border border-[#5e0078] bg-purple-50/60 rounded-xl p-2.5 flex flex-col transition hover:border-[#5e0078]" id="labelPlanDp">
+                            <div class="flex items-center gap-1.5">
+                                <input type="radio" name="tipe_pembayaran" value="dp" checked onchange="calcTotal()" class="text-[#5e0078] focus:ring-[#5e0078]">
+                                <span class="text-xs font-bold text-slate-900">Uang Muka (DP)</span>
+                            </div>
+                            <span id="orderMinDpDesc" class="text-[11px] font-bold text-[#5e0078] mt-1 pl-4">Min Rp 0</span>
+                        </label>
+                        <label class="cursor-pointer border border-slate-200 rounded-xl p-2.5 flex flex-col transition hover:border-[#5e0078]" id="labelPlanFull">
+                            <div class="flex items-center gap-1.5">
+                                <input type="radio" name="tipe_pembayaran" value="full" onchange="calcTotal()" class="text-[#5e0078] focus:ring-[#5e0078]">
+                                <span class="text-xs font-bold text-slate-900">Bayar Penuh</span>
+                            </div>
+                            <span id="orderFullDesc" class="text-[11px] text-slate-400 mt-1 pl-4">Lunas Langsung</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
                     <label for="orderCatatan" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Catatan / Nama Jamaah</label>
                     <textarea id="orderCatatan" name="catatan" rows="3" placeholder="Tuliskan nama-nama calon jamaah atau catatan khusus lainnya..."
                               class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition"></textarea>
                 </div>
 
                 <div class="p-3.5 bg-purple-50/70 rounded-xl border border-purple-100 flex items-center justify-between">
-                    <span class="text-xs font-bold text-slate-700">Total Pembayaran:</span>
+                    <span class="text-xs font-bold text-slate-700">Total Yang Harus Dibayar:</span>
                     <span id="orderTotalFmt" class="text-base font-extrabold text-[#5e0078]">Rp 0</span>
                 </div>
 
@@ -538,6 +580,10 @@
 
 <script>
 let currentPrice = 0;
+let currentMinDp = 0;
+const canOrderAllowed = <?= (!empty($canOrder) && $canOrder['allowed']) ? 'true' : 'false' ?>;
+const canOrderRedirect = "<?= base_url(!empty($canOrder['need_agreement']) ? '/agreement' : '/verify') ?>";
+const canOrderMessage = "<?= esc($canOrder['message'] ?? 'Anda belum dapat melakukan pemesanan paket karena belum melengkapi verifikasi data atau persetujuan PKS.') ?>";
 const packagesRegistry = <?= json_encode($packagesJsRegistry ?? [], JSON_UNESCAPED_UNICODE) ?>;
 
 function escapeHtml(text) {
@@ -682,15 +728,27 @@ function closeDetailModal() {
 }
 
 function openOrderModal(pkg) {
+    if (!canOrderAllowed) {
+        alert(canOrderMessage + '\n\nSilakan selesaikan verifikasi profil atau persetujuan PKS terlebih dahulu.');
+        window.location.href = canOrderRedirect;
+        return;
+    }
     const modal = document.getElementById('orderModal');
     if (!modal) return;
 
-    currentPrice = pkg.harga || 0;
-    document.getElementById('orderPackageId').value = pkg.id;
-    document.getElementById('orderPackageNama').textContent = pkg.nama;
-    document.getElementById('orderPackageHargaFmt').textContent = pkg.harga_fmt + ' / jamaah';
+    const fullPkg = packagesRegistry.find(p => String(p.id) === String(pkg.id)) || pkg;
+    currentPrice = fullPkg.harga || 0;
+    currentMinDp = fullPkg.min_dp_per_pax || (fullPkg.harga ? fullPkg.harga * 0.2 : 0);
+
+    document.getElementById('orderPackageId').value = fullPkg.id;
+    document.getElementById('orderPackageNama').textContent = fullPkg.nama;
+    document.getElementById('orderPackageHargaFmt').textContent = (fullPkg.harga_fmt || ('Rp ' + Number(fullPkg.harga).toLocaleString('id-ID'))) + ' / jamaah';
     document.getElementById('orderQty').value = 1;
     document.getElementById('orderCatatan').value = '';
+
+    // Default ke DP
+    const dpRadio = document.querySelector('input[name="tipe_pembayaran"][value="dp"]');
+    if (dpRadio) dpRadio.checked = true;
 
     calcTotal();
 
@@ -717,10 +775,29 @@ function changeQty(delta) {
 function calcTotal() {
     const qtyInput = document.getElementById('orderQty');
     const totalEl = document.getElementById('orderTotalFmt');
+    const minDpDesc = document.getElementById('orderMinDpDesc');
+    const fullDesc = document.getElementById('orderFullDesc');
+    const labelDp = document.getElementById('labelPlanDp');
+    const labelFull = document.getElementById('labelPlanFull');
+    const payDpRadio = document.querySelector('input[name="tipe_pembayaran"][value="dp"]');
+
     let qty = parseInt(qtyInput.value) || 1;
     if (qty < 1) qty = 1;
     const total = qty * currentPrice;
-    totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+    const totalMinDp = qty * currentMinDp;
+
+    if (minDpDesc) minDpDesc.textContent = 'Min Rp ' + Math.round(totalMinDp).toLocaleString('id-ID');
+    if (fullDesc) fullDesc.textContent = 'Rp ' + Math.round(total).toLocaleString('id-ID');
+
+    if (payDpRadio && payDpRadio.checked) {
+        if (labelDp) { labelDp.classList.add('border-[#5e0078]', 'bg-purple-50/60'); labelDp.classList.remove('border-slate-200'); }
+        if (labelFull) { labelFull.classList.remove('border-[#5e0078]', 'bg-purple-50/60'); labelFull.classList.add('border-slate-200'); }
+        totalEl.textContent = 'DP Min: Rp ' + Math.round(totalMinDp).toLocaleString('id-ID');
+    } else {
+        if (labelFull) { labelFull.classList.add('border-[#5e0078]', 'bg-purple-50/60'); labelFull.classList.remove('border-slate-200'); }
+        if (labelDp) { labelDp.classList.remove('border-[#5e0078]', 'bg-purple-50/60'); labelDp.classList.add('border-slate-200'); }
+        totalEl.textContent = 'Rp ' + Math.round(total).toLocaleString('id-ID');
+    }
 }
 
 // Dual-View Coordinator (Search, Filtering, Sorting, Pagination & View Toggle)

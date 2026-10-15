@@ -12,6 +12,7 @@ class VerificationModel extends Model
     protected $returnType = 'array';
     protected $allowedFields = [
         'user_id',
+        'nik',
         'ktp_path',
         'swafoto_path',
         'nama_bank',

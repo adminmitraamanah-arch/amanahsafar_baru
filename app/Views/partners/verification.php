@@ -1,0 +1,1 @@
+<?= view('auth/verify', ['user' => $user ?? null]) ?>

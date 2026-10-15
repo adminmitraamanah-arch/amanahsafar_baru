@@ -13,7 +13,15 @@ class TaskModel extends Model
     protected $useSoftDeletes = true;
     protected $allowedFields = [
         'judul',
+        'kategori',
         'deskripsi',
+        'copywriting',
+        'catatan',
+        'file_path',
+        'file_type',
+        'file_name',
+        'file_size',
+        'status',
         'caption',
         'tenggat',
         'target_role',

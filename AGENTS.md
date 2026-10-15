@@ -2,7 +2,7 @@
 
 This file provides guidance to AI coding agents (Antigravity, Claude Code, Cursor, Copilot, etc.) working on this project (`amanahsafar`).
 
-Skills from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills), [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill), and [DealTech UI](https://github.com/Deal-Tech/dealtech-ui-for-public-component) are installed in `.agents/skills/`.
+Skills from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) and [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) are installed in `.agents/skills/`.
 
 ## OpenCode Integration
 
@@ -19,28 +19,57 @@ OpenCode uses a **skill-driven execution model** powered by the `skill` tool and
 
 The agent should automatically map user intent to skills:
 
-- Feature / new functionality → `spec-driven-development`, then `incremental-implementation`, `test-driven-development`
-- Planning / breakdown → `planning-and-task-breakdown`
-- Bug / failure / unexpected behavior → `debugging-and-error-recovery`
-- Code review → `code-review-and-quality`
-- Refactoring / simplification → `code-simplification`
-- API or interface design → `api-and-interface-design`
-- UI/UX & Design system → `ui-ux-pro-max`, `design-system`, `ui-styling`, `dealtech-ui`
-- Frontend implementation → `frontend-ui-engineering`, `dealtech-ui`
-- Banner & slides design → `banner-design`, `slides`, `brand`
+- **Requirements & Ideation**:
+  - Unclear / underspecified requests → `interview-me`
+  - Ideation, brainstorming & concept divergence/convergence → `idea-refine`
+  - Meta-skill discovery & orchestration → `using-agent-skills`
+  - Context setup & agent rule configuration → `context-engineering`
+
+- **Architecture, Planning & Specs**:
+  - Feature / new functionality PRD & specifications → `spec-driven-development`
+  - Planning / task breakdown & sequencing → `planning-and-task-breakdown`
+  - Quality thresholds & project constraints contract → `constraint-driven-development`
+  - Stress-testing plans & adversarial cross-examination → `doubt-driven-development`
+  - API, schema, or interface design → `api-and-interface-design`
+  - Architecture decisions & ADR documentation → `documentation-and-adrs`
+
+- **Implementation & Code Construction**:
+  - Official documentation verification & source-backed coding → `source-driven-development`
+  - Step-by-step implementation in thin vertical slices → `incremental-implementation`
+  - Test-driven development (Red-Green-Refactor) → `test-driven-development`
+  - Database schema migrations, sunsetting & deprecations → `deprecation-and-migration`
+
+- **UI/UX, Styling & Frontend**:
+  - UI/UX intelligence, color palettes, fonts & UX guidelines → `ui-ux-pro-max`
+  - Utility styling & component implementation (Tailwind CSS, shadcn) → `ui-styling`
+  - Accessible, responsive frontend implementation → `frontend-ui-engineering`
+  - Design tokens & systematic specifications → `design-system`
+
+- **Testing, Quality & Debugging**:
+  - Bug / failure / unexpected behavior → `debugging-and-error-recovery`
+  - Real browser DOM, console & network testing → `browser-testing-with-devtools`
+  - Multi-axis code review before merging → `code-review-and-quality`
+  - Refactoring & simplification for clarity → `code-simplification`
+
+- **Security, Performance & Operations (DevOps)**:
+  - Security audit, OWASP hardening & auth safety → `security-and-hardening`
+  - Performance optimization (queries, frontend, backend) → `performance-optimization`
+  - Logging, metrics, tracing & observability → `observability-and-instrumentation`
+  - Git branching, atomic commits, releases & changelogs → `git-workflow-and-versioning`
+  - CI/CD pipeline & automated build setup → `ci-cd-and-automation`
+  - Production readiness, deployment & rollback planning → `shipping-and-launch`
 
 ### Lifecycle Mapping (Implicit Commands)
 
-OpenCode does not support slash commands like `/spec` or `/plan`.
+OpenCode and agent systems follow this lifecycle:
 
-Instead, the agent must internally follow this lifecycle:
-
-- DEFINE → `spec-driven-development`
-- PLAN → `planning-and-task-breakdown`
-- BUILD → `incremental-implementation` + `test-driven-development`
-- VERIFY → `debugging-and-error-recovery`
-- REVIEW → `code-review-and-quality`
-- SHIP → `shipping-and-launch`
+- IDEATE & INTERVIEW → `interview-me`, `idea-refine`, `using-agent-skills`
+- DEFINE → `spec-driven-development`, `constraint-driven-development`
+- PLAN → `planning-and-task-breakdown`, `api-and-interface-design`, `doubt-driven-development`
+- BUILD → `source-driven-development` + `incremental-implementation` + `test-driven-development` (+ UI/UX skills for frontend)
+- VERIFY → `debugging-and-error-recovery`, `browser-testing-with-devtools`, `security-and-hardening`, `performance-optimization`
+- REVIEW → `code-review-and-quality`, `code-simplification`, `documentation-and-adrs`
+- SHIP → `git-workflow-and-versioning`, `ci-cd-and-automation`, `shipping-and-launch`
 
 ### Execution Model
 

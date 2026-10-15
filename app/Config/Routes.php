@@ -35,12 +35,11 @@ $routes->get('/dashboard', 'Dashboard::index');
 $routes->get('/profile', 'Profile::index', ['filter' => 'roleFilter']);
 $routes->post('/profile/update', 'Profile::update', ['filter' => 'roleFilter']);
 
-// Katalog & Order
+// Katalog
 $routes->get('/catalog', 'Catalog::index');
 $routes->get('/catalog/(:num)', 'Catalog::detail/$1');
-$routes->post('/order', 'Order::create');
-$routes->get('/orders', 'Order::myOrders');
-$routes->get('/orders/(:num)', 'Order::detail/$1');
+$routes->get('/orders', function() { return redirect()->to('/app/orders'); });
+$routes->get('/orders/(:num)', function($id) { return redirect()->to('/app/orders/' . $id); });
 
 // Super Admin
 $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($routes) {
@@ -50,22 +49,37 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
     $routes->post('vouchers/disable/(:num)', 'SuperAdmin\Voucher::disable/$1');
     $routes->post('vouchers/delete/(:num)', 'SuperAdmin\Voucher::delete/$1');
     $routes->get('vouchers/delete/(:num)', 'SuperAdmin\Voucher::delete/$1');
+    $routes->post('vouchers/bulk-delete', 'SuperAdmin\Voucher::bulkDelete');
     $routes->get('packages', 'SuperAdmin\Package::index');
     $routes->get('packages/create', 'SuperAdmin\Package::create');
     $routes->post('packages/store', 'SuperAdmin\Package::store');
     $routes->get('packages/(:num)/edit', 'SuperAdmin\Package::edit/$1');
     $routes->post('packages/(:num)/update', 'SuperAdmin\Package::update/$1');
     $routes->post('packages/(:num)/delete', 'SuperAdmin\Package::delete/$1');
+    $routes->post('packages/bulk-delete', 'SuperAdmin\Package::bulkDelete');
     $routes->get('users', 'SuperAdmin\User::index');
     $routes->post('users/update/(:num)', 'SuperAdmin\User::update/$1');
     $routes->post('users/deactivate/(:num)', 'SuperAdmin\User::deactivate/$1');
     $routes->post('users/activate/(:num)', 'SuperAdmin\User::activate/$1');
     $routes->post('users/delete/(:num)', 'SuperAdmin\User::delete/$1');
-    $routes->get('users/delete/(:num)', 'SuperAdmin\User::delete/$1');
+    $routes->post('users/bulk-delete', 'SuperAdmin\User::bulkDelete');
+    $routes->post('users/restore/(:num)', 'SuperAdmin\User::restore/$1');
+    $routes->get('users/restore/(:num)', 'SuperAdmin\User::restore/$1');
+    $routes->post('users/purge/(:num)', 'SuperAdmin\User::purge/$1');
+    $routes->get('users/purge/(:num)', 'SuperAdmin\User::purge/$1');
     $routes->get('commissions', 'SuperAdmin\Commission::index');
     $routes->post('commissions/store', 'SuperAdmin\Commission::store');
     $routes->post('commissions/(:num)/update', 'SuperAdmin\Commission::update/$1');
     $routes->post('commissions/(:num)/delete', 'SuperAdmin\Commission::delete/$1');
+    $routes->get('withdrawals', 'SuperAdmin\Commission::withdrawals');
+    $routes->post('withdrawals/(:num)/process', 'SuperAdmin\Commission::processWithdrawal/$1');
+    
+    // Orders Management
+    $routes->get('orders', 'SuperAdmin\Order::index');
+    $routes->get('orders/(:num)', 'SuperAdmin\Order::detail/$1');
+    $routes->post('orders/payments/(:num)/verify', 'SuperAdmin\Order::verifyPayment/$1');
+    $routes->post('orders/(:num)/status', 'SuperAdmin\Order::updateStatus/$1');
+
     // Tasks
     $routes->get('tasks', 'SuperAdmin\Task::index');
     $routes->get('tasks/edit/(:num)', 'SuperAdmin\Task::edit/$1');
@@ -73,6 +87,7 @@ $routes->group('superadmin', ['filter' => 'roleFilter:super_admin'], function($r
     $routes->post('tasks/store', 'SuperAdmin\Task::store');
     $routes->post('tasks/(:num)/update', 'SuperAdmin\Task::update/$1');
     $routes->post('tasks/(:num)/delete', 'SuperAdmin\Task::delete/$1');
+    $routes->post('tasks/bulk-delete', 'SuperAdmin\Task::bulkDelete');
     $routes->get('tasks/(:num)/download', 'SuperAdmin\Task::download/$1');
     $routes->get('verifications', 'SuperAdmin\Verification::index');
     $routes->get('verifications/(:num)', 'SuperAdmin\Verification::show/$1');
@@ -110,6 +125,12 @@ $routes->group('admin', ['filter' => 'roleFilter:admin,pusat'], function($routes
     $routes->post('commissions/(:num)/update', 'Admin\Commission::update/$1');
     $routes->post('commissions/(:num)/delete', 'Admin\Commission::delete/$1');
     
+    // Orders Management
+    $routes->get('orders', 'Admin\Order::index');
+    $routes->get('orders/(:num)', 'Admin\Order::detail/$1');
+    $routes->post('orders/payments/(:num)/verify', 'Admin\Order::verifyPayment/$1');
+    $routes->post('orders/(:num)/status', 'Admin\Order::updateStatus/$1');
+
     // Tasks
     $routes->get('tasks', 'Admin\Task::index');
     $routes->get('tasks/edit/(:num)', 'Admin\Task::edit/$1');
@@ -128,6 +149,9 @@ $routes->group('app', ['filter' => 'roleFilter:pusat,cabang,manager_mitra,mitra'
     $routes->get('binaan', 'Member\Binaan::index');
     $routes->get('orders', 'Member\Order::index');
     $routes->get('orders/(:num)', 'Member\Order::detail/$1');
+    $routes->post('orders/(:num)/pay', 'Member\Order::pay/$1');
+    $routes->get('commissions', 'Member\Commission::index');
+    $routes->post('commissions/withdraw', 'Member\Commission::withdraw');
     $routes->get('tasks', 'Member\Task::index');
     $routes->get('tasks/(:num)/download', 'Member\Task::download/$1');
 });

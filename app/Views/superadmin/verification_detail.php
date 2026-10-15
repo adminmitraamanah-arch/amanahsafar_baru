@@ -78,6 +78,20 @@
                     </div>
                 <?php endif; ?>
 
+                <?php if (!empty($fraudAlerts)): ?>
+                    <div class="space-y-3">
+                        <?php foreach ($fraudAlerts as $fa): ?>
+                            <div class="p-4 rounded-2xl bg-rose-50 border-2 border-rose-300 text-rose-900 text-xs sm:text-sm flex items-start gap-3 shadow-xs">
+                                <i class="fas fa-triangle-exclamation text-rose-600 text-lg mt-0.5 shrink-0"></i>
+                                <div>
+                                    <strong class="font-bold text-rose-800 uppercase tracking-wider block mb-0.5"><?= esc($fa['title']) ?></strong>
+                                    <p class="leading-relaxed text-rose-700"><?= esc($fa['message']) ?></p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Grid Layout: 2 Kolom -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     
@@ -362,6 +376,14 @@
                                                 </a>
                                             <?php endif; ?>
                                         </div>
+                                    </div>
+
+                                    <!-- NIK KTP -->
+                                    <div class="flex items-center justify-between py-1.5 border-b border-slate-50">
+                                        <span class="text-slate-500 font-medium">NIK KTP (16 Digit):</span>
+                                        <span class="font-mono font-bold text-slate-900 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                                            <?= esc($verification['nik'] ?? 'Belum diisi') ?>
+                                        </span>
                                     </div>
 
                                     <!-- Email -->

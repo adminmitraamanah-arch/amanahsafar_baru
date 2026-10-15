@@ -112,6 +112,33 @@
         outline: none;
         box-shadow: 0 0 0 3px rgba(107, 0, 138, 0.15);
     }
+    #namaBankManual {
+        text-align: left;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    #namaBankManual:placeholder-shown {
+        text-align: center !important;
+    }
+    #namaBankManual:focus {
+        text-align: left !important;
+    }
+    #namaBankManual::placeholder,
+    #namaBankManual::-webkit-input-placeholder,
+    #namaBankManual::-moz-placeholder,
+    #namaBankManual:-ms-input-placeholder {
+        text-align: center !important;
+    }
+    #selectBank {
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        background-image: none !important;
+        padding-right: 2.25rem !important;
+    }
+    #selectBank::-ms-expand {
+        display: none !important;
+    }
     .btn-brand-primary {
         width: 100%;
         background-color: #6b008a;
@@ -376,10 +403,9 @@
             <!-- Panel Kiri: Identitas Ungu Amanah Safar & Stepper -->
             <div class="auth-left-panel">
                 <div class="relative z-10">
-                    <!-- Logo Resmi Amanah Safar Putih & Identitas -->
+                    <!-- Logo Resmi Amanah Safar Putih -->
                     <div class="mb-8" style="margin-bottom: 2rem;">
-                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="block h-11 sm:h-12 w-auto object-contain mb-1.5 drop-shadow-sm">
-                        <span class="block text-[11px] font-semibold text-[#ca82e6] tracking-wider uppercase">Onboarding Mitra</span>
+                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="block h-11 sm:h-12 w-auto object-contain drop-shadow-sm">
                     </div>
 
                     <!-- Step Progress Indicator -->
@@ -410,16 +436,27 @@
                     </p>
 
                     <!-- Info Ringkas Akun Terdaftar -->
-                    <div class="frosted-box rounded-xl p-3.5 space-y-1.5 text-xs text-purple-100 mb-6">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-[#ca82e6]">Akun Mitra Terdaftar:</div>
-                        <div class="font-bold text-white flex items-center gap-2">
-                            <i class="fas fa-user-circle text-[#ca82e6]"></i> <?= esc($user['nama_lengkap'] ?? 'Mitra') ?>
-                        </div>
-                        <div class="text-[11px] flex items-center gap-2 panel-feature-text" style="color: #dfb2f1 !important;">
-                            <i class="fas fa-envelope text-[#ca82e6]"></i> <?= esc($user['email'] ?? '-') ?>
-                        </div>
-                        <div class="text-[11px] flex items-center gap-2 panel-feature-text" style="color: #dfb2f1 !important;">
-                            <i class="fab fa-whatsapp text-[#ca82e6]"></i> <?= esc($user['no_wa'] ?? '-') ?>
+                    <div class="frosted-box rounded-2xl p-4 mb-6">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-[#ca82e6] mb-2.5">Akun Mitra Terdaftar:</div>
+                        <div class="space-y-2">
+                            <div class="font-bold text-white text-xs flex items-center gap-2.5">
+                                <span class="w-4 h-4 inline-flex items-center justify-center shrink-0 text-[#ca82e6]">
+                                    <i class="fas fa-user-circle text-xs"></i>
+                                </span>
+                                <span class="truncate"><?= esc($user['nama_lengkap'] ?? 'Mitra') ?></span>
+                            </div>
+                            <div class="text-[11px] flex items-center gap-2.5 panel-feature-text" style="color: #dfb2f1 !important;">
+                                <span class="w-4 h-4 inline-flex items-center justify-center shrink-0 text-[#ca82e6]">
+                                    <i class="fas fa-envelope text-xs"></i>
+                                </span>
+                                <span class="truncate"><?= esc($user['email'] ?? '-') ?></span>
+                            </div>
+                            <div class="text-[11px] flex items-center gap-2.5 panel-feature-text" style="color: #dfb2f1 !important;">
+                                <span class="w-4 h-4 inline-flex items-center justify-center shrink-0 text-[#ca82e6]">
+                                    <i class="fab fa-whatsapp text-xs"></i>
+                                </span>
+                                <span class="truncate"><?= esc($user['no_wa'] ?? '-') ?></span>
+                            </div>
                         </div>
                     </div>
 
@@ -429,13 +466,13 @@
                             <div class="circle-icon-badge">
                                 <i class="fas fa-id-card"></i>
                             </div>
-                            <span class="panel-feature-text" style="color: #dfb2f1 !important;">Foto KTP asli terbaca jelas & tidak buram</span>
+                            <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Foto KTP asli terbaca jelas & tidak buram</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="circle-icon-badge">
                                 <i class="fas fa-building-columns"></i>
                             </div>
-                            <span class="panel-feature-text" style="color: #dfb2f1 !important;">Rekening bank valid atas nama pribadi</span>
+                            <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Rekening bank valid atas nama pribadi</span>
                         </li>
                     </ul>
                 </div>
@@ -463,6 +500,18 @@
                     </div>
 
                     <!-- Flash Message Notifications -->
+                    <?php if (!empty($verification) && $verification['status'] === 'ditolak'): ?>
+                        <div class="mt-4 p-4 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs">
+                            <div class="flex items-center gap-2 font-bold text-rose-700 mb-1">
+                                <i class="fas fa-circle-xmark text-sm"></i> Verifikasi Sebelumnya Ditolak Admin
+                            </div>
+                            <p class="text-rose-800 leading-relaxed">
+                                <strong>Catatan Perbaikan:</strong> <?= esc($verification['catatan'] ?: 'Mohon periksa kembali kejelasan foto KTP dan nomor rekening Anda.') ?>
+                            </p>
+                            <p class="text-[11px] text-rose-600 mt-1">Silakan unggah berkas yang benar melalui formulir di bawah ini.</p>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if (session()->getFlashdata('error')): ?>
                         <div class="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
                             <i class="fas fa-circle-exclamation text-rose-500 text-sm shrink-0"></i>
@@ -488,6 +537,41 @@
                     <form method="POST" action="<?= base_url('/verify') ?>" enctype="multipart/form-data" class="mt-5">
                         <?= csrf_field() ?>
 
+                        <!-- Bagian Identitas: Nama Sesuai KTP -->
+                        <div class="form-group-spaced">
+                            <label for="namaKtp" class="block text-xs font-bold text-slate-700 mb-1.5">
+                                Nama Sesuai KTP <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" id="namaKtp" name="nama_ktp" required
+                                    value="<?= esc(old('nama_ktp', $user['nama_lengkap'] ?? '')) ?>"
+                                    class="input-pill"
+                                    placeholder="Contoh: AHMAD DAHLAN (Sesuai KTP)">
+                            </div>
+                            <span class="block text-[10px] text-slate-400 mt-1">Pastikan nama lengkap persis seperti yang tertera pada kartu identitas KTP Anda.</span>
+                        </div>
+
+                        <!-- Bagian Identitas: Nomor Induk Kependudukan (NIK) -->
+                        <div class="form-group-spaced">
+                            <label for="nikInput" class="block text-xs font-bold text-slate-700 mb-1.5">
+                                Nomor Induk Kependudukan (NIK KTP - 16 Digit) <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
+                                    <i class="fas fa-id-card"></i>
+                                </span>
+                                <input type="text" id="nikInput" name="nik" required pattern="[0-9]{16}" minlength="16" maxlength="16" inputmode="numeric"
+                                    value="<?= esc($verification['nik'] ?? '') ?>"
+                                    class="input-pill font-mono tracking-wider"
+                                    placeholder="Contoh: 3201012345670001"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16)">
+                            </div>
+                            <span class="block text-[10px] text-slate-400 mt-1">Wajib 16 digit angka sesuai KTP resmi. 1 NIK hanya berlaku untuk 1 akun kemitraan.</span>
+                        </div>
+
                         <!-- Bagian Upload: Upload KTP -->
                         <div class="form-group-spaced">
                             <label class="block text-xs font-bold text-slate-700 mb-1.5">
@@ -495,7 +579,7 @@
                             </label>
                             <div class="upload-dropzone rounded-xl p-4 text-center cursor-pointer group relative"
                                  onclick="document.getElementById('ktpInput').click()">
-                                <input type="file" id="ktpInput" name="ktp" accept="image/*" required class="hidden" onchange="previewUpload(this, 'ktpPreview', 'ktpFileName', 'ktpDefaultIcon')">
+                                <input type="file" id="ktpInput" name="ktp" accept="image/*" <?= empty($verification['ktp_path']) ? 'required' : '' ?> class="hidden" onchange="previewUpload(this, 'ktpPreview', 'ktpFileName', 'ktpDefaultIcon')">
                                 
                                 <div id="ktpPreview" class="hidden mb-2">
                                     <img src="" alt="KTP Preview" class="h-20 mx-auto rounded-lg object-cover shadow-sm border border-slate-200">
@@ -512,27 +596,56 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 form-group-spaced">
                             <!-- Nama Bank -->
                             <div>
-                                <label for="namaBank" class="block text-xs font-bold text-slate-700 mb-1.5">
+                                <label for="selectBank" class="block text-xs font-bold text-slate-700 mb-1.5">
                                     Nama Bank <span class="text-rose-500">*</span>
                                 </label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
                                         <i class="fas fa-building-columns"></i>
                                     </span>
-                                    <input type="text" id="namaBank" name="nama_bank" list="bankList" required
-                                        class="input-pill"
-                                        placeholder="Contoh: BCA, BSI, Mandiri">
-                                    <datalist id="bankList">
-                                        <option value="BCA (Bank Central Asia)">
-                                        <option value="BSI (Bank Syariah Indonesia)">
-                                        <option value="Bank Mandiri">
-                                        <option value="BRI (Bank Rakyat Indonesia)">
-                                        <option value="BNI (Bank Negara Indonesia)">
-                                        <option value="Bank Muamalat">
-                                        <option value="CIMB Niaga">
-                                        <option value="Bank Permata">
-                                    </datalist>
+                                    <select id="selectBank" required
+                                        class="input-pill cursor-pointer bg-white pr-4"
+                                        onchange="handleBankSelection(this.value)">
+                                        <option value="" disabled selected>-- Pilih Nama Bank --</option>
+                                        <option value="BCA (Bank Central Asia)">BCA (Bank Central Asia)</option>
+                                        <option value="BSI (Bank Syariah Indonesia)">BSI (Bank Syariah Indonesia)</option>
+                                        <option value="Bank Mandiri">Bank Mandiri</option>
+                                        <option value="BRI (Bank Rakyat Indonesia)">BRI (Bank Rakyat Indonesia)</option>
+                                        <option value="BNI (Bank Negara Indonesia)">BNI (Bank Negara Indonesia)</option>
+                                        <option value="Bank Muamalat">Bank Muamalat</option>
+                                        <option value="CIMB Niaga">CIMB Niaga</option>
+                                        <option value="Bank Permata">Bank Permata</option>
+                                        <option value="Bank Danamon">Bank Danamon</option>
+                                        <option value="Bank Tabungan Negara (BTN)">Bank Tabungan Negara (BTN)</option>
+                                        <option value="Bank BJB">Bank BJB</option>
+                                        <option value="Bank Jatim">Bank Jatim</option>
+                                        <option value="Bank Jateng">Bank Jateng</option>
+                                        <option value="Bank Sumut">Bank Sumut</option>
+                                        <option value="Bank Nagari">Bank Nagari</option>
+                                        <option value="Bank DKI">Bank DKI</option>
+                                        <option value="Bank BTPN / Jenius">Bank BTPN / Jenius</option>
+                                        <option value="Bank Jago">Bank Jago</option>
+                                        <option value="SeaBank">SeaBank</option>
+                                        <option value="Lainnya">Lainnya (Ketik Manual)</option>
+                                    </select>
+                                    <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-700 text-xs">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </span>
                                 </div>
+
+                                <!-- Kolom Input Ketik Manual (Hanya Aktif & Muncul Ketika Memilih Opsi 'Lainnya') -->
+                                <div id="bankManualContainer" class="hidden mt-2">
+                                    <input type="text" id="namaBankManual" name="nama_bank_manual"
+                                        class="input-pill bg-purple-50/50 border-purple-200 focus:bg-white focus:border-[#6b008a]"
+                                        style="padding-left: 1rem !important; padding-right: 1rem !important;"
+                                        placeholder="Ketik nama bank Anda di sini..."
+                                        onfocus="this.style.textAlign='left'"
+                                        onblur="if(!this.value.trim()) this.style.textAlign='center'"
+                                        oninput="syncBankValue(this.value); this.style.textAlign=this.value.trim() ? 'left' : 'center'">
+                                </div>
+
+                                <!-- Input Hidden untuk memastikan nama_bank terkirim bersih ke backend -->
+                                <input type="hidden" id="namaBankFinal" name="nama_bank" value="<?= esc($verification['nama_bank'] ?? '') ?>" required>
                             </div>
 
                             <!-- Nomor Rekening -->
@@ -557,8 +670,8 @@
                                 <label for="namaPemilikRekening" class="block text-xs font-bold text-slate-700">
                                     Nama Pemilik Rekening <span class="text-rose-500">*</span>
                                 </label>
-                                <button type="button" onclick="copyUserName()" class="text-xs font-bold text-[#6b008a] hover:text-[#55006e] hover:underline inline-flex items-center gap-1 focus:outline-none">
-                                    <i class="fas fa-clone text-[10px]"></i> Salin dari Nama Akun
+                                <button type="button" onclick="copyKtpName()" class="text-xs font-bold text-[#6b008a] hover:text-[#55006e] hover:underline inline-flex items-center gap-1 focus:outline-none">
+                                    <i class="fas fa-clone text-[10px]"></i> Salin dari Nama KTP
                                 </button>
                             </div>
                             <div class="relative">
@@ -566,8 +679,9 @@
                                     <i class="fas fa-user-check"></i>
                                 </span>
                                 <input type="text" id="namaPemilikRekening" name="nama_pemilik_rekening" required
+                                    value="<?= esc($verification['nama_pemilik_rekening'] ?? '') ?>"
                                     class="input-pill"
-                                    placeholder="Nama sesuai buku tabungan">
+                                    placeholder="Nama lengkap sesuai KTP">
                             </div>
                         </div>
 
@@ -610,9 +724,18 @@
 </div>
 
 <script>
+function copyKtpName() {
+    const namaKtpInput = document.getElementById('namaKtp');
+    const targetInput = document.getElementById('namaPemilikRekening');
+    if (namaKtpInput && targetInput) {
+        targetInput.value = namaKtpInput.value.trim();
+    } else if (targetInput) {
+        targetInput.value = <?= json_encode($user['nama_lengkap'] ?? '') ?>;
+    }
+}
+
 function copyUserName() {
-    const defaultName = <?= json_encode($user['nama_lengkap'] ?? '') ?>;
-    document.getElementById('namaPemilikRekening').value = defaultName;
+    copyKtpName();
 }
 
 function previewUpload(input, previewContainerId, labelId, defaultIconId) {
@@ -633,5 +756,83 @@ function previewUpload(input, previewContainerId, labelId, defaultIconId) {
         reader.readAsDataURL(file);
     }
 }
+
+// Logika Pilihan Bank & Opsi 'Lainnya'
+function handleBankSelection(value) {
+    const manualContainer = document.getElementById('bankManualContainer');
+    const manualInput = document.getElementById('namaBankManual');
+    const finalInput = document.getElementById('namaBankFinal');
+
+    if (value === 'Lainnya') {
+        // Tampilkan kolom input dan langsung fokus agar pengguna bisa langsung mengetik
+        manualContainer.classList.remove('hidden');
+        manualInput.required = true;
+        setTimeout(() => manualInput.focus(), 50);
+        finalInput.value = manualInput.value.trim();
+    } else {
+        // Jika memilih dari select, tidak bisa diketik ulang (terkunci pada opsi select)
+        manualContainer.classList.add('hidden');
+        manualInput.required = false;
+        manualInput.value = '';
+        finalInput.value = value;
+    }
+}
+
+function syncBankValue(value) {
+    document.getElementById('namaBankFinal').value = value.trim();
+}
+
+// Inisialisasi Bank saat DOM selesai dimuat (jika ada data tersimpan sebelumnya)
+document.addEventListener('DOMContentLoaded', function() {
+    const savedBank = <?= json_encode($verification['nama_bank'] ?? '') ?>;
+    const select = document.getElementById('selectBank');
+    const manualContainer = document.getElementById('bankManualContainer');
+    const manualInput = document.getElementById('namaBankManual');
+    const finalInput = document.getElementById('namaBankFinal');
+
+    if (savedBank) {
+        let matched = false;
+        for (let i = 0; i < select.options.length; i++) {
+            if (select.options[i].value === savedBank) {
+                select.selectedIndex = i;
+                finalInput.value = savedBank;
+                matched = true;
+                break;
+            }
+        }
+
+        if (!matched) {
+            select.value = 'Lainnya';
+            manualContainer.classList.remove('hidden');
+            manualInput.required = true;
+            manualInput.value = savedBank;
+            manualInput.style.textAlign = 'left';
+            finalInput.value = savedBank;
+        }
+    }
+
+    // Pastikan nilai valid sebelum form dikirimkan
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (select.value === 'Lainnya') {
+                finalInput.value = manualInput.value.trim();
+                if (!finalInput.value) {
+                    e.preventDefault();
+                    manualInput.focus();
+                    alert('Silakan ketik nama bank Anda pada kolom yang disediakan.');
+                    return false;
+                }
+            } else if (select.value) {
+                finalInput.value = select.value;
+            } else {
+                e.preventDefault();
+                select.focus();
+                alert('Silakan pilih nama bank terlebih dahulu.');
+                return false;
+            }
+        });
+    }
+});
 </script>
 <?= $this->endSection() ?>

@@ -486,7 +486,7 @@
                         </h1>
                     </div>
                     <p class="text-xs sm:text-sm leading-relaxed mb-8 panel-feature-text" style="color: #dfb2f1 !important;">
-                        Daftarkan akun Mitra Anda dengan kode voucher resmi dari Pembina untuk membuka akses syiar dan bagi hasil yang barakah.
+                        Daftarkan akun kemitraan Anda (Cabang, Manager Mitra, atau Mitra) dengan kode voucher resmi dari Pembina untuk membuka akses syiar dan bagi hasil yang barakah.
                     </p>
 
                     <!-- Poin Keunggulan (3 List Item Ikon Bulat Sesuai Referensi) -->
@@ -495,7 +495,7 @@
                             <div class="circle-icon-badge">
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
-                            <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Aktivasi otomatis via Kode Voucher Pembina</span>
+                            <span class="text-xs font-medium panel-feature-text" style="color: #dfb2f1 !important;">Aktivasi otomatis & penentu role via Voucher Pembina</span>
                         </li>
                         <li class="flex items-center gap-3">
                             <div class="circle-icon-badge">
@@ -537,15 +537,15 @@
                         </div>
                     </div>
 
-                    <!-- Callout Info: Pendaftaran Khusus Mitra (Warna Kuning & Ramping Tanpa Ruang Kosong Berlebih) -->
+                    <!-- Callout Info: Pendaftaran Kemitraan (Cabang, Manager Mitra, Mitra) -->
                     <div class="info-card-amber">
                         <div class="info-card-icon">
                             <i class="fas fa-circle-info"></i>
                         </div>
                         <div class="info-card-content">
-                            <strong class="info-card-title">Pendaftaran Ditujukan Khusus untuk Mitra</strong>
+                            <strong class="info-card-title">Pendaftaran Akses Kemitraan Amanah Safar</strong>
                             <p class="info-card-desc">
-                                Pastikan Anda memiliki <strong>Kode Voucher</strong> dari Pembina (Pusat / Cabang / Manager) untuk mengaktivasi akun ini.
+                                Pastikan Anda memiliki <strong>Kode Voucher</strong> dari Pembina. Voucher ini otomatis menentukan tingkat akses (Cabang, Manager Mitra, atau Mitra) dan jaringan pembinaan Anda.
                             </p>
                         </div>
                     </div>
@@ -584,7 +584,7 @@
                                 <input type="text" id="kodeVoucher" name="kode_voucher" required autofocus
                                     value="<?= esc(old('kode_voucher') ?? '') ?>"
                                     class="input-pill font-mono font-bold uppercase text-[#6b008a]"
-                                    placeholder="Contoh: MIT-PUS-001-0001">
+                                    placeholder="masukan kode voucher">
                             </div>
                         </div>
 

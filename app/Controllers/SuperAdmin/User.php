@@ -22,14 +22,30 @@ class User extends BaseController
 
         $db = \Config\Database::connect();
         
-        // Fetch all users with their pembina name
-        $users = $db->table('users u')
-            ->select('u.*, p.nama_lengkap as nama_pembina')
-            ->join('users p', 'p.id = u.pembina_id', 'left')
-            ->where('u.deleted_at', null)
-            ->orderBy('u.id', 'ASC')
-            ->get()
-            ->getResultArray();
+        $tab = $this->request->getGet('tab') ?? 'active';
+
+        // Hitung total pengguna aktif dan sampah
+        $activeCount = $db->table('users')->where('deleted_at', null)->countAllResults();
+        $trashCount = $db->table('users')->where('deleted_at IS NOT NULL', null, false)->countAllResults();
+
+        // Fetch users based on selected tab
+        if ($tab === 'trash') {
+            $users = $db->table('users u')
+                ->select('u.*, p.nama_lengkap as nama_pembina')
+                ->join('users p', 'p.id = u.pembina_id', 'left')
+                ->where('u.deleted_at IS NOT NULL', null, false)
+                ->orderBy('u.deleted_at', 'DESC')
+                ->get()
+                ->getResultArray();
+        } else {
+            $users = $db->table('users u')
+                ->select('u.*, p.nama_lengkap as nama_pembina')
+                ->join('users p', 'p.id = u.pembina_id', 'left')
+                ->where('u.deleted_at', null)
+                ->orderBy('u.id', 'ASC')
+                ->get()
+                ->getResultArray();
+        }
 
         // Fetch potential pembinas (Pusat, Cabang, Manager Mitra, Admin, Super Admin)
         $pembinas = $db->table('users')
@@ -42,10 +58,13 @@ class User extends BaseController
             ->getResultArray();
 
         $data = [
-            'title' => 'Kelola Pengguna',
-            'users' => $users,
-            'pembinas' => $pembinas,
+            'title'           => 'Kelola Pengguna',
+            'users'           => $users,
+            'pembinas'        => $pembinas,
             'current_user_id' => session('user_id'),
+            'active_tab'      => $tab,
+            'active_count'    => $activeCount,
+            'trash_count'     => $trashCount,
         ];
 
         return view('superadmin/users', $data);
@@ -258,14 +277,168 @@ class User extends BaseController
         // Reassign any users who had this user as pembina to null
         $db->table('users')->where('pembina_id', $id)->update(['pembina_id' => null]);
 
-        // Soft delete the user & set status to nonaktif
+        // Soft delete the user & set status to nonaktif, anonymize email & no_wa to free unique constraints
+        $nowTs = time();
+        $anonymizedEmail = str_contains($user['email'], '.deleted.') ? $user['email'] : ($user['email'] . '.deleted.' . $nowTs);
+        $anonymizedWa = (!empty($user['no_wa']) && !str_contains($user['no_wa'], '.deleted.')) ? ($user['no_wa'] . '.deleted.' . $nowTs) : $user['no_wa'];
+
         $this->userModel->update($id, [
-            'status' => 'nonaktif',
+            'email'      => $anonymizedEmail,
+            'no_wa'      => $anonymizedWa,
+            'status'     => 'nonaktif',
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
         $this->userModel->delete($id);
 
-        return redirect()->back()->with('success', "Akun pengguna {$user['nama_lengkap']} berhasil dihapus");
+        return redirect()->back()->with('success', "Akun pengguna {$user['nama_lengkap']} berhasil dipindahkan ke Tong Sampah");
+    }
+
+    public function bulkDelete()
+    {
+        if (!session('logged_in') || session('role') !== 'super_admin') {
+            return redirect()->to('/login');
+        }
+
+        if (!$this->request->is('post')) {
+            return redirect()->to('/superadmin/users')->with('error', 'Metode request tidak diizinkan');
+        }
+
+        $ids = $this->request->getPost('ids');
+        if (empty($ids) || !is_array($ids)) {
+            return redirect()->back()->with('error', 'Tidak ada pengguna yang dipilih untuk dihapus');
+        }
+
+        $cleanIds = array_values(array_filter(array_map('intval', $ids), fn($id) => $id > 0));
+        if (empty($cleanIds)) {
+            return redirect()->back()->with('error', 'Daftar ID pengguna tidak valid');
+        }
+
+        $currentUserId = (int)session('user_id');
+        // Proteksi 1: Tidak dapat menghapus akun diri sendiri yang sedang login
+        $cleanIds = array_values(array_filter($cleanIds, fn($id) => $id !== $currentUserId));
+        if (empty($cleanIds)) {
+            return redirect()->back()->with('error', 'Tidak dapat menghapus akun Anda sendiri');
+        }
+
+        // Proteksi 2: Tidak dapat menghapus seluruh Super Admin (wajib ada minimal 1 aktif)
+        $activeSuperAdmins = $this->userModel
+            ->where('role', 'super_admin')
+            ->where('status', 'aktif')
+            ->where('deleted_at', null)
+            ->findAll();
+
+        $activeSuperAdminIds = array_map('intval', array_column($activeSuperAdmins, 'id'));
+        $remainingSuperAdmins = array_diff($activeSuperAdminIds, $cleanIds);
+        if (empty($remainingSuperAdmins)) {
+            return redirect()->back()->with('error', 'Penghapusan dibatalkan: Sistem wajib menyisakan minimal satu akun Super Admin aktif');
+        }
+
+        $db = \Config\Database::connect();
+        $deletedCount = 0;
+
+        foreach ($cleanIds as $delId) {
+            $user = $this->userModel->find($delId);
+            if (!$user) {
+                continue;
+            }
+
+            $this->revokeAllUserSessions($delId);
+            $db->table('users')->where('pembina_id', $delId)->update(['pembina_id' => null]);
+            $nowTs = time();
+            $anonymizedEmail = str_contains($user['email'], '.deleted.') ? $user['email'] : ($user['email'] . '.deleted.' . $nowTs);
+            $anonymizedWa = (!empty($user['no_wa']) && !str_contains($user['no_wa'], '.deleted.')) ? ($user['no_wa'] . '.deleted.' . $nowTs) : $user['no_wa'];
+
+            $this->userModel->update($delId, [
+                'email'      => $anonymizedEmail,
+                'no_wa'      => $anonymizedWa,
+                'status'     => 'nonaktif',
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+            $this->userModel->delete($delId);
+            $deletedCount++;
+        }
+
+        return redirect()->back()->with('success', "Berhasil memindahkan {$deletedCount} akun pengguna terpilih ke Tong Sampah");
+    }
+
+    public function restore($id)
+    {
+        if (!session('logged_in') || session('role') !== 'super_admin') {
+            return redirect()->to('/login');
+        }
+
+        $db = \Config\Database::connect();
+        $user = $db->table('users')->where('id', $id)->where('deleted_at IS NOT NULL', null, false)->get()->getRowArray();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'Data pengguna di Tong Sampah tidak ditemukan');
+        }
+
+        // Recover original email and no_wa by stripping .deleted.<timestamp>
+        $cleanEmail = preg_replace('/\.deleted\.\d+$/', '', $user['email']);
+        $cleanWa = !empty($user['no_wa']) ? preg_replace('/\.deleted\.\d+$/', '', $user['no_wa']) : $user['no_wa'];
+
+        // Protection: Check if original email or no_wa is currently in use by another ACTIVE user
+        $emailConflict = $db->table('users')
+            ->where('email', $cleanEmail)
+            ->where('deleted_at', null)
+            ->where('id !=', $id)
+            ->countAllResults();
+
+        if ($emailConflict > 0) {
+            return redirect()->back()->with('error', "Gagal memulihkan: Email '{$cleanEmail}' saat ini sedang digunakan oleh akun aktif lain.");
+        }
+
+        if (!empty($cleanWa)) {
+            $waConflict = $db->table('users')
+                ->where('no_wa', $cleanWa)
+                ->where('deleted_at', null)
+                ->where('id !=', $id)
+                ->countAllResults();
+
+            if ($waConflict > 0) {
+                return redirect()->back()->with('error', "Gagal memulihkan: Nomor WhatsApp '{$cleanWa}' saat ini sedang digunakan oleh akun aktif lain.");
+            }
+        }
+
+        // Restore user to active state
+        $db->table('users')->where('id', $id)->update([
+            'email'      => $cleanEmail,
+            'no_wa'      => $cleanWa,
+            'status'     => 'aktif',
+            'deleted_at' => null,
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        return redirect()->to('/superadmin/users?tab=trash')->with('success', "Akun pengguna {$user['nama_lengkap']} ({$cleanEmail}) berhasil dipulihkan!");
+    }
+
+    public function purge($id)
+    {
+        if (!session('logged_in') || session('role') !== 'super_admin') {
+            return redirect()->to('/login');
+        }
+
+        $db = \Config\Database::connect();
+        $user = $db->table('users')->where('id', $id)->where('deleted_at IS NOT NULL', null, false)->get()->getRowArray();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'Data pengguna di Tong Sampah tidak ditemukan');
+        }
+
+        // Check if user has orders or commissions for financial audit preservation
+        $orderCount = $db->table('orders')->where('user_id', $id)->countAllResults();
+        $commCount = $db->table('commissions')->where('user_id', $id)->countAllResults();
+
+        if ($orderCount > 0 || $commCount > 0) {
+            return redirect()->back()->with('error', "Peringatan Keamanan: Akun ini memiliki riwayat {$orderCount} pesanan dan {$commCount} mutasi komisi. Untuk menjaga integritas audit keuangan, akun tidak dapat dihapus permanen.");
+        }
+
+        // Safe to purge
+        $db->table('verifications')->where('user_id', $id)->delete();
+        $db->table('users')->where('id', $id)->delete();
+
+        return redirect()->to('/superadmin/users?tab=trash')->with('success', "Akun pengguna {$user['nama_lengkap']} berhasil dihapus permanen dari sistem.");
     }
 
     /**

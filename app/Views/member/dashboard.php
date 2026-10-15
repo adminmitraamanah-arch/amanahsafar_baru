@@ -16,6 +16,11 @@
                         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Mitra</h1>
                     </div>
                     <div class="flex items-center gap-2">
+                        <a href="<?= base_url('/app/commissions') ?>" 
+                           class="btn-interactive inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-50 text-[#5e0078] hover:bg-purple-100 text-xs sm:text-sm font-bold border border-purple-200 shadow-2xs transition">
+                            <i class="fas fa-receipt text-xs"></i>
+                            <span>Buku Mutasi</span>
+                        </a>
                         <a href="<?= base_url('/app/orders') ?>" 
                            class="btn-interactive inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs sm:text-sm font-bold shadow-sm transition">
                             <i class="fas fa-shopping-cart text-xs"></i>
@@ -26,7 +31,7 @@
 
                 <!-- Stats Grid (DevzeMart 4-card grid) -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                    <a href="<?= base_url('/app/orders') ?>" class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-10 h-10 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center text-base transition-transform group-hover:scale-105">
                                 <i class="fas fa-shopping-cart"></i>
@@ -36,21 +41,35 @@
                             <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Total Pesanan</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= $total_orders ?? 0 ?></span>
                         </div>
-                    </div>
+                    </a>
 
-                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                    <a href="<?= base_url('/app/commissions') ?>" class="bg-white rounded-2xl border border-amber-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-base transition-transform group-hover:scale-105">
+                                <i class="fas fa-hourglass-half"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100">Tahap DP</span>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Potensi Komisi</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-amber-600">Rp <?= number_format($potensi_komisi ?? 0, 0, ',', '.') ?></span>
+                        </div>
+                    </a>
+
+                    <a href="<?= base_url('/app/commissions') ?>" class="bg-white rounded-2xl border border-emerald-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base transition-transform group-hover:scale-105">
                                 <i class="fas fa-wallet"></i>
                             </div>
+                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100">Siap Tarik</span>
                         </div>
                         <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Komisi Pending</span>
-                            <span class="text-xl sm:text-2xl font-extrabold text-emerald-600">Rp 0</span>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Saldo Siap Cair</span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-emerald-600">Rp <?= number_format($saldo_siap_cair ?? 0, 0, ',', '.') ?></span>
                         </div>
-                    </div>
+                    </a>
 
-                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
+                    <a href="<?= base_url('/app/binaan') ?>" class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base transition-transform group-hover:scale-105">
                                 <i class="fas fa-users"></i>
@@ -60,21 +79,7 @@
                             <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Total Binaan</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= $total_binaan ?? 0 ?></span>
                         </div>
-                    </div>
-
-                    <div class="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base transition-transform group-hover:scale-105">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                        </div>
-                        <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Status Akun</span>
-                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 mt-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
-                            </span>
-                        </div>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- Recent Orders Table Card -->

@@ -24,36 +24,22 @@ class Auth extends BaseController
         if ($this->request->is('post')) {
             $email = trim($this->request->getPost('email') ?? '');
             $password = $this->request->getPost('password');
-            $role = $this->request->getPost('role');
 
             $user = $this->userModel->findByEmail($email);
 
-            if (!$user || !password_verify($password, $user['password_hash'])) {
-                return redirect()->back()->with('error', 'Email atau kata sandi tidak sesuai')->withInput();
+            if (!$user) {
+                return redirect()->back()->with('error', 'akun belum terdaftar,silahkan daftar akun')->withInput();
             }
 
-            if (!empty($role) && $user['role'] !== $role) {
-                return redirect()->back()->with('warning', 'Role yang dipilih tidak sesuai dengan data login')->withInput();
+            if (!password_verify($password, $user['password_hash'])) {
+                return redirect()->back()->with('error', 'Email atau kata sandi tidak sesuai')->withInput();
             }
 
             if ($user['status'] === 'nonaktif') {
                 return redirect()->back()->with('error', 'Akun anda di nonaktifkan');
             }
 
-            // Check onboarding
-            if ($user['verification_status'] !== 'terverifikasi') {
-                session()->set('user_id', $user['id']);
-                session()->set('role', $user['role']);
-                return redirect()->to('/verify');
-            }
-
-            if (!$user['agreement_accepted_at']) {
-                session()->set('user_id', $user['id']);
-                session()->set('role', $user['role']);
-                return redirect()->to('/agreement');
-            }
-
-            // Login success
+            // Login success - active users can login directly to dashboard
             session()->set([
                 'user_id' => $user['id'],
                 'email' => $user['email'],
@@ -67,6 +53,12 @@ class Auth extends BaseController
                 $targetUrl = '/superadmin';
             } elseif ($user['role'] === 'admin') {
                 $targetUrl = '/admin';
+            } else {
+                // Partner/member role: periksa kelengkapan onboarding
+                $onboarding = $this->userModel->getOnboardingStatus($user['id']);
+                if (!$onboarding['completed']) {
+                    return redirect()->to($onboarding['redirect_url'])->with('warning', $onboarding['message']);
+                }
             }
 
             return redirect()->to($targetUrl)->with('success', 'Berhasil masuk ke akun');
@@ -124,8 +116,9 @@ class Auth extends BaseController
                     return redirect()->back()->with('error', 'Kode voucher tidak valid atau sudah terpakai')->withInput();
                 }
 
-                // Role is strictly 'mitra' as mandated by voucher policy
-                $targetRole = 'mitra';
+                // Role dan hierarki binaan ditentukan langsung oleh voucher
+                $targetRole = $locked['role_tujuan'] ?? $voucher['role_tujuan'] ?? 'mitra';
+                $pembinaId = $locked['pembina_id'] ?? $voucher['pembina_id'] ?? null;
 
                 $userId = $this->userModel->insert([
                     'nama_lengkap' => $nama,
@@ -134,14 +127,28 @@ class Auth extends BaseController
                     'domisili' => $domisili,
                     'password_hash' => password_hash($password, PASSWORD_BCRYPT),
                     'role' => $targetRole,
-                    'pembina_id' => $voucher['pembina_id'],
+                    'pembina_id' => $pembinaId,
                     'status' => 'aktif',
                     'verification_status' => 'belum_verifikasi'
                 ]);
 
                 if (!$userId) {
                     $db->transRollback();
-                    return redirect()->back()->with('error', 'Gagal membuat akun pendaftar')->withInput();
+                    $dbErr = $db->error();
+                    $errMsg = 'Gagal membuat akun pendaftar';
+                    if (!empty($dbErr['message']) && str_contains($dbErr['message'], 'Duplicate entry')) {
+                        if (str_contains($dbErr['message'], 'email')) {
+                            $errMsg = 'Email tersebut sudah terdaftar pada sistem. Silakan gunakan email lain atau login ke akun Anda.';
+                        } elseif (str_contains($dbErr['message'], 'no_wa')) {
+                            $errMsg = 'Nomor WhatsApp tersebut sudah terdaftar pada sistem. Silakan gunakan nomor lain.';
+                        }
+                    }
+                    return redirect()->back()->with('error', $errMsg)->withInput();
+                }
+
+                // Jika role baru adalah cabang atau manager_mitra, inisialisasi kode_pembina otomatis
+                if (in_array($targetRole, ['cabang', 'manager_mitra'])) {
+                    $this->userModel->getOrAssignKodePembina($userId);
                 }
 
                 // Mark voucher as used atomically
@@ -187,9 +194,63 @@ class Auth extends BaseController
 
         if ($this->request->is('post')) {
             $user_id = session('user_id');
-            $nama_bank = $this->request->getPost('nama_bank');
-            $nomor_rekening = $this->request->getPost('nomor_rekening');
-            $nama_pemilik = $this->request->getPost('nama_pemilik_rekening');
+            $nama_ktp = trim($this->request->getPost('nama_ktp') ?? '');
+            $nik = trim($this->request->getPost('nik') ?? '');
+            $nama_bank = trim($this->request->getPost('nama_bank') ?? '');
+            if ($nama_bank === 'Lainnya' || empty($nama_bank)) {
+                $manualBank = trim($this->request->getPost('nama_bank_manual') ?? '');
+                if (!empty($manualBank)) {
+                    $nama_bank = $manualBank;
+                }
+            }
+            $nomor_rekening = trim($this->request->getPost('nomor_rekening') ?? '');
+            $nama_pemilik = trim($this->request->getPost('nama_pemilik_rekening') ?? '');
+
+            // Validasi Nama Sesuai KTP Wajib Diisi
+            if (empty($nama_ktp)) {
+                return redirect()->back()->with('error', 'Nama lengkap sesuai KTP wajib diisi.')->withInput();
+            }
+
+            // Validasi Nama Bank Wajib Diisi
+            if (empty($nama_bank) || $nama_bank === 'Lainnya') {
+                return redirect()->back()->with('error', 'Silakan pilih nama bank atau ketik nama bank Anda jika memilih opsi Lainnya.')->withInput();
+            }
+
+            // 1. Validasi NIK (Wajib 16 digit angka)
+            if (!preg_match('/^[0-9]{16}$/', $nik)) {
+                return redirect()->back()->with('error', 'Nomor Induk Kependudukan (NIK) wajib 16 digit angka sesuai KTP resmi.')->withInput();
+            }
+
+            // 2. Validasi NIK Unik di antara akun AKTIF (tidak boleh ganda)
+            $db = \Config\Database::connect();
+            $nikConflict = $db->table('verifications v')
+                ->join('users u', 'u.id = v.user_id')
+                ->where('v.nik', $nik)
+                ->where('v.user_id !=', $user_id)
+                ->where('u.deleted_at', null)
+                ->countAllResults();
+
+            if ($nikConflict > 0) {
+                return redirect()->back()->with('error', 'Keamanan Sistem: NIK KTP ini sudah terdaftar pada akun mitra aktif lain. Satu NIK hanya berlaku untuk satu akun resmi.')->withInput();
+            }
+
+            // 3. Validasi Nomor Rekening Unik di antara akun AKTIF (tidak boleh ganda)
+            $cleanRek = preg_replace('/[^0-9]/', '', $nomor_rekening);
+            if (strlen($cleanRek) < 5) {
+                return redirect()->back()->with('error', 'Nomor rekening bank tidak valid.')->withInput();
+            }
+
+            $rekConflict = $db->table('verifications v')
+                ->join('users u', 'u.id = v.user_id')
+                ->where('v.nama_bank', $nama_bank)
+                ->where('v.nomor_rekening', $nomor_rekening)
+                ->where('v.user_id !=', $user_id)
+                ->where('u.deleted_at', null)
+                ->countAllResults();
+
+            if ($rekConflict > 0) {
+                return redirect()->back()->with('error', 'Keamanan Sistem: Nomor rekening bank ini sudah terdaftar pada akun mitra aktif lain. Mohon gunakan rekening bank atas nama pribadi Anda.')->withInput();
+            }
 
             // Handle file uploads
             $ktp = $this->request->getFile('ktp');
@@ -202,10 +263,11 @@ class Auth extends BaseController
 
             $existing = $this->verificationModel->where('user_id', $user_id)->first();
             $dataToSave = [
-                'nama_bank' => $nama_bank,
-                'nomor_rekening' => $nomor_rekening,
+                'nik'                   => $nik,
+                'nama_bank'             => $nama_bank,
+                'nomor_rekening'        => $nomor_rekening,
                 'nama_pemilik_rekening' => $nama_pemilik,
-                'status' => 'menunggu_review'
+                'status'                => 'menunggu_review'
             ];
             if ($ktp_path) {
                 $dataToSave['ktp_path'] = $ktp_path;
@@ -220,17 +282,40 @@ class Auth extends BaseController
                 $this->verificationModel->insert($dataToSave);
             }
 
+            // Sinkronkan status KYC dan nama resmi KTP pada tabel users agar konsisten di seluruh sistem
+            $userUpdate = [
+                'verification_status' => 'menunggu_review',
+                'updated_at'          => date('Y-m-d H:i:s'),
+            ];
+            if (!empty($nama_ktp)) {
+                $userUpdate['nama_lengkap'] = $nama_ktp;
+                session()->set('nama', $nama_ktp);
+            }
+            $this->userModel->update($user_id, $userUpdate);
+
             return redirect()->to('/agreement')->with('success', 'Data verifikasi berhasil dikirim');
         }
 
-        $user = $this->userModel->find(session('user_id'));
-        return view('auth/verify', ['user' => $user]);
+        $userId = session('user_id');
+        $user = $this->userModel->find($userId);
+        $verification = $this->verificationModel->where('user_id', $userId)->first();
+        return view('auth/verify', [
+            'user' => $user,
+            'verification' => $verification
+        ]);
     }
 
     public function agreement()
     {
-        if (!session('user_id')) {
+        $userId = session('user_id');
+        if (!$userId) {
             return redirect()->to('/login');
+        }
+
+        // Mencegah bypass: Pengguna wajib menyelesaikan tahap 1 (verifikasi identitas) sebelum menyetujui PKS
+        $onboarding = $this->userModel->getOnboardingStatus($userId);
+        if (!$onboarding['completed'] && $onboarding['step'] === 'verify') {
+            return redirect()->to('/verify')->with('warning', 'Silakan lengkapi data verifikasi identitas (KTP) dan rekening bank terlebih dahulu sebelum menyetujui PKS.');
         }
 
         if ($this->request->is('post')) {

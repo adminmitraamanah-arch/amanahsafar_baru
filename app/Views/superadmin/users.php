@@ -21,6 +21,36 @@
                         </span>
                     </div>
                 </div>
+                
+                <!-- Navigation Tabs: Pengguna Aktif vs Tong Sampah (Trash) -->
+                <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+                    <a href="<?= base_url('/superadmin/users') ?>" 
+                       class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition <?= ($active_tab ?? 'active') !== 'trash' ? 'bg-[#5e0078] text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' ?>">
+                        <i class="fas fa-users"></i>
+                        <span>Pengguna Aktif</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] <?= ($active_tab ?? 'active') !== 'trash' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700' ?>">
+                            <?= number_format($active_count ?? count($users ?? []), 0, ',', '.') ?>
+                        </span>
+                    </a>
+                    <a href="<?= base_url('/superadmin/users?tab=trash') ?>" 
+                       class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition <?= ($active_tab ?? 'active') === 'trash' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200' ?>">
+                        <i class="fas fa-trash-alt"></i>
+                        <span>Tong Sampah (Trash)</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] <?= ($active_tab ?? 'active') === 'trash' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700' ?>">
+                            <?= number_format($trash_count ?? 0, 0, ',', '.') ?>
+                        </span>
+                    </a>
+                </div>
+
+                <?php if (($active_tab ?? 'active') === 'trash'): ?>
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-900 text-xs flex items-start gap-3">
+                    <i class="fas fa-info-circle text-amber-600 text-base mt-0.5 shrink-0"></i>
+                    <div>
+                        <p class="font-bold text-amber-800">Area Pemulihan & Arsip Akun Terhapus</p>
+                        <p class="mt-0.5 leading-relaxed text-amber-700">Akun di Tong Sampah mempertahankan seluruh riwayat pesanan umrah, komisi, dan bukti pembayaran di database. Email dan nomor WhatsApp telah dilepaskan otomatis sehingga tidak memblokir pendaftaran baru. Klik <strong>Pulihkan</strong> untuk mengembalikan akun menjadi aktif kembali, atau <strong>Permanen</strong> untuk membersihkan data testing tanpa transaksi finansial.</p>
+                    </div>
+                </div>
+                <?php endif; ?>
 
                 <!-- Stat Summary Row (6 Cards Grid - DevzeMart Reference) -->
                 <?php
@@ -185,32 +215,75 @@
                         </div>
                     </div>
 
+                    <!-- Floating Bulk Action Bar (Konsisten di Seluruh Halaman Super Admin) -->
+                    <div id="userBulkActionBar" 
+                         class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden bg-white text-slate-800 shadow-2xl rounded-2xl px-5 py-3 border border-slate-200/90 backdrop-blur-md flex items-center gap-4 transition-all duration-200"
+                         style="background-color: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" style="background-color: #10b981;"></span>
+                            <span class="text-xs font-semibold text-slate-600" style="color: #475569;">
+                                <strong id="selectedUsersCount" class="text-slate-900 font-extrabold text-sm" style="color: #0f172a;">0</strong> pengguna dipilih
+                            </span>
+                        </div>
+                        <div class="h-4 w-px bg-slate-200" style="background-color: #cbd5e1;"></div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="cancelUserSelectionBtn" 
+                                    class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold transition text-xs border border-slate-200/80 cursor-pointer"
+                                    style="background-color: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
+                                Batal
+                            </button>
+                            <button type="button" id="bulkDeleteUsersBtn" 
+                                    class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold transition text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+                                    style="background-color: #e11d48; color: #ffffff;">
+                                <i class="fas fa-trash-alt text-xs"></i>
+                                <span>Hapus Terpilih</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Bulk Delete Form -->
+                    <form id="userBulkDeleteForm" method="POST" action="<?= base_url('/superadmin/users/bulk-delete') ?>" class="hidden">
+                        <?= csrf_field() ?>
+                        <div id="userBulkDeleteInputs"></div>
+                    </form>
+
                     <!-- Table Data -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[760px]" id="usersTable">
                             <thead>
                                 <tr class="bg-slate-50/70 border-b border-slate-200/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                    <th class="px-4 py-3.5 w-12 text-center">
+                                        <input type="checkbox" id="selectAllUsers" class="w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" title="Pilih Semua Pengguna">
+                                    </th>
                                     <th class="px-5 py-3.5 w-16 text-center" data-sort-asc="id_asc" data-sort-desc="id_desc">#</th>
                                     <th class="px-5 py-3.5" data-sort-asc="nama_asc" data-sort-desc="nama_desc">Detail Pengguna</th>
                                     <th class="px-5 py-3.5">Kontak &amp; Domisili</th>
                                     <th class="px-5 py-3.5" data-sort-asc="role_asc" data-sort-desc="role_desc">Role</th>
                                     <th class="px-5 py-3.5" data-sort-asc="pembina_asc" data-sort-desc="pembina_desc">Pembina</th>
-                                    <th class="px-5 py-3.5" data-sort-asc="status_asc" data-sort-desc="status_desc">Status Akun</th>
-                                    <th class="px-5 py-3.5">KYC Status</th>
+                                    <?php if (($active_tab ?? 'active') === 'trash'): ?>
+                                        <th class="px-5 py-3.5 text-rose-600">Waktu Dihapus</th>
+                                        <th class="px-5 py-3.5">Status Riwayat</th>
+                                    <?php else: ?>
+                                        <th class="px-5 py-3.5" data-sort-asc="status_asc" data-sort-desc="status_desc">Status Akun</th>
+                                        <th class="px-5 py-3.5">KYC Status</th>
+                                    <?php endif; ?>
                                     <th class="px-5 py-3.5 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-xs sm:text-sm">
                                 <?php if (empty($users)): ?>
                                     <tr id="emptyRow">
-                                        <td colspan="8" class="px-6 py-12 text-center text-slate-400 text-xs">
-                                            Belum ada pengguna terdaftar di sistem.
+                                        <td colspan="9" class="px-6 py-12 text-center text-slate-400 text-xs">
+                                            <?= ($active_tab ?? 'active') === 'trash' ? 'Tong Sampah kosong. Tidak ada data pengguna yang terhapus.' : 'Belum ada pengguna terdaftar di sistem.' ?>
                                         </td>
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($users as $user): 
                                         $isSelf = ((int)$user['id'] === (int)($current_user_id ?? 0));
                                         $initial = strtoupper(substr($user['nama_lengkap'] ?? 'U', 0, 1));
+                                        $isTrash = !empty($user['deleted_at']);
+                                        $cleanEmail = preg_replace('/\.deleted\.\d+$/', '', $user['email']);
+                                        $cleanWa = !empty($user['no_wa']) ? preg_replace('/\.deleted\.\d+$/', '', $user['no_wa']) : '';
                                     ?>
                                         <tr class="hover:bg-purple-50/30 transition-colors user-table-row" 
                                             data-id="<?= esc($user['id']) ?>"
@@ -218,8 +291,17 @@
                                             data-status="<?= esc($user['status']) ?>" 
                                             data-role="<?= esc($user['role']) ?>"
                                             data-pembina="<?= strtolower(esc($user['nama_pembina'] ?? '')) ?>"
-                                            data-search="<?= strtolower(esc($user['nama_lengkap'] . ' ' . $user['email'] . ' ' . $user['no_wa'] . ' ' . $user['domisili'] . ' ' . $user['role'] . ' ' . ($user['nama_pembina'] ?? ''))) ?>">
+                                            data-search="<?= strtolower(esc($user['nama_lengkap'] . ' ' . $cleanEmail . ' ' . $cleanWa . ' ' . $user['domisili'] . ' ' . $user['role'] . ' ' . ($user['nama_pembina'] ?? ''))) ?>">
                                             
+                                            <!-- Checkbox Selection (Disabled for Self Account) -->
+                                            <td class="px-4 py-4 text-center">
+                                                <?php if ($isSelf): ?>
+                                                    <input type="checkbox" disabled class="w-4 h-4 rounded border-slate-200 text-slate-300 cursor-not-allowed opacity-40" title="Akun Anda sendiri tidak dapat dipilih">
+                                                <?php else: ?>
+                                                    <input type="checkbox" class="user-row-checkbox w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" value="<?= esc($user['id']) ?>" data-nama="<?= esc($user['nama_lengkap']) ?>">
+                                                <?php endif; ?>
+                                            </td>
+
                                             <!-- ID -->
                                             <td class="px-5 py-4 text-center text-xs font-semibold text-slate-400">
                                                 #<?= esc($user['id']) ?>
@@ -228,7 +310,7 @@
                                             <!-- User Details (Avatar, Name, Email) -->
                                             <td class="px-5 py-4">
                                                 <div class="flex items-center gap-3">
-                                                    <div class="w-9 h-9 rounded-full bg-purple-100 text-[#5e0078] font-bold text-xs flex items-center justify-center shrink-0">
+                                                    <div class="w-9 h-9 rounded-full <?= $isTrash ? 'bg-rose-100 text-rose-700' : 'bg-purple-100 text-[#5e0078]' ?> font-bold text-xs flex items-center justify-center shrink-0">
                                                         <?= $initial ?>
                                                     </div>
                                                     <div class="min-w-0">
@@ -237,8 +319,11 @@
                                                             <?php if ($isSelf): ?>
                                                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-[#5e0078]">Anda</span>
                                                             <?php endif; ?>
+                                                            <?php if ($isTrash): ?>
+                                                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-100 text-rose-700">Terhapus</span>
+                                                            <?php endif; ?>
                                                         </div>
-                                                        <p class="text-[11px] text-slate-400 truncate mt-0.5"><?= esc($user['email']) ?></p>
+                                                        <p class="text-[11px] text-slate-400 truncate mt-0.5"><?= esc($cleanEmail) ?></p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -247,7 +332,7 @@
                                             <td class="px-5 py-4">
                                                 <div class="text-xs text-slate-700 font-medium flex items-center gap-1.5">
                                                     <i class="fab fa-whatsapp text-emerald-500 text-xs"></i>
-                                                    <span><?= esc($user['no_wa'] ?: '-') ?></span>
+                                                    <span><?= esc($cleanWa ?: '-') ?></span>
                                                 </div>
                                                 <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
                                                     <i class="fas fa-map-marker-alt text-slate-300 text-[10px]"></i>
@@ -271,100 +356,139 @@
                                                 <?php endif; ?>
                                             </td>
 
-                                            <!-- Status Akun (Soft Pill Badge) -->
-                                            <td class="px-5 py-4">
-                                                <?php if ($user['status'] === 'aktif'): ?>
-                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
-                                                    </span>
-                                                <?php elseif ($user['status'] === 'nonaktif'): ?>
+                                            <?php if ($isTrash): ?>
+                                                <!-- Waktu Dihapus -->
+                                                <td class="px-5 py-4">
                                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif
+                                                        <i class="fas fa-clock text-[10px]"></i> <?= date('d M Y H:i', strtotime($user['deleted_at'])) ?>
                                                     </span>
-                                                <?php else: ?>
-                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pending
-                                                    </span>
-                                                <?php endif; ?>
-                                            </td>
+                                                </td>
 
-                                            <!-- KYC Status -->
-                                            <td class="px-5 py-4">
-                                                <?php if ($user['verification_status'] === 'terverifikasi'): ?>
-                                                    <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                        Verified
+                                                <!-- Status Riwayat -->
+                                                <td class="px-5 py-4">
+                                                    <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-800 border border-amber-200">
+                                                        Riwayat Tersimpan
                                                     </span>
-                                                <?php elseif ($user['verification_status'] === 'menunggu_review'): ?>
-                                                    <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
-                                                        Review
-                                                    </span>
-                                                <?php else: ?>
-                                                    <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                                                        Unverified
-                                                    </span>
-                                                <?php endif; ?>
-                                            </td>
+                                                </td>
 
-                                            <!-- Aksi -->
-                                            <td class="px-5 py-4 text-right whitespace-nowrap">
-                                                <div class="flex items-center justify-end gap-1.5 whitespace-nowrap">
-                                                    <!-- Edit Button -->
-                                                    <button type="button" 
-                                                            onclick='openEditModal(<?= htmlspecialchars(json_encode($user), ENT_QUOTES, "UTF-8") ?>)' 
-                                                            class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 hover:text-[#4c0062] border border-purple-200 transition shadow-xs"
-                                                            title="Edit Pengguna"
-                                                            aria-label="Edit Pengguna">
-                                                        <i class="fas fa-edit text-xs"></i>
-                                                    </button>
+                                                <!-- Aksi Trash (Pulihkan & Purge) -->
+                                                <td class="px-5 py-4 text-right whitespace-nowrap">
+                                                    <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+                                                        <!-- Pulihkan (Restore) Button -->
+                                                        <button type="button" 
+                                                                onclick="openRestoreModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>', '<?= esc($cleanEmail, 'js') ?>')" 
+                                                                class="btn-interactive px-3 py-1.5 rounded-xl inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 border border-emerald-200 transition shadow-xs text-xs font-bold"
+                                                                title="Pulihkan Akun">
+                                                            <i class="fas fa-undo text-xs"></i>
+                                                            <span>Pulihkan</span>
+                                                        </button>
 
-                                                    <!-- Nonaktifkan / Aktifkan Button -->
+                                                        <!-- Hapus Permanen (Purge) Button -->
+                                                        <button type="button" 
+                                                                onclick="openPurgeModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>', '<?= esc($cleanEmail, 'js') ?>')" 
+                                                                class="btn-interactive px-2.5 py-1.5 rounded-xl inline-flex items-center gap-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs text-xs font-bold"
+                                                                title="Hapus Permanen">
+                                                            <i class="fas fa-trash text-xs"></i>
+                                                            <span class="hidden sm:inline">Permanen</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            <?php else: ?>
+                                                <!-- Status Akun (Soft Pill Badge) -->
+                                                <td class="px-5 py-4">
                                                     <?php if ($user['status'] === 'aktif'): ?>
+                                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                                                        </span>
+                                                    <?php elseif ($user['status'] === 'nonaktif'): ?>
+                                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Pending
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <!-- KYC Status -->
+                                                <td class="px-5 py-4">
+                                                    <?php if ($user['verification_status'] === 'terverifikasi'): ?>
+                                                        <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                            Verified
+                                                        </span>
+                                                    <?php elseif ($user['verification_status'] === 'menunggu_review'): ?>
+                                                        <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                                                            Review
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                                            Unverified
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+
+                                                <!-- Aksi Standar -->
+                                                <td class="px-5 py-4 text-right whitespace-nowrap">
+                                                    <div class="flex items-center justify-end gap-1.5 whitespace-nowrap">
+                                                        <!-- Edit Button -->
+                                                        <button type="button" 
+                                                                onclick='openEditModal(<?= htmlspecialchars(json_encode($user), ENT_QUOTES, "UTF-8") ?>)' 
+                                                                class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-purple-50 text-[#5e0078] hover:bg-purple-100 hover:text-[#4c0062] border border-purple-200 transition shadow-xs"
+                                                                title="Edit Pengguna"
+                                                                aria-label="Edit Pengguna">
+                                                            <i class="fas fa-edit text-xs"></i>
+                                                        </button>
+
+                                                        <!-- Nonaktifkan / Aktifkan Button -->
+                                                        <?php if ($user['status'] === 'aktif'): ?>
+                                                            <?php if ($isSelf): ?>
+                                                                <button type="button" disabled 
+                                                                        title="Tidak dapat menonaktifkan akun sendiri"
+                                                                        aria-label="Tidak dapat menonaktifkan akun sendiri"
+                                                                        class="w-8 h-8 rounded-xl inline-flex items-center justify-center bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
+                                                                    <i class="fas fa-ban text-xs"></i>
+                                                                </button>
+                                                            <?php else: ?>
+                                                                <button type="button" 
+                                                                        onclick="openDeactivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
+                                                                        class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 border border-amber-200 transition shadow-xs"
+                                                                        title="Nonaktifkan Akun"
+                                                                        aria-label="Nonaktifkan Akun">
+                                                                    <i class="fas fa-user-slash text-xs"></i>
+                                                                </button>
+                                                            <?php endif; ?>
+                                                        <?php else: ?>
+                                                            <!-- Aktifkan Kembali -->
+                                                            <button type="button" 
+                                                                    onclick="openActivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
+                                                                    class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 border border-emerald-200 transition shadow-xs"
+                                                                    title="Aktifkan Kembali Akun"
+                                                                    aria-label="Aktifkan Kembali Akun">
+                                                                    <i class="fas fa-user-check text-xs"></i>
+                                                                </button>
+                                                        <?php endif; ?>
+
+                                                        <!-- Hapus Button -->
                                                         <?php if ($isSelf): ?>
                                                             <button type="button" disabled 
-                                                                    title="Tidak dapat menonaktifkan akun sendiri"
-                                                                    aria-label="Tidak dapat menonaktifkan akun sendiri"
+                                                                    title="Tidak dapat menghapus akun sendiri"
+                                                                    aria-label="Tidak dapat menghapus akun sendiri"
                                                                     class="w-8 h-8 rounded-xl inline-flex items-center justify-center bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
-                                                                <i class="fas fa-ban text-xs"></i>
+                                                                <i class="fas fa-trash-alt text-xs"></i>
                                                             </button>
                                                         <?php else: ?>
                                                             <button type="button" 
-                                                                    onclick="openDeactivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
-                                                                    class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 border border-amber-200 transition shadow-xs"
-                                                                    title="Nonaktifkan Akun"
-                                                                    aria-label="Nonaktifkan Akun">
-                                                                <i class="fas fa-user-slash text-xs"></i>
+                                                                    onclick="openDeleteModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>', '<?= esc($cleanEmail, 'js') ?>')" 
+                                                                    class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs"
+                                                                    title="Pindahkan ke Tong Sampah"
+                                                                    aria-label="Pindahkan ke Tong Sampah">
+                                                                <i class="fas fa-trash-alt text-xs"></i>
                                                             </button>
                                                         <?php endif; ?>
-                                                    <?php else: ?>
-                                                        <!-- Aktifkan Kembali -->
-                                                        <button type="button" 
-                                                                onclick="openActivateModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>')" 
-                                                                class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 border border-emerald-200 transition shadow-xs"
-                                                                title="Aktifkan Kembali Akun"
-                                                                aria-label="Aktifkan Kembali Akun">
-                                                            <i class="fas fa-user-check text-xs"></i>
-                                                        </button>
-                                                    <?php endif; ?>
-
-                                                    <!-- Hapus Button -->
-                                                    <?php if ($isSelf): ?>
-                                                        <button type="button" disabled 
-                                                                title="Tidak dapat menghapus akun sendiri"
-                                                                aria-label="Tidak dapat menghapus akun sendiri"
-                                                                class="w-8 h-8 rounded-xl inline-flex items-center justify-center bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200">
-                                                            <i class="fas fa-trash-alt text-xs"></i>
-                                                        </button>
-                                                    <?php else: ?>
-                                                        <button type="button" 
-                                                                onclick="openDeleteModal(<?= $user['id'] ?>, '<?= esc($user['nama_lengkap'], 'js') ?>', '<?= esc($user['email'], 'js') ?>')" 
-                                                                class="btn-interactive w-8 h-8 rounded-xl inline-flex items-center justify-center bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 border border-rose-200 transition shadow-xs"
-                                                                title="Hapus Pengguna"
-                                                                aria-label="Hapus Pengguna">
-                                                            <i class="fas fa-trash-alt text-xs"></i>
-                                                        </button>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </td>
+                                                    </div>
+                                                </td>
+                                            <?php endif; ?>
 
                                         </tr>
                                     <?php endforeach; ?>
@@ -618,9 +742,112 @@
     </div>
 </div>
 
+<!-- ========================================================
+     MODAL 5: KONFIRMASI PULIHKAN PENGGUNA (RESTORE)
+     ======================================================== -->
+<div id="restoreUserModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative p-6 space-y-4 border border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mx-auto">
+            <i class="fas fa-undo"></i>
+        </div>
+
+        <div class="text-center space-y-2">
+            <h3 class="text-lg font-bold text-slate-900">Pulihkan Akun Pengguna?</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Apakah Anda ingin memulihkan akun <strong id="restoreUserName" class="text-slate-900 font-bold"></strong> (<span id="restoreUserEmail" class="text-slate-500 font-medium"></span>)?
+            </p>
+            <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-left text-xs text-emerald-800 space-y-1">
+                <div class="font-bold flex items-center gap-1.5">
+                    <i class="fas fa-check-circle text-emerald-600"></i> Efek Pemulihan:
+                </div>
+                <p class="text-[11px] leading-relaxed text-emerald-700">
+                    • Akun akan kembali berstatus <strong>Aktif</strong> dan dapat login kembali.<br>
+                    • Seluruh data transaksi, pesanan, dan komisi historis akan langsung terhubung normal kembali.<br>
+                    • Sistem otomatis memverifikasi bahwa email tidak sedang dipakai akun aktif lain.
+                </p>
+            </div>
+        </div>
+
+        <form id="restoreUserForm" method="POST" action="" class="flex items-center justify-end gap-3 pt-2">
+            <?= csrf_field() ?>
+            <button type="button" onclick="closeRestoreModal()" 
+                    class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
+                Batal
+            </button>
+            <button type="submit" 
+                    class="btn-interactive px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm transition">
+                <i class="fas fa-undo mr-1.5"></i> Ya, Pulihkan Akun
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL 6: KONFIRMASI HAPUS PERMANEN (PURGE)
+     ======================================================== -->
+<div id="purgeUserModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden relative p-6 space-y-4 border border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl mx-auto">
+            <i class="fas fa-radiation"></i>
+        </div>
+
+        <div class="text-center space-y-2">
+            <h3 class="text-lg font-bold text-rose-700">Hapus Permanen dari Database?</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Apakah Anda benar-benar yakin ingin menghapus permanen akun <strong id="purgeUserName" class="text-slate-900 font-bold"></strong> (<span id="purgeUserEmail" class="text-slate-500 font-medium"></span>)?
+            </p>
+            <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-left text-xs text-rose-800 space-y-1">
+                <div class="font-bold flex items-center gap-1.5">
+                    <i class="fas fa-triangle-exclamation text-rose-600"></i> Peringatan Kritis:
+                </div>
+                <p class="text-[11px] leading-relaxed text-rose-700">
+                    • Tindakan ini <strong>tidak dapat dibatalkan</strong> sama sekali.<br>
+                    • Seluruh data fisik akan dihapus tuntas dari database MySQL.<br>
+                    • Jika akun memiliki riwayat transaksi atau komisi, sistem akan otomatis <strong>menolak</strong> penghapusan demi audit perbankan.
+                </p>
+            </div>
+        </div>
+
+        <form id="purgeUserForm" method="POST" action="" class="flex items-center justify-end gap-3 pt-2">
+            <?= csrf_field() ?>
+            <button type="button" onclick="closePurgeModal()" 
+                    class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-xs font-bold hover:bg-slate-50 transition">
+                Batal
+            </button>
+            <button type="submit" 
+                    class="btn-interactive px-5 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-sm transition">
+                <i class="fas fa-trash-alt mr-1.5"></i> Hapus Selamanya
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- JAVASCRIPT CONTROLLERS -->
 <script>
     const baseUrl = '<?= base_url() ?>';
+
+    // Modal Restore & Purge
+    function openRestoreModal(id, name, email) {
+        document.getElementById('restoreUserName').textContent = name;
+        document.getElementById('restoreUserEmail').textContent = email;
+        document.getElementById('restoreUserForm').action = `${baseUrl}/superadmin/users/restore/${id}`;
+        document.getElementById('restoreUserModal').classList.remove('hidden');
+    }
+
+    function closeRestoreModal() {
+        document.getElementById('restoreUserModal').classList.add('hidden');
+    }
+
+    function openPurgeModal(id, name, email) {
+        document.getElementById('purgeUserName').textContent = name;
+        document.getElementById('purgeUserEmail').textContent = email;
+        document.getElementById('purgeUserForm').action = `${baseUrl}/superadmin/users/purge/${id}`;
+        document.getElementById('purgeUserModal').classList.remove('hidden');
+    }
+
+    function closePurgeModal() {
+        document.getElementById('purgeUserModal').classList.add('hidden');
+    }
 
     // 1. Edit Modal Controller
     function openEditModal(user) {
@@ -763,6 +990,103 @@
                 status_desc: (a, b) => (b.getAttribute('data-status') || '').localeCompare(a.getAttribute('data-status') || '', 'id', { numeric: true, sensitivity: 'base' }) || ((parseInt(b.getAttribute('data-id'), 10) || 0) - (parseInt(a.getAttribute('data-id'), 10) || 0))
             }
         });
+
+        // Bulk Selection & Bulk Delete Handler for Users
+        const selectAllUsers = document.getElementById('selectAllUsers');
+        const userBulkBar = document.getElementById('userBulkActionBar');
+        const selectedUsersCount = document.getElementById('selectedUsersCount');
+        const cancelUserBtn = document.getElementById('cancelUserSelectionBtn');
+        const bulkDeleteUsersBtn = document.getElementById('bulkDeleteUsersBtn');
+        const userBulkForm = document.getElementById('userBulkDeleteForm');
+        const userBulkInputs = document.getElementById('userBulkDeleteInputs');
+
+        if (selectAllUsers && userBulkBar) {
+            function getSelectableRowCheckboxes() {
+                const rows = document.querySelectorAll('tbody tr.user-table-row');
+                const visibleCheckboxes = [];
+                rows.forEach(row => {
+                    if (row.style.display !== 'none') {
+                        const cb = row.querySelector('.user-row-checkbox:not(:disabled)');
+                        if (cb) visibleCheckboxes.push(cb);
+                    }
+                });
+                return visibleCheckboxes;
+            }
+
+            function getAllCheckedUserBoxes() {
+                return document.querySelectorAll('tbody .user-row-checkbox:checked:not(:disabled)');
+            }
+
+            function updateUserBulkBarState() {
+                const checked = getAllCheckedUserBoxes();
+                const count = checked.length;
+                if (count > 0) {
+                    selectedUsersCount.textContent = count;
+                    userBulkBar.classList.remove('hidden');
+                    userBulkBar.classList.add('flex');
+                } else {
+                    userBulkBar.classList.add('hidden');
+                    userBulkBar.classList.remove('flex');
+                }
+
+                const visible = getSelectableRowCheckboxes();
+                if (visible.length > 0) {
+                    const allChecked = visible.every(cb => cb.checked);
+                    const someChecked = visible.some(cb => cb.checked);
+                    selectAllUsers.checked = allChecked;
+                    selectAllUsers.indeterminate = !allChecked && someChecked;
+                } else {
+                    selectAllUsers.checked = false;
+                    selectAllUsers.indeterminate = false;
+                }
+            }
+
+            selectAllUsers.addEventListener('change', function() {
+                const visible = getSelectableRowCheckboxes();
+                visible.forEach(cb => {
+                    cb.checked = selectAllUsers.checked;
+                });
+                updateUserBulkBarState();
+            });
+
+            document.getElementById('usersTable').addEventListener('change', function(e) {
+                if (e.target && e.target.classList.contains('user-row-checkbox')) {
+                    updateUserBulkBarState();
+                }
+            });
+
+            cancelUserBtn.addEventListener('click', function() {
+                document.querySelectorAll('tbody .user-row-checkbox').forEach(cb => cb.checked = false);
+                selectAllUsers.checked = false;
+                selectAllUsers.indeterminate = false;
+                updateUserBulkBarState();
+            });
+
+            bulkDeleteUsersBtn.addEventListener('click', function() {
+                const checked = getAllCheckedUserBoxes();
+                const count = checked.length;
+                if (count === 0) return;
+
+                if (confirm(`Apakah Anda yakin ingin menghapus ${count} akun pengguna yang dipilih secara permanen? Akun akan dinonaktifkan dan sesi aktif akan dicabut.`)) {
+                    userBulkInputs.innerHTML = '';
+                    checked.forEach(cb => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'ids[]';
+                        input.value = cb.value;
+                        userBulkInputs.appendChild(input);
+                    });
+                    userBulkForm.submit();
+                }
+            });
+
+            const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+            if (resetFiltersBtn) {
+                resetFiltersBtn.addEventListener('click', function() {
+                    setTimeout(updateUserBulkBarState, 100);
+                });
+            }
+        }
     });
 </script>
 

@@ -26,9 +26,10 @@ class Verification extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('verifications v')
             ->select('v.*, u.nama_lengkap, u.email, u.no_wa, u.domisili, u.role as user_role, u.agreement_accepted_at, vc.kode as kode_mitra')
-            ->join('users u', 'u.id = v.user_id', 'left')
+            ->join('users u', 'u.id = v.user_id', 'inner')
             ->join('vouchers vc', 'vc.used_by = u.id', 'left')
             ->where('u.id IS NOT NULL')
+            ->where('u.deleted_at', null)
             ->orderBy('v.created_at', 'DESC');
 
         $verifications = $builder->get()->getResultArray();
@@ -59,9 +60,9 @@ class Verification extends BaseController
             return redirect()->to('/superadmin/verifications')->with('error', 'Data verifikasi tidak ditemukan.');
         }
 
-        $user = $db->table('users')->where('id', $verification['user_id'])->get()->getRowArray();
+        $user = $db->table('users')->where('id', $verification['user_id'])->where('deleted_at', null)->get()->getRowArray();
         if (!$user) {
-            return redirect()->to('/superadmin/verifications')->with('error', 'Data pengguna terkait tidak ditemukan.');
+            return redirect()->to('/superadmin/verifications')->with('error', 'Data pengguna terkait tidak ditemukan atau telah dihapus.');
         }
 
         // Cari data pembina jika ada
@@ -88,16 +89,56 @@ class Verification extends BaseController
         $pksNumber = 'PKS/AS/' . date('Ym', strtotime($user['agreement_accepted_at'] ?? $verification['created_at'])) . '/' . str_pad((string)$user['id'], 4, '0', STR_PAD_LEFT);
         $pksAccepted = !empty($user['agreement_accepted_at']);
 
+        // Deteksi Fraud Alert: Duplikasi NIK atau Nomor Rekening di akun aktif lain
+        $fraudAlerts = [];
+        if (!empty($verification['nik'])) {
+            $duplicateNiks = $db->table('verifications v')
+                ->select('u.id, u.nama_lengkap, u.email')
+                ->join('users u', 'u.id = v.user_id')
+                ->where('v.nik', $verification['nik'])
+                ->where('v.user_id !=', $user['id'])
+                ->where('u.deleted_at', null)
+                ->get()
+                ->getResultArray();
+            if (!empty($duplicateNiks)) {
+                $fraudAlerts[] = [
+                    'type' => 'nik',
+                    'title' => 'Peringatan Duplikasi NIK KTP',
+                    'message' => 'NIK (' . $verification['nik'] . ') terdeteksi sama persis dengan akun aktif lain: ' . implode(', ', array_map(fn($d) => $d['nama_lengkap'] . " (ID #{$d['id']})", $duplicateNiks))
+                ];
+            }
+        }
+
+        if (!empty($verification['nomor_rekening']) && !empty($verification['nama_bank'])) {
+            $duplicateReks = $db->table('verifications v')
+                ->select('u.id, u.nama_lengkap, u.email')
+                ->join('users u', 'u.id = v.user_id')
+                ->where('v.nama_bank', $verification['nama_bank'])
+                ->where('v.nomor_rekening', $verification['nomor_rekening'])
+                ->where('v.user_id !=', $user['id'])
+                ->where('u.deleted_at', null)
+                ->get()
+                ->getResultArray();
+            if (!empty($duplicateReks)) {
+                $fraudAlerts[] = [
+                    'type' => 'rekening',
+                    'title' => 'Peringatan Duplikasi Rekening Bank',
+                    'message' => 'Rekening ' . $verification['nama_bank'] . ' (' . $verification['nomor_rekening'] . ') terdeteksi sama persis dengan akun aktif lain: ' . implode(', ', array_map(fn($d) => $d['nama_lengkap'] . " (ID #{$d['id']})", $duplicateReks))
+                ];
+            }
+        }
+
         $data = [
-            'title' => 'Detail Verifikasi: ' . ($user['nama_lengkap'] ?? ('User #' . $user['id'])),
+            'title'        => 'Detail Verifikasi: ' . ($user['nama_lengkap'] ?? ('User #' . $user['id'])),
             'verification' => $verification,
-            'user' => $user,
-            'pembina' => $pembina,
-            'voucher' => $voucher,
-            'ktpExists' => $ktpExists,
-            'ktpUrl' => $ktpUrl,
-            'pksNumber' => $pksNumber,
-            'pksAccepted' => $pksAccepted,
+            'user'         => $user,
+            'pembina'      => $pembina,
+            'voucher'      => $voucher,
+            'ktpExists'    => $ktpExists,
+            'ktpUrl'       => $ktpUrl,
+            'pksNumber'    => $pksNumber,
+            'pksAccepted'  => $pksAccepted,
+            'fraudAlerts'  => $fraudAlerts,
         ];
 
         return view('superadmin/verification_detail', $data);

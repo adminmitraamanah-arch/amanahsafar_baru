@@ -79,6 +79,46 @@
                     </div>
                 </div>
 
+                <!-- Floating Bulk Action Bar (Konsisten di Seluruh Halaman Super Admin) -->
+                <div id="packageBulkActionBar" 
+                     class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 hidden bg-white text-slate-800 shadow-2xl rounded-2xl px-5 py-3 border border-slate-200/90 backdrop-blur-md flex items-center gap-4 transition-all duration-200"
+                     style="background-color: rgba(255, 255, 255, 0.98); border: 1px solid #e2e8f0; box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1);">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" style="background-color: #10b981;"></span>
+                        <span class="text-xs font-semibold text-slate-600" style="color: #475569;">
+                            <strong id="selectedPackagesCount" class="text-slate-900 font-extrabold text-sm" style="color: #0f172a;">0</strong> paket dipilih
+                        </span>
+                    </div>
+                    <div class="h-4 w-px bg-slate-200" style="background-color: #cbd5e1;"></div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="cancelPackageSelectionBtn" 
+                                class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold transition text-xs border border-slate-200/80 cursor-pointer"
+                                style="background-color: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
+                            Batal
+                        </button>
+                        <button type="button" id="bulkDeletePackagesBtn" 
+                                class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold transition text-xs flex items-center gap-1.5 shadow-sm cursor-pointer"
+                                style="background-color: #e11d48; color: #ffffff;">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                            <span>Hapus Terpilih</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden Bulk Delete Form -->
+                <form id="packageBulkDeleteForm" method="POST" action="<?= base_url('/superadmin/packages/bulk-delete') ?>" class="hidden">
+                    <?= csrf_field() ?>
+                    <div id="packageBulkDeleteInputs"></div>
+                </form>
+
+                <!-- Sub-Bar: Seleksi Khusus Tampilan Grid Kartu -->
+                <div class="flex items-center justify-between gap-3 mb-4 px-1" id="packageGridSelectionBar">
+                    <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer select-none">
+                        <input type="checkbox" id="selectAllPackages" class="w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer">
+                        <span>Pilih Semua Paket</span>
+                    </label>
+                </div>
+
                 <!-- Package Grid (Card View) -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="packagesGridContainer">
                     <div id="emptyPackageCard" class="col-span-full bg-white rounded-2xl border border-slate-200/80 p-12 text-center text-slate-400 text-xs <?= empty($packages) ? '' : 'hidden' ?>">
@@ -121,6 +161,9 @@
                                  data-search="<?= strtolower(esc($pkg['nama'] . ' ' . ($pkg['kategori'] ?? '') . ' ' . ($pkg['program_durasi'] ?? '') . ' ' . ($pkg['maskapai'] ?? '') . ' ' . ($pkg['hotel_mekkah'] ?? '') . ' ' . ($pkg['deskripsi'] ?? '') . ' ' . $pkg['harga'])) ?>">
                                 <?php if (!empty($pkg['gambar'])): ?>
                                     <div class="h-44 w-full overflow-hidden bg-slate-100 relative">
+                                        <div class="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-xl bg-white/90 backdrop-blur-md shadow-md border border-slate-200/80 flex items-center justify-center">
+                                            <input type="checkbox" class="package-checkbox w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" value="<?= esc($pkg['id']) ?>" data-nama="<?= esc($pkg['nama']) ?>" title="Pilih paket ini">
+                                        </div>
                                         <img src="<?= base_url('uploads/packages/' . esc($pkg['gambar'])) ?>" alt="<?= esc($pkg['nama']) ?>" class="w-full h-full object-cover">
                                         <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
                                             <span class="px-2 py-0.5 rounded-lg bg-black/60 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-wider">
@@ -135,6 +178,9 @@
                                     </div>
                                 <?php else: ?>
                                     <div class="h-44 w-full bg-[#5e0078] flex flex-col items-center justify-center text-white relative">
+                                        <div class="absolute top-2.5 right-2.5 z-10 w-7 h-7 rounded-xl bg-white/90 backdrop-blur-md shadow-md border border-slate-200/80 flex items-center justify-center">
+                                            <input type="checkbox" class="package-checkbox w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" value="<?= esc($pkg['id']) ?>" data-nama="<?= esc($pkg['nama']) ?>" title="Pilih paket ini">
+                                        </div>
                                         <i class="fas fa-kaaba text-4xl opacity-80 mb-1"></i>
                                         <span class="text-xs font-semibold opacity-90 tracking-wider uppercase"><?= esc($pkg['kategori'] ?? 'Umroh') ?></span>
                                         <?php if (!empty($pkg['program_durasi'])): ?>
@@ -217,6 +263,9 @@
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                    <th class="py-3.5 px-4 w-12 text-center">
+                                        <input type="checkbox" id="selectAllPackagesList" class="w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" title="Pilih Semua Paket">
+                                    </th>
                                     <th class="py-3.5 px-4 sm:px-6">Paket</th>
                                     <th class="py-3.5 px-4">Kategori & Program</th>
                                     <th class="py-3.5 px-4">Keberangkatan</th>
@@ -227,7 +276,7 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-xs" id="packagesListTableBody">
                                 <tr id="emptyPackageListRow" class="<?= empty($packages) ? '' : 'hidden' ?>">
-                                    <td colspan="6" class="p-12 text-center text-slate-400">
+                                    <td colspan="7" class="p-12 text-center text-slate-400">
                                         <i class="fas fa-box-open text-3xl mb-2 text-slate-300 block"></i>
                                         <p>Tidak ada paket umroh yang sesuai dengan filter atau kata kunci.</p>
                                     </td>
@@ -241,6 +290,9 @@
                                             data-kategori="<?= strtolower(esc($pkg['kategori'] ?? 'umroh')) ?>"
                                             data-status="<?= esc($pkg['status'] ?? 'aktif') ?>"
                                             data-search="<?= strtolower(esc($pkg['nama'] . ' ' . ($pkg['kategori'] ?? '') . ' ' . ($pkg['program_durasi'] ?? '') . ' ' . ($pkg['maskapai'] ?? '') . ' ' . ($pkg['hotel_mekkah'] ?? '') . ' ' . ($pkg['deskripsi'] ?? '') . ' ' . $pkg['harga'])) ?>">
+                                            <td class="py-3.5 px-4 text-center">
+                                                <input type="checkbox" class="package-checkbox w-4 h-4 rounded border-slate-300 text-[#5e0078] focus:ring-[#5e0078] cursor-pointer" value="<?= esc($pkg['id']) ?>" data-nama="<?= esc($pkg['nama']) ?>">
+                                            </td>
                                             <td class="py-3.5 px-4 sm:px-6">
                                                 <div class="flex items-center gap-3">
                                                     <div class="w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-slate-100 border border-slate-100">
@@ -630,13 +682,16 @@ document.addEventListener('DOMContentLoaded', function() {
         currentMode = mode;
         localStorage.setItem('amanah_packages_view_mode', mode);
         
+        const gridSelectionBar = document.getElementById('packageGridSelectionBar');
         if (mode === 'card') {
             gridContainer.classList.remove('hidden');
+            if (gridSelectionBar) gridSelectionBar.classList.remove('hidden');
             listContainer.classList.add('hidden');
             cardViewBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-white text-[#5e0078] shadow-xs';
             listViewBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-slate-500 hover:text-slate-800';
         } else {
             gridContainer.classList.add('hidden');
+            if (gridSelectionBar) gridSelectionBar.classList.add('hidden');
             listContainer.classList.remove('hidden');
             listViewBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-white text-[#5e0078] shadow-xs';
             cardViewBtn.className = 'px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-slate-500 hover:text-slate-800';
@@ -816,6 +871,123 @@ document.addEventListener('DOMContentLoaded', function() {
     // Init initial mode and render
     setViewMode(currentMode);
     render();
+
+    // Bulk Selection & Bulk Delete Handler for Packages
+    const selectAllPackages = document.getElementById('selectAllPackages');
+    const selectAllPackagesList = document.getElementById('selectAllPackagesList');
+    const packageBulkBar = document.getElementById('packageBulkActionBar');
+    const selectedPackagesCount = document.getElementById('selectedPackagesCount');
+    const cancelPackageBtn = document.getElementById('cancelPackageSelectionBtn');
+    const bulkDeletePackagesBtn = document.getElementById('bulkDeletePackagesBtn');
+    const packageBulkForm = document.getElementById('packageBulkDeleteForm');
+    const packageBulkInputs = document.getElementById('packageBulkDeleteInputs');
+
+    function getVisiblePackageCheckboxes() {
+        const checkboxes = [];
+        document.querySelectorAll('.package-card-item').forEach(card => {
+            if (card.style.display !== 'none' && !card.classList.contains('hidden')) {
+                const cb = card.querySelector('.package-checkbox');
+                if (cb) checkboxes.push(cb);
+            }
+        });
+        document.querySelectorAll('.package-list-row').forEach(row => {
+            if (row.style.display !== 'none' && !row.classList.contains('hidden')) {
+                const cb = row.querySelector('.package-checkbox');
+                if (cb && !checkboxes.includes(cb)) checkboxes.push(cb);
+            }
+        });
+        return checkboxes;
+    }
+
+    function getUniqueCheckedPackageIds() {
+        const checkedBoxes = document.querySelectorAll('.package-checkbox:checked');
+        const ids = new Set();
+        checkedBoxes.forEach(cb => ids.add(cb.value));
+        return Array.from(ids);
+    }
+
+    function updatePackageBulkBarState() {
+        const checkedIds = getUniqueCheckedPackageIds();
+        const count = checkedIds.length;
+        if (count > 0) {
+            if (selectedPackagesCount) selectedPackagesCount.textContent = count;
+            if (packageBulkBar) {
+                packageBulkBar.classList.remove('hidden');
+                packageBulkBar.classList.add('flex');
+            }
+        } else {
+            if (packageBulkBar) {
+                packageBulkBar.classList.add('hidden');
+                packageBulkBar.classList.remove('flex');
+            }
+        }
+
+        const visibleCbs = getVisiblePackageCheckboxes();
+        if (visibleCbs.length > 0) {
+            const allChecked = visibleCbs.every(cb => cb.checked);
+            const someChecked = visibleCbs.some(cb => cb.checked);
+            if (selectAllPackages) {
+                selectAllPackages.checked = allChecked;
+                selectAllPackages.indeterminate = !allChecked && someChecked;
+            }
+            if (selectAllPackagesList) {
+                selectAllPackagesList.checked = allChecked;
+                selectAllPackagesList.indeterminate = !allChecked && someChecked;
+            }
+        } else {
+            if (selectAllPackages) { selectAllPackages.checked = false; selectAllPackages.indeterminate = false; }
+            if (selectAllPackagesList) { selectAllPackagesList.checked = false; selectAllPackagesList.indeterminate = false; }
+        }
+    }
+
+    function handleSelectAllChange(checked) {
+        document.querySelectorAll('.package-checkbox').forEach(cb => {
+            cb.checked = checked;
+        });
+        updatePackageBulkBarState();
+    }
+
+    if (selectAllPackages) {
+        selectAllPackages.addEventListener('change', () => handleSelectAllChange(selectAllPackages.checked));
+    }
+    if (selectAllPackagesList) {
+        selectAllPackagesList.addEventListener('change', () => handleSelectAllChange(selectAllPackagesList.checked));
+    }
+
+    document.addEventListener('change', (e) => {
+        if (e.target && e.target.classList.contains('package-checkbox')) {
+            const val = e.target.value;
+            const checked = e.target.checked;
+            document.querySelectorAll(`.package-checkbox[value="${val}"]`).forEach(cb => cb.checked = checked);
+            updatePackageBulkBarState();
+        }
+    });
+
+    if (cancelPackageBtn) {
+        cancelPackageBtn.addEventListener('click', () => {
+            document.querySelectorAll('.package-checkbox').forEach(cb => cb.checked = false);
+            updatePackageBulkBarState();
+        });
+    }
+
+    if (bulkDeletePackagesBtn) {
+        bulkDeletePackagesBtn.addEventListener('click', () => {
+            const checkedIds = getUniqueCheckedPackageIds();
+            if (checkedIds.length === 0) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus ${checkedIds.length} paket umroh yang dipilih secara permanen? Data dan gambar terkait akan dihapus.`)) {
+                packageBulkInputs.innerHTML = '';
+                checkedIds.forEach(id => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'ids[]';
+                    input.value = id;
+                    packageBulkInputs.appendChild(input);
+                });
+                packageBulkForm.submit();
+            }
+        });
+    }
 });
 </script>
 <?= $this->endSection() ?>

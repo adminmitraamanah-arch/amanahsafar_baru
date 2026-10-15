@@ -24,6 +24,21 @@ class RoleFilter implements FilterInterface
                 session()->regenerate(true);
                 return redirect()->to('/login')->with('error', 'Akun anda di nonaktifkan');
             }
+
+            // Cegat akses jika onboarding (KYC/PKS) belum tuntas
+            $onboarding = $userModel->getOnboardingStatus($userId);
+            if (!$onboarding['completed']) {
+                if ($request->isAJAX()) {
+                    return service('response')
+                        ->setStatusCode(403)
+                        ->setJSON([
+                            'status' => 'error',
+                            'message' => $onboarding['message'],
+                            'redirect' => $onboarding['redirect_url']
+                        ]);
+                }
+                return redirect()->to($onboarding['redirect_url'])->with('warning', $onboarding['message']);
+            }
         }
 
         $userRole = session('role');

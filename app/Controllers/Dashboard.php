@@ -35,9 +35,16 @@ class Dashboard extends BaseController
             return $redirect;
         }
 
+        // Partner/member role: cegat jika onboarding belum tuntas
+        $userId = session('user_id');
+        $onboarding = $this->userModel->getOnboardingStatus($userId);
+        if (!$onboarding['completed']) {
+            return redirect()->to($onboarding['redirect_url'])->with('warning', $onboarding['message']);
+        }
+
         $data = [
             'title' => 'Dashboard',
-            'user' => $this->userModel->find(session('user_id'))
+            'user' => $this->userModel->find($userId)
         ];
 
         return view('member/dashboard', $data);

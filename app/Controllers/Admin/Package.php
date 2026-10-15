@@ -35,7 +35,10 @@ class Package extends BaseController
             return redirect()->to('/login');
         }
 
-        return view('admin/package_form', ['title' => 'Buat Paket']);
+        return view('admin/package_form', [
+            'title' => 'Buat Paket',
+            'dpRules' => [],
+        ]);
     }
 
     public function store()
@@ -87,7 +90,17 @@ class Package extends BaseController
             $harga = $hargaQuad;
         }
 
-        $this->packageModel->insert([
+        // Komisi Hierarki & Default DP
+        $komisiMitra = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('komisi_mitra'));
+        $komisiManager = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('komisi_manager'));
+        $komisiCabangPusat = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('komisi_cabang_pusat'));
+        $totalPool = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('total_pool_komisi'));
+        if ($totalPool <= 0) {
+            $totalPool = $komisiMitra + $komisiManager + $komisiCabangPusat;
+        }
+        $minDpDefault = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('minimal_dp_default'));
+
+        $packageId = $this->packageModel->insert([
             'nama' => $this->request->getPost('nama'),
             'tanggal_keberangkatan' => $this->request->getPost('tanggal_keberangkatan') ?: null,
             'program_durasi' => $this->request->getPost('program_durasi'),
@@ -99,6 +112,11 @@ class Package extends BaseController
             'harga_quad' => !empty($hargaQuad) ? $hargaQuad : null,
             'harga_triple' => !empty($hargaTriple) ? $hargaTriple : null,
             'harga_double' => !empty($hargaDouble) ? $hargaDouble : null,
+            'komisi_mitra' => $komisiMitra,
+            'komisi_manager' => $komisiManager,
+            'komisi_cabang_pusat' => $komisiCabangPusat,
+            'total_pool_komisi' => $totalPool,
+            'minimal_dp_default' => $minDpDefault,
             'seat_tersedia' => (int)($this->request->getPost('seat_tersedia') ?? 0),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'includes' => !empty($includes) ? json_encode(array_values($includes), JSON_UNESCAPED_UNICODE) : null,
@@ -107,6 +125,31 @@ class Package extends BaseController
             'status' => $this->request->getPost('status') ?: 'aktif',
             'created_by' => session('user_id')
         ]);
+
+        // Simpan Model A Aturan DP Rentang Tanggal
+        $dpRuleModel = new \App\Models\PackageDpRuleModel();
+        $dpKeterangans = $this->request->getPost('dp_rule_keterangan');
+        $dpTglMulai = $this->request->getPost('dp_rule_tgl_mulai');
+        $dpTglSelesai = $this->request->getPost('dp_rule_tgl_selesai');
+        $dpNominals = $this->request->getPost('dp_rule_nominal');
+
+        if (is_array($dpNominals) && $packageId) {
+            for ($i = 0; $i < count($dpNominals); $i++) {
+                $nom = (float)str_replace(['.', ','], ['', '.'], (string)($dpNominals[$i] ?? 0));
+                $tMulai = $dpTglMulai[$i] ?? null;
+                $tSelesai = $dpTglSelesai[$i] ?? null;
+                $ket = trim((string)($dpKeterangans[$i] ?? ''));
+                if ($nom > 0 && !empty($tMulai) && !empty($tSelesai)) {
+                    $dpRuleModel->insert([
+                        'package_id' => (int)$packageId,
+                        'tanggal_mulai' => $tMulai,
+                        'tanggal_selesai' => $tSelesai,
+                        'nominal_dp' => $nom,
+                        'keterangan' => $ket,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->to('/admin/packages')->with('success', 'Data paket berhasil ditambahkan');
     }
@@ -122,7 +165,14 @@ class Package extends BaseController
             return redirect()->to('/admin/packages')->with('error', 'Paket tidak ditemukan');
         }
 
-        return view('admin/package_form', ['title' => 'Edit Paket', 'package' => $package]);
+        $dpRuleModel = new \App\Models\PackageDpRuleModel();
+        $dpRules = $dpRuleModel->getRulesByPackage($id);
+
+        return view('admin/package_form', [
+            'title' => 'Edit Paket',
+            'package' => $package,
+            'dpRules' => $dpRules,
+        ]);
     }
 
     public function update($id)
@@ -172,6 +222,16 @@ class Package extends BaseController
             $harga = $hargaQuad;
         }
 
+        // Komisi Hierarki & Default DP
+        $komisiMitra = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('komisi_mitra'));
+        $komisiManager = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('komisi_manager'));
+        $komisiCabangPusat = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('komisi_cabang_pusat'));
+        $totalPool = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('total_pool_komisi'));
+        if ($totalPool <= 0) {
+            $totalPool = $komisiMitra + $komisiManager + $komisiCabangPusat;
+        }
+        $minDpDefault = (float)str_replace(['.', ','], ['', '.'], (string)$this->request->getPost('minimal_dp_default'));
+
         $dataUpdate = [
             'nama' => $this->request->getPost('nama'),
             'tanggal_keberangkatan' => $this->request->getPost('tanggal_keberangkatan') ?: null,
@@ -184,6 +244,11 @@ class Package extends BaseController
             'harga_quad' => !empty($hargaQuad) ? $hargaQuad : null,
             'harga_triple' => !empty($hargaTriple) ? $hargaTriple : null,
             'harga_double' => !empty($hargaDouble) ? $hargaDouble : null,
+            'komisi_mitra' => $komisiMitra,
+            'komisi_manager' => $komisiManager,
+            'komisi_cabang_pusat' => $komisiCabangPusat,
+            'total_pool_komisi' => $totalPool,
+            'minimal_dp_default' => $minDpDefault,
             'seat_tersedia' => (int)($this->request->getPost('seat_tersedia') ?? 0),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'includes' => !empty($includes) ? json_encode(array_values($includes), JSON_UNESCAPED_UNICODE) : null,
@@ -203,6 +268,33 @@ class Package extends BaseController
         }
 
         $this->packageModel->update($id, $dataUpdate);
+
+        // Update Model A Aturan DP Rentang Tanggal
+        $dpRuleModel = new \App\Models\PackageDpRuleModel();
+        $dpRuleModel->where('package_id', (int)$id)->delete();
+
+        $dpKeterangans = $this->request->getPost('dp_rule_keterangan');
+        $dpTglMulai = $this->request->getPost('dp_rule_tgl_mulai');
+        $dpTglSelesai = $this->request->getPost('dp_rule_tgl_selesai');
+        $dpNominals = $this->request->getPost('dp_rule_nominal');
+
+        if (is_array($dpNominals)) {
+            for ($i = 0; $i < count($dpNominals); $i++) {
+                $nom = (float)str_replace(['.', ','], ['', '.'], (string)($dpNominals[$i] ?? 0));
+                $tMulai = $dpTglMulai[$i] ?? null;
+                $tSelesai = $dpTglSelesai[$i] ?? null;
+                $ket = trim((string)($dpKeterangans[$i] ?? ''));
+                if ($nom > 0 && !empty($tMulai) && !empty($tSelesai)) {
+                    $dpRuleModel->insert([
+                        'package_id' => (int)$id,
+                        'tanggal_mulai' => $tMulai,
+                        'tanggal_selesai' => $tSelesai,
+                        'nominal_dp' => $nom,
+                        'keterangan' => $ket,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->to('/admin/packages')->with('success', 'Perubahan data paket berhasil disimpan');
     }

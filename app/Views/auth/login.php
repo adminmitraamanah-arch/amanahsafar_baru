@@ -508,9 +508,18 @@
 
                     <!-- Flash Message Notifications -->
                     <?php if (session()->getFlashdata('error')): ?>
-                        <div class="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-3">
-                            <i class="fas fa-circle-exclamation text-rose-500 text-sm shrink-0"></i>
-                            <div class="font-medium"><?= esc(session()->getFlashdata('error')) ?></div>
+                        <?php $flashError = (string) session()->getFlashdata('error'); ?>
+                        <div class="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center justify-between gap-3 shadow-2xs">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <i class="fas fa-circle-exclamation text-rose-500 text-sm shrink-0"></i>
+                                <div class="font-semibold break-words"><?= esc($flashError) ?></div>
+                            </div>
+                            <?php if (str_contains(strtolower($flashError), 'belum terdaftar') || str_contains(strtolower($flashError), 'daftar akun')): ?>
+                                <a href="<?= base_url('/register') ?>" class="shrink-0 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition inline-flex items-center gap-1.5 shadow-xs">
+                                    <span>Daftar Akun</span>
+                                    <i class="fas fa-arrow-right text-[10px]"></i>
+                                </a>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
 
@@ -577,31 +586,6 @@
                                     class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition focus:outline-none">
                                     <i id="eyeIcon" class="fas fa-eye text-sm"></i>
                                 </button>
-                            </div>
-                        </div>
-
-                        <!-- Role Selection (Mempertahankan Seluruh Role Asli Sistem) -->
-                        <div class="form-group-spaced">
-                            <label for="role" class="block text-xs font-bold text-slate-700 mb-1.5">
-                                Role
-                            </label>
-                            <div class="relative">
-                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
-                                    <i class="fa-solid fa-users"></i>
-                                </span>
-                                <select id="role" name="role" required
-                                    class="input-pill pr-8 cursor-pointer">
-                                    <option value="" <?= empty(old('role')) ? 'selected' : '' ?>>Pilih Role</option>
-                                    <option value="super_admin" <?= old('role') === 'super_admin' ? 'selected' : '' ?>>Super Admin</option>
-                                    <option value="admin" <?= old('role') === 'admin' ? 'selected' : '' ?>>Admin</option>
-                                    <option value="pusat" <?= old('role') === 'pusat' ? 'selected' : '' ?>>Pusat</option>
-                                    <option value="cabang" <?= old('role') === 'cabang' ? 'selected' : '' ?>>Cabang</option>
-                                    <option value="manager_mitra" <?= old('role') === 'manager_mitra' ? 'selected' : '' ?>>Manager Mitra</option>
-                                    <option value="mitra" <?= old('role') === 'mitra' ? 'selected' : '' ?>>Mitra</option>
-                                </select>
-                                <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400 text-xs">
-                                    <i class="fas fa-chevron-down"></i>
-                                </span>
                             </div>
                         </div>
 

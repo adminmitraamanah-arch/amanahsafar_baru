@@ -125,11 +125,13 @@
             lowerMsg.includes('tidak sesuai') || 
             lowerMsg.includes('tidak valid') || 
             lowerMsg.includes('ditolak') || 
-            lowerMsg.includes('tidak ditemukan')
+            lowerMsg.includes('tidak ditemukan') ||
+            lowerMsg.includes('belum terdaftar')
         ) {
             type = 'red';
             if (!title) {
-                if (lowerMsg.includes('logout')) title = 'Logout';
+                if (lowerMsg.includes('belum terdaftar')) title = 'Akun Belum Terdaftar';
+                else if (lowerMsg.includes('logout')) title = 'Logout';
                 else if (lowerMsg.includes('hapus') || lowerMsg.includes('dihapus')) title = 'Data Dihapus';
                 else if (lowerMsg.includes('nonaktif')) title = 'Akun Dinonaktifkan';
                 else title = 'Terjadi Kesalahan';
@@ -145,12 +147,13 @@
                 else if (lowerMsg.includes('diaktifkan')) title = 'Akun Diaktifkan';
                 else title = 'Berhasil';
             }
-        }
+        } 
 
         const palette = TOAST_TYPES[type] || TOAST_TYPES.green;
         let icon = palette.icon;
         if (type === 'red') {
-            if (lowerMsg.includes('logout')) icon = 'fas fa-arrow-right-from-bracket';
+            if (lowerMsg.includes('belum terdaftar')) icon = 'fas fa-user-xmark';
+            else if (lowerMsg.includes('logout')) icon = 'fas fa-arrow-right-from-bracket';
             else if (lowerMsg.includes('hapus')) icon = 'fas fa-trash-alt';
             else if (lowerMsg.includes('nonaktif')) icon = 'fas fa-user-slash';
         } else if (type === 'green') {

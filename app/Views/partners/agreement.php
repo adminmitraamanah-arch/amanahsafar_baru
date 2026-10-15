@@ -1,0 +1,1 @@
+<?= view('auth/agreement', ['user' => $user ?? null]) ?>
