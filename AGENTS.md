@@ -2,6 +2,8 @@
 
 This file provides guidance to AI coding agents (Antigravity, Claude Code, Cursor, Copilot, etc.) working on this project (`amanahsafar`).
 
+Before working on this project, read and follow [rules.md](rules.md) for scope limits, evidence-based changes, required local commits, and explicit user confirmation before every GitHub push or pull. Apply skills within these boundaries.
+
 Skills from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) and [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) are installed in `.agents/skills/`.
 
 ## OpenCode Integration
