@@ -631,7 +631,7 @@
                                     <i class="fas fa-user"></i>
                                 </span>
                                 <input type="text" id="namaKtp" name="nama_ktp" required
-                                    value="<?= esc(old('nama_ktp', $user['nama_lengkap'] ?? '')) ?>"
+                                    value="<?= esc(old('nama_ktp', '')) ?>"
                                     class="input-pill"
                                     placeholder="Contoh: AHMAD DAHLAN (Sesuai KTP)">
                             </div>
@@ -809,8 +809,6 @@ function copyKtpName() {
     const targetInput = document.getElementById('namaPemilikRekening');
     if (namaKtpInput && targetInput) {
         targetInput.value = namaKtpInput.value.trim();
-    } else if (targetInput) {
-        targetInput.value = <?= json_encode($user['nama_lengkap'] ?? '') ?>;
     }
 }
 
