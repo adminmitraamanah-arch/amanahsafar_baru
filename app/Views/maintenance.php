@@ -76,8 +76,8 @@
             <!-- Discreet SuperAdmin Login Link -->
             <div class="mt-8 pt-5 border-t border-slate-100 flex items-center justify-center text-xs text-slate-400">
                 <span>Pengelola Sistem? </span>
-                <a href="<?= base_url('/login?admin=1') ?>" class="ml-1 text-[#5e0078] hover:text-purple-900 font-semibold hover:underline">
-                    Masuk Super Admin
+                <a href="<?= base_url('/login?admin=1') ?>" class="ml-1 text-[#5e0078] hover:text-purple-900 font-semibold hover:underline inline-flex items-center gap-1.5 py-1 px-2.5 rounded-lg hover:bg-purple-50 transition">
+                    <i class="fas fa-user-shield text-xs"></i> Masuk Super Admin
                 </a>
             </div>
 

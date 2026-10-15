@@ -23,29 +23,44 @@ class PortalMaintenanceFilter implements FilterInterface
             return;
         }
 
-        // 3. Ambil path URL saat ini
-        $uri = service('uri');
-        $path = trim($uri->getPath(), '/');
+        // 3. Normalisasi path URI (kompatibel pada localhost subfolder XAMPP maupun domain hosting)
+        $routeUri = function_exists('uri_string') ? trim(uri_string(), '/') : '';
+        $rawPath = trim($request->getUri()->getPath(), '/');
 
         // Pengecualian halaman yang selalu boleh diakses:
-        if ($path === 'maintenance' || $path === 'logout') {
+        if ($routeUri === 'maintenance' || str_ends_with($rawPath, 'maintenance') ||
+            $routeUri === 'logout' || str_ends_with($rawPath, 'logout')) {
             return;
         }
 
-        // 4. Periksa akses khusus halaman Login
-        if ($path === 'login') {
-            // Jika POST login, izinkan lewat agar Auth::login memvalidasi apakah kredensial Super Admin
-            if ($request->getMethod() === 'POST' || (method_exists($request, 'is') && $request->is('post'))) {
+        // 4. Periksa apakah rute saat ini adalah halaman Login
+        $isLoginRoute = ($routeUri === 'login') 
+            || str_ends_with($rawPath, '/login') 
+            || ($rawPath === 'login')
+            || str_contains($rawPath, 'superadmin/login');
+
+        // Parameter admin bypass via GET atau query string
+        $isAdminParam = isset($_GET['admin']) 
+            || isset($_GET['superadmin']) 
+            || $request->getGet('admin') !== null 
+            || $request->getGet('superadmin') !== null;
+
+        if ($isLoginRoute) {
+            // Jika POST login, izinkan lewat agar Auth::login memvalidasi kredensial
+            $isPost = (method_exists($request, 'is') && $request->is('post')) 
+                || ($request->getMethod() === 'POST')
+                || (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) === 'POST');
+
+            if ($isPost) {
                 return;
             }
 
-            // Jika GET login dengan parameter ?admin=1 atau ?superadmin=1, izinkan form login tampil
-            $getParams = $request->getGet();
-            if (isset($getParams['admin']) || isset($getParams['superadmin'])) {
+            // Jika GET login dengan parameter admin bypass (?admin=1) atau rute superadmin/login, izinkan form tampil
+            if ($isAdminParam || str_contains($rawPath, 'superadmin/login')) {
                 return;
             }
 
-            // Kunjungan biasa ke /login diarahkan ke /maintenance
+            // Kunjungan biasa ke /login tanpa kunci admin diarahkan ke /maintenance
             return redirect()->to('/maintenance');
         }
 

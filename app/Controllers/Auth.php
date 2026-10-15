@@ -22,7 +22,12 @@ class Auth extends BaseController
     public function login()
     {
         $isMaintenance = \App\Models\LandingSettingModel::getVal('portal_maintenance_active', '0') === '1';
-        $isAdminAccess = $this->request->getGet('admin') !== null || $this->request->getGet('superadmin') !== null;
+        $rawPath = trim($this->request->getUri()->getPath(), '/');
+        $isAdminAccess = isset($_GET['admin']) 
+            || isset($_GET['superadmin']) 
+            || $this->request->getGet('admin') !== null 
+            || $this->request->getGet('superadmin') !== null
+            || str_contains($rawPath, 'superadmin/login');
 
         // Jika mode maintenance aktif dan kunjungan biasa (bukan akses admin), alihkan ke maintenance
         if ($isMaintenance && !$isAdminAccess && !session('logged_in')) {
@@ -35,18 +40,24 @@ class Auth extends BaseController
             $email = trim($this->request->getPost('email') ?? '');
             $password = $this->request->getPost('password');
 
+            $errorRedirect = function($msg) use ($isMaintenance, $isAdminAccess) {
+                $target = ($isMaintenance && $isAdminAccess) ? base_url('/login?admin=1') : null;
+                $res = $target ? redirect()->to($target) : redirect()->back();
+                return $res->with('error', $msg)->withInput();
+            };
+
             $user = $this->userModel->findByEmail($email);
 
             if (!$user) {
-                return redirect()->back()->with('error', 'akun belum terdaftar,silahkan daftar akun')->withInput();
+                return $errorRedirect('akun belum terdaftar,silahkan daftar akun');
             }
 
             if (!password_verify($password, $user['password_hash'])) {
-                return redirect()->back()->with('error', 'Email atau kata sandi tidak sesuai')->withInput();
+                return $errorRedirect('Email atau kata sandi tidak sesuai');
             }
 
             if ($user['status'] === 'nonaktif') {
-                return redirect()->back()->with('error', 'Akun anda di nonaktifkan');
+                return $errorRedirect('Akun anda di nonaktifkan');
             }
 
             // Jika mode pemeliharaan portal aktif, tolak akses pengguna non-superadmin

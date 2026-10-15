@@ -554,7 +554,7 @@
                     <?php endif; ?>
 
                     <!-- Form Login -->
-                    <form method="POST" action="<?= base_url('/login') ?>" class="mt-6">
+                    <form method="POST" action="<?= base_url('/login' . (!empty($isAdminAccess) ? '?admin=1' : '')) ?>" class="mt-6">
                         <?= csrf_field() ?>
 
                         <!-- Email Input (Hanya Menggunakan Email Aktif) -->

@@ -12,6 +12,8 @@ $routes->post('/login', 'Auth::login', ['filter' => 'portalMaintenance']);
 $routes->get('/register', 'Auth::register', ['filter' => 'portalMaintenance']);
 $routes->post('/register', 'Auth::register', ['filter' => 'portalMaintenance']);
 $routes->get('/logout', 'Auth::logout');
+$routes->get('/superadmin/login', 'Auth::login');
+$routes->post('/superadmin/login', 'Auth::login');
 
 // Auth required
 $routes->get('/verify', 'Auth::verify', ['filter' => 'portalMaintenance']);
