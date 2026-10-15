@@ -607,14 +607,6 @@
                                                 <span class="text-slate-500">Nama Terdeteksi:</span>
                                                 <span id="extractedNamaText" class="font-bold text-slate-800 uppercase">-</span>
                                             </div>
-                                            <div id="quickSyncButtons" class="pt-1.5 flex flex-wrap gap-1.5 border-t border-slate-200/60 mt-1">
-                                                <button type="button" id="btnApplyNik" class="text-[10px] font-bold px-2 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors">
-                                                    <i class="fas fa-arrow-down mr-1"></i> Gunakan NIK dari KTP
-                                                </button>
-                                                <button type="button" id="btnApplyNama" class="text-[10px] font-bold px-2 py-1 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-colors">
-                                                    <i class="fas fa-arrow-down mr-1"></i> Gunakan Nama dari KTP
-                                                </button>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1340,20 +1332,22 @@ async function handleKtpFile(file) {
                 if (nikText) nikText.textContent = extracted.nik || '(Tidak terbaca otomatis)';
                 if (namaText) namaText.textContent = extracted.nama || '(Tidak terbaca otomatis)';
 
-                // Auto-fill jika form masih kosong atau default
+                // Auto-fill langsung NIK dan Nama dari KTP ke form
                 const nikInput = document.getElementById('nikInput');
                 const namaInput = document.getElementById('namaKtp');
 
-                if (extracted.nik && nikInput && (!nikInput.value.trim() || nikInput.value.trim() === '')) {
+                if (extracted.nik && nikInput) {
                     nikInput.value = extracted.nik;
                 }
 
-                if (extracted.nama && namaInput && (!namaInput.value.trim() || namaInput.value.trim() === 'Mitra')) {
+                if (extracted.nama && namaInput) {
                     namaInput.value = extracted.nama;
                 }
 
-                // Cocokkan data input dengan KTP
+                // Cocokkan data input dengan KTP & validasi kesesuaian rekening
                 validateIdentityMatch();
+                checkRekeningOwnerMatch();
+                refreshSubmitButton();
 
             } catch (err) {
                 if (scanId !== systemState.currentScanId) return;
@@ -1393,8 +1387,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const manualContainer = document.getElementById('bankManualContainer');
     const manualInput = document.getElementById('namaBankManual');
     const finalInput = document.getElementById('namaBankFinal');
-    const btnApplyNik = document.getElementById('btnApplyNik');
-    const btnApplyNama = document.getElementById('btnApplyNama');
     const form = document.getElementById('verificationForm');
 
     // 1. File Input Change Listener
@@ -1433,26 +1425,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, false);
     }
 
-    // 3. Tombol Terapkan NIK & Nama dari KTP
-    if (btnApplyNik) {
-        btnApplyNik.addEventListener('click', function() {
-            if (systemState.extractedNik && nikInput) {
-                nikInput.value = systemState.extractedNik;
-                validateIdentityMatch();
-            }
-        });
-    }
-
-    if (btnApplyNama) {
-        btnApplyNama.addEventListener('click', function() {
-            if (systemState.extractedNama && namaInput) {
-                namaInput.value = systemState.extractedNama;
-                validateIdentityMatch();
-            }
-        });
-    }
-
-    // 4. Real-time Cross Check saat User Mengetik di NIK atau Nama
+    // 3. Real-time Cross Check saat User Mengetik di NIK atau Nama
     if (nikInput) {
         nikInput.addEventListener('input', function() {
             if (systemState.fileSelected) {

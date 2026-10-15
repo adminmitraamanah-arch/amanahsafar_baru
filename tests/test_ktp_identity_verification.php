@@ -155,7 +155,8 @@ assertCondition("Urutan form lengkap: Upload -> Status -> Nama -> NIK -> Bank ->
 );
 assertCondition("CDN Tesseract.js dimuat untuk client-side OCR", strpos($viewContent, 'tesseract.min.js') !== false);
 assertCondition("Terdapat tombol Salin dari Nama KTP", strpos($viewContent, 'copyKtpName()') !== false);
-assertCondition("Terdapat tombol Gunakan NIK dari KTP", strpos($viewContent, 'btnApplyNik') !== false);
+assertCondition("Kedua tombol terapkan manual di status box telah dihapus (auto-fill otomatis)", strpos($viewContent, 'btnApplyNik') === false && strpos($viewContent, 'btnApplyNama') === false);
+assertCondition("Auto-fill langsung NIK dan Nama aktif saat KTP berhasil dipindai", strpos($viewContent, 'nikInput.value = extracted.nik') !== false && strpos($viewContent, 'namaInput.value = extracted.nama') !== false);
 assertCondition("Terdapat elemen peringatan ketidaksesuaian pemilik rekening", strpos($viewContent, 'rekeningOwnerError') !== false);
 assertCondition("Terdapat fungsi validasi checkRekeningOwnerMatch", strpos($viewContent, 'checkRekeningOwnerMatch') !== false);
 
