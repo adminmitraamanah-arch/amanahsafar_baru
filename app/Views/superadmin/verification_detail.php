@@ -573,6 +573,61 @@
     </div>
 </div>
 
+<script>
+function copyToClipboard(text, message) {
+    if (!navigator.clipboard) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+        showToastNotification(message || 'Teks berhasil disalin');
+        return;
+    }
+    navigator.clipboard.writeText(text).then(function() {
+        showToastNotification(message || 'Teks berhasil disalin');
+    });
+}
+
+function showToastNotification(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-lg flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-200';
+    toast.innerHTML = `<i class="fas fa-check-circle text-emerald-400"></i> <span>${msg}</span>`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+        setTimeout(() => toast.remove(), 300);
+    }, 2200);
+}
+
+function openImageLightbox(src, title) {
+    const modal = document.getElementById('imageLightboxModal');
+    const img = document.getElementById('imageLightboxImg');
+    const titleEl = document.getElementById('imageLightboxTitle');
+    const newTabBtn = document.getElementById('imageLightboxNewTabBtn');
+    const downloadBtn = document.getElementById('imageLightboxDownloadBtn');
+
+    if (!modal || !img) return;
+
+    img.src = src;
+    if (titleEl) titleEl.textContent = title || 'Preview Dokumen';
+    if (newTabBtn) newTabBtn.href = src;
+    if (downloadBtn) downloadBtn.href = src + (src.includes('?') ? '&download=1' : '?download=1');
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageLightbox() {
+    const modal = document.getElementById('imageLightboxModal');
+    if (!modal) return;
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeImageLightbox();
