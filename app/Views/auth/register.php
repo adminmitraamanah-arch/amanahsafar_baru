@@ -601,7 +601,7 @@
                                     <input type="text" id="namaLengkap" name="nama_lengkap" required
                                         value="<?= esc(old('nama_lengkap') ?? '') ?>"
                                         class="input-pill"
-                                        placeholder="Nama sesuai KTP">
+                                        placeholder="masukan nama anda">
                                 </div>
                             </div>
                             <div>
