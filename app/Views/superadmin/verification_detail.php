@@ -248,8 +248,8 @@
                                     </div>
                                 </div>
 
-                                <!-- Box Preview Isi Perjanjian (Pasal 1-8) -->
-                                <div class="bg-slate-50/70 border border-slate-200 rounded-xl p-4 max-h-56 overflow-y-auto text-xs leading-relaxed text-slate-700 space-y-3 shadow-inner">
+                                <!-- Box Preview Isi Perjanjian (Pasal 1-14) -->
+                                <div class="bg-slate-50/70 border border-slate-200 rounded-xl p-4 text-xs leading-relaxed text-slate-700 space-y-3 shadow-inner" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain;">
                                     <div class="text-center pb-2 border-b border-slate-200">
                                         <strong class="text-xs text-slate-900 block font-black uppercase">RINGKASAN KLAUSUL PERJANJIAN KERJA SAMA (PKS)</strong>
                                         <span class="text-[10px] text-slate-500">Nomor: <?= esc($pksNumber) ?></span>

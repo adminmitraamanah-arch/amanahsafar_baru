@@ -326,6 +326,37 @@
         font-weight: 700;
         box-shadow: 0 4px 12px -1px rgba(107, 0, 138, 0.4), 0 2px 4px rgba(0, 0, 0, 0.06);
     }
+    /* Scrollable Container Dokumen PKS */
+    .pks-document-scroll {
+        max-height: min(48vh, 420px);
+        min-height: 220px;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 #f8fafc;
+    }
+    .pks-document-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+    .pks-document-scroll::-webkit-scrollbar-track {
+        background: #f8fafc;
+        border-radius: 9999px;
+    }
+    .pks-document-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 9999px;
+    }
+    .pks-document-scroll::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    @media (max-width: 640px) {
+        .pks-document-scroll {
+            max-height: 320px;
+            padding: 0.875rem !important;
+        }
+    }
 </style>
 <?= $this->endSection() ?>
 
@@ -477,7 +508,7 @@
                     </div>
 
                     <!-- Scrollable Konten Perjanjian (Pasal 1 s.d. 14 Sesuai PDF Referensi) -->
-                    <div class="mt-4 bg-slate-50/70 border border-slate-200 rounded-xl p-4 max-h-56 overflow-y-auto text-xs leading-relaxed text-slate-700 space-y-3 shadow-inner">
+                    <div class="pks-document-scroll mt-4 bg-slate-50/70 border border-slate-200 rounded-xl p-4 text-xs leading-relaxed text-slate-700 space-y-3 shadow-inner">
                         <div class="text-center pb-2 border-b border-slate-200">
                             <strong class="text-xs text-slate-900 block font-black uppercase">PERJANJIAN KERJA SAMA (PKS)</strong>
                             <strong class="text-[11px] text-[#6b008a] block font-bold">PT AMANAH TANGGUH MANDIRI DAN MITRA AMANAH</strong>
