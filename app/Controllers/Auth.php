@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\UserModel;
 use App\Models\VoucherModel;
 use App\Models\VerificationModel;
+use App\Libraries\PksPdfService;
 
 class Auth extends BaseController
 {
@@ -421,6 +422,14 @@ class Auth extends BaseController
                 'agreement_accepted_at' => date('Y-m-d H:i:s'),
                 'status' => 'aktif'
             ]);
+
+            // Otomatisasi pembuatan dokumen fisik PDF PKS
+            try {
+                $pksPdfService = new PksPdfService();
+                $pksPdfService->generate($user_id, true);
+            } catch (\Throwable $e) {
+                log_message('error', 'Gagal generate PDF PKS setelah persetujuan: ' . $e->getMessage());
+            }
 
             $user = $this->userModel->find($user_id);
             session()->set([

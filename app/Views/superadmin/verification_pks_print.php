@@ -267,9 +267,22 @@
             }
         }
     </style>
+    <?php if (!empty($isPdf)): ?>
+    <style>
+        body {
+            background: #ffffff !important;
+        }
+        .page-container {
+            margin: 0 auto !important;
+            box-shadow: none !important;
+            padding: 24px 32px !important;
+        }
+    </style>
+    <?php endif; ?>
 </head>
 <body>
 
+    <?php if (empty($hideToolbar)): ?>
     <!-- Action Toolbar (Hidden during print) -->
     <div class="action-bar">
         <div class="title">
@@ -285,6 +298,7 @@
             </button>
         </div>
     </div>
+    <?php endif; ?>
 
     <?php
     $rawDate = $user['agreement_accepted_at'] ?? $verification['created_at'] ?? date('Y-m-d H:i:s');

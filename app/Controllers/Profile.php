@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Libraries\PksPdfService;
 
 class Profile extends BaseController
 {
     protected $userModel;
+    protected $pksPdfService;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->pksPdfService = new PksPdfService();
     }
 
     /**
@@ -29,9 +32,19 @@ class Profile extends BaseController
             return redirect()->to('/login')->with('error', 'Pengguna tidak ditemukan');
         }
 
+        $isAccepted = !empty($user['agreement_accepted_at']);
+        $pksInfo = [
+            'is_accepted' => $isAccepted,
+            'accepted_at' => $user['agreement_accepted_at'] ?? null,
+            'pks_number'  => $isAccepted ? $this->pksPdfService->getPksNumber($user) : null,
+            'has_pdf'     => $isAccepted && $this->pksPdfService->hasPdf($userId),
+            'download_url'=> base_url('profile/pks/download'),
+        ];
+
         $data = [
-            'title' => 'Profil Saya',
-            'user' => $user
+            'title'   => 'Profil Saya',
+            'user'    => $user,
+            'pksInfo' => $pksInfo,
         ];
 
         return view('profile', $data);
@@ -121,4 +134,52 @@ class Profile extends BaseController
 
         return redirect()->back()->with('success', $successMessage);
     }
+
+    /**
+     * Unduh berkas fisik PDF PKS resmi milik pengguna yang sedang login
+     */
+    public function downloadPks()
+    {
+        if (!session('logged_in')) {
+            return redirect()->to('/login');
+        }
+
+        // Keamanan Server-Side Otorisasi: Hanya user_id dari sesi login aktif (anti-tampering)
+        $userId = (int) session('user_id');
+        $user = $this->userModel->find($userId);
+
+        if (!$user) {
+            return redirect()->to('/login')->with('error', 'Pengguna tidak ditemukan.');
+        }
+
+        // Validasi: Pengguna wajib telah menyetujui PKS
+        if (empty($user['agreement_accepted_at'])) {
+            return redirect()->to('/agreement')->with('warning', 'Anda belum menyetujui Perjanjian Kerja Sama (PKS). Silakan baca dan setujui PKS terlebih dahulu.');
+        }
+
+        // Cek ketersediaan file fisik. Jika belum ada (misal generate sebelumnya belum selesai / file terhapus), lakukan auto-recovery
+        if (!$this->pksPdfService->hasPdf($userId)) {
+            $generated = $this->pksPdfService->generate($userId, true);
+            if (!$generated || !is_file($generated)) {
+                return redirect()->back()->with('error', 'Gagal memproses berkas PDF PKS. Silakan hubungi admin atau coba beberapa saat lagi.');
+            }
+        }
+
+        $pdfPath = $this->pksPdfService->getPdfPath($userId);
+        if (!is_file($pdfPath)) {
+            return redirect()->back()->with('error', 'Berkas PDF PKS tidak ditemukan.');
+        }
+
+        $cleanUserName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $user['nama_lengkap'] ?? 'Mitra');
+        $downloadFileName = 'PKS_Amanah_Safar_' . $cleanUserName . '_' . $userId . '.pdf';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $downloadFileName . '"')
+            ->setHeader('Content-Length', (string) filesize($pdfPath))
+            ->setHeader('Cache-Control', 'private, max-age=0, must-revalidate')
+            ->setHeader('Pragma', 'public')
+            ->setBody(file_get_contents($pdfPath));
+    }
 }
+
