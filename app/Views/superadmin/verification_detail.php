@@ -44,22 +44,6 @@
                             <i class="fas fa-print text-slate-400"></i>
                             <span>Cetak PKS</span>
                         </a>
-
-                        <?php if ($verification['status'] !== 'terverifikasi'): ?>
-                            <button type="button" onclick="openApproveModal()"
-                                    class="btn-interactive inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
-                                <i class="fas fa-check text-xs"></i>
-                                <span>Setujui</span>
-                            </button>
-                        <?php endif; ?>
-
-                        <?php if ($verification['status'] !== 'ditolak'): ?>
-                            <button type="button" onclick="openRejectModal()"
-                                    class="btn-interactive inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition">
-                                <i class="fas fa-xmark text-xs"></i>
-                                <span>Tolak</span>
-                            </button>
-                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -551,29 +535,9 @@
                             </div>
                         </div>
 
-                        <!-- Card Keputusan Verifikasi -->
-                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 space-y-3">
-                            <h3 class="text-sm font-bold text-slate-900">Aksi Otorisasi Super Admin</h3>
-                            <p class="text-xs text-slate-500">Tentukan status verifikasi akun mitra berdasarkan kelengkapan identitas, rekening, dan kesepakatan PKS.</p>
-                            
-                            <div class="grid grid-cols-2 gap-3 pt-2">
-                                <button type="button" onclick="openApproveModal()"
-                                        class="btn-interactive w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs transition">
-                                    <i class="fas fa-check-circle"></i>
-                                    <span>Setujui Akun</span>
-                                </button>
-                                <button type="button" onclick="openRejectModal()"
-                                        class="btn-interactive w-full py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs inline-flex items-center justify-center gap-1.5 shadow-xs transition">
-                                    <i class="fas fa-times-circle"></i>
-                                    <span>Tolak Akun</span>
-                                </button>
-                            </div>
-                        </div>
-
                     </div>
 
                 </div>
-
             </div>
         </main>
     </div>
@@ -608,155 +572,9 @@
     </div>
 </div>
 
-<!-- Modal Setujui Verifikasi -->
-<div id="approveModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <form method="POST" action="<?= base_url('/superadmin/verifications/' . $verification['id'] . '/approve') ?>">
-            <?= csrf_field() ?>
-            <div class="p-6 text-center space-y-3">
-                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl mx-auto border border-emerald-100">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h3 class="text-base font-bold text-slate-900">Konfirmasi Persetujuan Verifikasi</h3>
-                <p class="text-xs text-slate-500">
-                    Apakah Anda yakin ingin menyetujui verifikasi untuk pengguna <strong><?= esc($user['nama_lengkap']) ?></strong>? Akun mitra akan langsung aktif dengan status <em>Terverifikasi</em>.
-                </p>
-                <div class="text-left pt-2">
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">Catatan Tambahan (Opsional):</label>
-                    <textarea name="catatan" rows="2" placeholder="Contoh: Dokumen KTP dan rekening terverifikasi valid."
-                              class="w-full p-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
-                </div>
-            </div>
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button type="button" onclick="closeApproveModal()"
-                        class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-200 text-xs font-semibold transition">
-                    Batal
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition">
-                    Ya, Setujui Verifikasi
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Modal Tolak Verifikasi -->
-<div id="rejectModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-        <form method="POST" action="<?= base_url('/superadmin/verifications/' . $verification['id'] . '/reject') ?>">
-            <?= csrf_field() ?>
-            <div class="p-6 text-center space-y-3">
-                <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto border border-rose-100">
-                    <i class="fas fa-triangle-exclamation"></i>
-                </div>
-                <h3 class="text-base font-bold text-slate-900">Tolak Pengajuan Verifikasi</h3>
-                <p class="text-xs text-slate-500">
-                    Pengajuan verifikasi untuk <strong><?= esc($user['nama_lengkap']) ?></strong> akan ditolak. Harap masukkan alasan agar pengguna dapat memperbaiki data.
-                </p>
-                <div class="text-left pt-2">
-                    <label class="block text-[11px] font-semibold text-slate-700 mb-1">
-                        Alasan Penolakan <span class="text-rose-500">*</span>
-                    </label>
-                    <textarea name="catatan" rows="3" required placeholder="Contoh: Foto KTP buram dan tidak terbaca. Harap unggah ulang."
-                              class="w-full p-2.5 rounded-xl border border-slate-200 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500"></textarea>
-                </div>
-            </div>
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button type="button" onclick="closeRejectModal()"
-                        class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-200 text-xs font-semibold transition">
-                    Batal
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-xs transition">
-                    Tolak Verifikasi
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-function copyToClipboard(text, message) {
-    if (!navigator.clipboard) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-        showToastNotification(message || 'Teks berhasil disalin');
-        return;
-    }
-    navigator.clipboard.writeText(text).then(function() {
-        showToastNotification(message || 'Teks berhasil disalin');
-    });
-}
-
-function showToastNotification(msg) {
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-5 right-5 z-50 px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-lg flex items-center gap-2 border border-slate-700 animate-in fade-in slide-in-from-bottom-2 duration-200';
-    toast.innerHTML = `<i class="fas fa-check-circle text-emerald-400"></i> <span>${msg}</span>`;
-    document.body.appendChild(toast);
-    setTimeout(() => {
-        toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
-        setTimeout(() => toast.remove(), 300);
-    }, 2200);
-}
-
-function openImageLightbox(src, title) {
-    const modal = document.getElementById('imageLightboxModal');
-    const img = document.getElementById('imageLightboxImg');
-    const titleEl = document.getElementById('imageLightboxTitle');
-    const newTabBtn = document.getElementById('imageLightboxNewTabBtn');
-    const downloadBtn = document.getElementById('imageLightboxDownloadBtn');
-
-    img.src = src;
-    titleEl.textContent = title || 'Preview Dokumen';
-    newTabBtn.href = src;
-    downloadBtn.href = src + (src.includes('?') ? '&download=1' : '?download=1');
-
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeImageLightbox() {
-    const modal = document.getElementById('imageLightboxModal');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-function openApproveModal() {
-    const modal = document.getElementById('approveModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-function closeApproveModal() {
-    const modal = document.getElementById('approveModal');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-}
-
-function openRejectModal() {
-    const modal = document.getElementById('rejectModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-function closeRejectModal() {
-    const modal = document.getElementById('rejectModal');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-}
-
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         closeImageLightbox();
-        closeApproveModal();
-        closeRejectModal();
     }
 });
 </script>

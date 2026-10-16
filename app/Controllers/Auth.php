@@ -364,7 +364,8 @@ class Auth extends BaseController
                 'nama_bank'             => $nama_bank,
                 'nomor_rekening'        => $nomor_rekening,
                 'nama_pemilik_rekening' => $nama_pemilik,
-                'status'                => 'menunggu_review'
+                'status'                => 'terverifikasi',
+                'catatan'               => 'Verifikasi otomatis sistem: Data identitas dan rekening valid.'
             ];
             if ($ktp_path) {
                 $dataToSave['ktp_path'] = $ktp_path;
@@ -381,7 +382,7 @@ class Auth extends BaseController
 
             // Sinkronkan status KYC dan nama resmi KTP pada tabel users agar konsisten di seluruh sistem
             $userUpdate = [
-                'verification_status' => 'menunggu_review',
+                'verification_status' => 'terverifikasi',
                 'updated_at'          => date('Y-m-d H:i:s'),
             ];
             if (!empty($nama_ktp)) {
@@ -390,7 +391,7 @@ class Auth extends BaseController
             }
             $this->userModel->update($user_id, $userUpdate);
 
-            return redirect()->to('/agreement')->with('success', 'Data verifikasi berhasil dikirim');
+            return redirect()->to('/agreement')->with('success', 'Data identitas dan rekening berhasil diverifikasi. Silakan setujui Perjanjian Kerja Sama (PKS).');
         }
 
         $userId = session('user_id');
@@ -420,8 +421,12 @@ class Auth extends BaseController
 
             $this->userModel->update($user_id, [
                 'agreement_accepted_at' => date('Y-m-d H:i:s'),
-                'status' => 'aktif'
+                'status'                => 'aktif',
+                'verification_status'   => 'terverifikasi'
             ]);
+
+            // Pastikan baris verifikasi juga tersinkronisasi menjadi terverifikasi
+            $this->verificationModel->where('user_id', $user_id)->set(['status' => 'terverifikasi'])->update();
 
             // Otomatisasi pembuatan dokumen fisik PDF PKS
             try {
