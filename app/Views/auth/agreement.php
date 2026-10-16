@@ -451,75 +451,124 @@
                         </div>
                     <?php endif; ?>
 
+                    <?php
+                    $rawDate = $user['agreement_accepted_at'] ?? $verification['created_at'] ?? date('Y-m-d H:i:s');
+                    $pksDateFormatted = format_tanggal_indonesia($rawDate, true);
+                    $pihakKeduaNama = !empty($user['nama_lengkap']) ? strtoupper(trim($user['nama_lengkap'])) : 'MITRA TERDAFTAR';
+                    $pihakKeduaNik = !empty($verification['nik']) ? trim($verification['nik']) : '-';
+                    $pihakKeduaAlamat = !empty($user['domisili']) ? strtoupper(trim($user['domisili'])) : 'INDONESIA';
+                    ?>
+
                     <!-- Ringkasan Para Pihak -->
                     <div class="mt-4 bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 text-xs">
                         <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Para Pihak yang Bersepakat:</div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700">
                             <div class="border-l-2 border-[#6b008a] pl-2.5">
                                 <span class="font-bold text-slate-900 block text-[11px]">PIHAK PERTAMA</span>
-                                <span class="text-xs">PT Amanah Tangguh Mandiri</span>
+                                <span class="text-xs font-semibold block text-slate-800">PT AMANAH TANGGUH MANDIRI (AMANAH SAFAR)</span>
+                                <span class="text-[11px] text-slate-500">M. Erwin Saputra &bull; Direktur Utama</span>
                             </div>
                             <div class="border-l-2 border-amber-500 pl-2.5">
-                                <span class="font-bold text-slate-900 block text-[11px]">PIHAK KEDUA (MITRA)</span>
-                                <span class="text-xs font-semibold text-slate-800"><?= esc($user['nama_lengkap'] ?? 'Mitra Terdaftar') ?></span>
+                                <span class="font-bold text-slate-900 block text-[11px]">PIHAK KEDUA (MITRA AMANAH)</span>
+                                <span class="text-xs font-semibold block text-slate-800"><?= esc($pihakKeduaNama) ?></span>
+                                <span class="text-[11px] text-slate-500">NIK: <?= esc($pihakKeduaNik) ?> &bull; <?= esc($pihakKeduaAlamat) ?></span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Scrollable Konten Perjanjian (Mempertahankan Seluruh Pasal Asli Sistem) -->
-                    <div class="mt-4 bg-slate-50/70 border border-slate-200 rounded-xl p-4 max-h-48 overflow-y-auto text-xs leading-relaxed text-slate-700 space-y-3.5 shadow-inner">
+                    <!-- Scrollable Konten Perjanjian (Pasal 1 s.d. 14 Sesuai PDF Referensi) -->
+                    <div class="mt-4 bg-slate-50/70 border border-slate-200 rounded-xl p-4 max-h-56 overflow-y-auto text-xs leading-relaxed text-slate-700 space-y-3 shadow-inner">
                         <div class="text-center pb-2 border-b border-slate-200">
-                            <strong class="text-xs text-slate-900 block font-black uppercase">PERJANJIAN KERJA SAMA KEMITRAAN (PKS)</strong>
+                            <strong class="text-xs text-slate-900 block font-black uppercase">PERJANJIAN KERJA SAMA (PKS)</strong>
+                            <strong class="text-[11px] text-[#6b008a] block font-bold">PT AMANAH TANGGUH MANDIRI DAN MITRA AMANAH</strong>
                             <span class="text-[10px] text-slate-500">Nomor: PKS/AS/<?= date('Ym') ?>/<?= str_pad((string)($user['id'] ?? 1), 4, '0', STR_PAD_LEFT) ?></span>
                         </div>
 
-                        <p>
-                            Pada hari ini, <strong><?= date('d F Y') ?></strong>, telah dibuat dan disepakati Perjanjian Kerja Sama antara <strong>PT Amanah Tangguh Mandiri</strong> (selanjutnya disebut "Pihak Pertama") dan <strong><?= esc($user['nama_lengkap'] ?? 'Mitra') ?></strong> (selanjutnya disebut "Pihak Kedua"), dengan kesepakatan sebagai berikut:
+                        <p class="text-slate-800">
+                            Pada hari ini, <strong><?= esc($pksDateFormatted) ?></strong> bertempat di <strong>Bogor</strong>, telah dibuat dan disepakati Perjanjian Kerja Sama (PKS) antara:
+                        </p>
+
+                        <div class="space-y-2 text-[11.5px] text-slate-800">
+                            <p>
+                                <strong>1. PT AMANAH TANGGUH MANDIRI (AMANAH SAFAR)</strong>, suatu perseroan terbatas yang didirikan berdasarkan hukum Negara Republik Indonesia, berkedudukan di Gedung Graha Pool Lt. 3 Unit 303-304, Jl. Merdeka No. 110, Ciwaringin, Bogor Tengah, Kota Bogor, Jawa Barat, dalam hal ini diwakili oleh <strong>M. Erwin Saputra</strong> selaku Direktur Utama, bertindak untuk dan atas nama PT Amanah Tangguh Mandiri, selanjutnya disebut <strong>"Pihak Pertama"</strong> atau <strong>"Pusat"</strong>.
+                            </p>
+                            <p>
+                                <strong>2. <?= esc($pihakKeduaNama) ?></strong>, NIK: <strong><?= esc($pihakKeduaNik) ?></strong>, berkedudukan dan beralamat di <strong><?= esc($pihakKeduaAlamat) ?></strong> dalam hal ini disebut <strong>MITRA AMANAH</strong>, untuk selanjutnya disebut <strong>"Pihak Kedua"</strong>.
+                            </p>
+                        </div>
+
+                        <p class="text-[11px] text-slate-600">
+                            PIHAK PERTAMA dan PIHAK KEDUA secara bersama-sama disebut <strong>Para Pihak</strong>. Para Pihak terlebih dahulu menerangkan bahwa Pihak Pertama adalah Perusahaan Biro Perjalanan Wisata yang telah memiliki izin resmi Umroh dan Haji, dan Para Pihak sepakat melaksanakan kerja sama pemasaran Produk Pihak Pertama.
                         </p>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 1: KETENTUAN UMUM DAN RUANG LINGKUP</strong>
-                            <p class="mt-0.5">Perjanjian ini mengatur kerja sama kemitraan syiar, pemasaran, dan pendaftaran jamaah Umrah dan Wisata Halal melalui sistem portal digital Amanah Safar.</p>
+                            <strong class="text-slate-900 block font-bold">PASAL 1: MAKSUD DAN TUJUAN</strong>
+                            <p class="mt-0.5">Perjanjian ini dibuat sebagai dasar kerja sama pemasaran produk dan layanan yang diselenggarakan oleh PT Amanah Safar melalui Program Mitra Amanah.</p>
                         </div>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 2: HAK DAN KEWAJIBAN PIHAK PERTAMA</strong>
-                            <p class="mt-0.5">Pihak Pertama berkewajiban menyediakan fasilitas sistem booking, bimbingan berkala, materi promosi, kepastian kuota paket ibadah, serta membayarkan hak ujroh bagi hasil sesuai skema komisi yang berlaku.</p>
+                            <strong class="text-slate-900 block font-bold">PASAL 2: RUANG LINGKUP KERJA SAMA</strong>
+                            <p class="mt-0.5">PIHAK KEDUA bertugas untuk memasarkan produk resmi Pihak Pertama (online/offline), memberikan informasi yang benar kepada calon jamaah, mengarahkan pendaftaran melalui sistem resmi Amanah Safar, serta mendampingi jamaah selama proses administrasi.</p>
                         </div>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 3: HAK DAN KEWAJIBAN PIHAK KEDUA (MITRA)</strong>
-                            <p class="mt-0.5">Pihak Kedua berhak atas ujroh transaksi dan materi pemasaran resmi, serta berkewajiban menyampaikan informasi paket secara jujur, menjaga nama baik Amanah Safar, dan mematuhi kode etik kemitraan.</p>
+                            <strong class="text-slate-900 block font-bold">PASAL 3: STATUS MITRA</strong>
+                            <p class="mt-0.5">MITRA bukan merupakan karyawan PT Amanah Safar; hubungan bersifat kemitraan dan MITRA tidak memiliki kewenangan mewakili perusahaan untuk membuat keputusan hukum tanpa persetujuan tertulis.</p>
                         </div>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 4: PENETAPAN HARGA DAN PENCAIRAN UJROH</strong>
-                            <p class="mt-0.5">Harga paket ibadah merujuk pada katalog resmi perusahaan. Ujroh kemitraan dibayarkan melalui transfer ke rekening bank terverifikasi milik Mitra setelah transaksi terkonfirmasi sah.</p>
+                            <strong class="text-slate-900 block font-bold">PASAL 4: HAK PIHAK PERTAMA</strong>
+                            <p class="mt-0.5">PIHAK PERTAMA berhak menentukan kebijakan kemitraan, memverifikasi identitas mitra, mengubah SOP operasional, memberikan pembinaan, serta menunda/menghentikan kemitraan apabila terjadi pelanggaran.</p>
                         </div>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 5: JANGKA WAKTU PERJANJIAN</strong>
-                            <p class="mt-0.5">Perjanjian ini berlaku efektif terhitung sejak tanggal persetujuan elektronik ini diberikan hingga 1 (satu) tahun ke depan dan dapat diperpanjang secara otomatis atas evaluasi kinerja bersama.</p>
+                            <strong class="text-slate-900 block font-bold">PASAL 5: HAK MITRA</strong>
+                            <p class="mt-0.5">MITRA berhak memasarkan produk resmi, mendapatkan materi promosi, mengakses dashboard mitra, mendapatkan komisi/insentif sesuai ketentuan program yang berlaku, serta mengikuti pelatihan dan pembinaan.</p>
                         </div>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 6: KERAHASIAAN DAN PERLINDUNGAN DATA</strong>
-                            <p class="mt-0.5">Pihak Kedua wajib menjaga kerahasiaan data pribadi calon jamaah dan informasi operasional internal perusahaan dari pihak ketiga yang tidak berwenang.</p>
+                            <strong class="text-slate-900 block font-bold">PASAL 6: KEWAJIBAN MITRA</strong>
+                            <p class="mt-0.5">MITRA wajib menjaga nama baik Amanah Safar, memberikan informasi yang benar, mematuhi SOP/kebijakan, menjaga kerahasiaan data jamaah, tidak menggunakan merek di luar ketentuan, serta tidak membuat janji/promo di luar kebijakan perusahaan.</p>
                         </div>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 7: SYARAT DAN KETENTUAN ANGGOTA JARINGAN</strong>
-                            <ul class="list-disc list-inside space-y-1 mt-1 pl-1">
-                                <li>Setiap mitra kemitraan harus terdaftar resmi dan memiliki akun aktif.</li>
-                                <li>Komisi dan insentif dibayarkan sesuai skema resmi yang disetujui perusahaan.</li>
-                                <li>Mitra dilarang memungut biaya di luar harga paket yang telah ditetapkan resmi oleh perusahaan.</li>
-                                <li>Perusahaan berhak menonaktifkan akun mitra apabila terbukti melakukan pelanggaran hukum atau penipuan.</li>
-                            </ul>
+                            <strong class="text-slate-900 block font-bold">PASAL 7: PEMBAYARAN JAMAAH</strong>
+                            <p class="mt-0.5">Seluruh pembayaran jamaah wajib langsung ke rekening resmi Amanah Safar: <strong>Bank BSI No. Rek. 7275610601 an. PT AMANAH TANGGUH MANDIRI</strong>. MITRA dilarang keras menampung dana jamaah ke rekening pribadi (pelanggaran berat).</p>
                         </div>
 
                         <div>
-                            <strong class="text-slate-900 block font-bold">PASAL 8: PENYELESAIAN SENGKETA DAN PENUTUP</strong>
-                            <p class="mt-0.5">Segala perselisihan yang timbul akan diselesaikan secara musyawarah mufakat. Perjanjian ini dinyatakan sah dan mengikat secara hukum sejak disetujui secara digital.</p>
+                            <strong class="text-slate-900 block font-bold">PASAL 8: KOMISI DAN INSENTIF</strong>
+                            <p class="mt-0.5">Besaran komisi mengikuti ketentuan program yang berlaku; pembayaran fee/komisi dilakukan setelah syarat terpenuhi dan maksimal 2 hari setelah keberangkatan jamaah.</p>
+                        </div>
+
+                        <div>
+                            <strong class="text-slate-900 block font-bold">PASAL 9: KERAHASIAAN</strong>
+                            <p class="mt-0.5">MITRA wajib menjaga kerahasiaan seluruh data jamaah, data perusahaan, informasi bisnis, strategi pemasaran, dan dokumen internal selama masa kerja sama.</p>
+                        </div>
+
+                        <div>
+                            <strong class="text-slate-900 block font-bold">PASAL 10: LARANGAN</strong>
+                            <p class="mt-0.5">Dilarang memalsukan data, menyalahgunakan identitas Amanah Safar, menipu jamaah, menggunakan rekening pribadi untuk pembayaran jamaah, menyebarkan info palsu, atau merugikan perusahaan/jamaah.</p>
+                        </div>
+
+                        <div>
+                            <strong class="text-slate-900 block font-bold">PASAL 11: SANKSI</strong>
+                            <p class="mt-0.5">Pelanggaran dapat dikenakan teguran tertulis, penangguhan status, penghentian kerja sama, pencabutan status mitra, tuntutan ganti rugi, hingga proses hukum pidana/perdata.</p>
+                        </div>
+
+                        <div>
+                            <strong class="text-slate-900 block font-bold">PASAL 12: JANGKA WAKTU</strong>
+                            <p class="mt-0.5">Perjanjian berlaku sejak tanggal disepakati dan tetap berlaku sampai diakhiri oleh salah satu pihak sesuai ketentuan dalam perjanjian.</p>
+                        </div>
+
+                        <div>
+                            <strong class="text-slate-900 block font-bold">PASAL 13: PENYELESAIAN PERSELISIHAN</strong>
+                            <p class="mt-0.5">Setiap perselisihan diselesaikan melalui musyawarah mufakat, atau sesuai ketentuan hukum Republik Indonesia.</p>
+                        </div>
+
+                        <div>
+                            <strong class="text-slate-900 block font-bold">PASAL 14: PENUTUP</strong>
+                            <p class="mt-0.5">Dengan menyetujui perjanjian ini, Para Pihak menyatakan telah membaca, memahami, dan menyetujui seluruh isi Perjanjian Kerja Sama tanpa paksaan dari pihak mana pun.</p>
                         </div>
                     </div>
 

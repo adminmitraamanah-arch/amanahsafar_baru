@@ -435,7 +435,11 @@ class Auth extends BaseController
         }
 
         $user = $this->userModel->find(session('user_id'));
-        return view('auth/agreement', ['user' => $user]);
+        $verification = $this->verificationModel->where('user_id', $user['id'])->first();
+        return view('auth/agreement', [
+            'user'         => $user,
+            'verification' => $verification,
+        ]);
     }
 
     public function logout()

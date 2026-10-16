@@ -256,43 +256,73 @@
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 1: KETENTUAN UMUM DAN RUANG LINGKUP</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Perjanjian ini mengatur kerja sama kemitraan syiar, pemasaran, dan pendaftaran jamaah Umrah dan Wisata Halal melalui sistem portal digital Amanah Safar.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 1: MAKSUD DAN TUJUAN</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Dasar kerja sama pemasaran produk dan layanan PT Amanah Safar melalui Program Mitra Amanah.</p>
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 2: HAK DAN KEWAJIBAN PIHAK PERTAMA</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Pihak Pertama berkewajiban menyediakan fasilitas sistem booking, bimbingan berkala, materi promosi, kepastian kuota paket ibadah, serta membayarkan hak ujroh bagi hasil sesuai skema komisi yang berlaku.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 2: RUANG LINGKUP KERJA SAMA</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Memasarkan produk resmi (online/offline), informasi benar, pendaftaran melalui sistem resmi, dan pendampingan administrasi jamaah.</p>
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 3: HAK DAN KEWAJIBAN PIHAK KEDUA (MITRA)</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Pihak Kedua berhak atas ujroh transaksi dan materi pemasaran resmi, serta berkewajiban menyampaikan informasi paket secara jujur, menjaga nama baik Amanah Safar, dan mematuhi kode etik kemitraan.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 3: STATUS MITRA</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Bukan karyawan; hubungan bersifat kemitraan tanpa wewenang keputusan hukum mandiri.</p>
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 4: PENETAPAN HARGA DAN PENCAIRAN UJROH</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Harga paket ibadah merujuk pada katalog resmi perusahaan. Ujroh kemitraan dibayarkan melalui transfer ke rekening bank terverifikasi milik Mitra setelah transaksi terkonfirmasi sah.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 4: HAK PIHAK PERTAMA</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Kebijakan kemitraan, verifikasi identitas, ubah SOP, pembinaan, serta menunda/menghentikan kemitraan jika melanggar.</p>
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 5: JANGKA WAKTU PERJANJIAN</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Perjanjian ini berlaku efektif terhitung sejak tanggal persetujuan elektronik ini diberikan hingga 1 (satu) tahun ke depan dan dapat diperpanjang secara otomatis atas evaluasi kinerja bersama.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 5: HAK MITRA</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Pemasaran produk resmi, materi promosi, akses dashboard mitra, komisi/insentif program, serta pelatihan.</p>
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 6: KERAHASIAAN DAN PERLINDUNGAN DATA</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Pihak Kedua wajib menjaga kerahasiaan data pribadi calon jamaah dan informasi operasional internal perusahaan dari pihak ketiga yang tidak berwenang.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 6: KEWAJIBAN MITRA</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Menjaga nama baik, info benar, patuhi SOP, jaga kerahasiaan data jamaah, taat merek resmi, dan tidak membuat janji di luar SOP.</p>
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 7: SYARAT DAN KETENTUAN ANGGOTA JARINGAN</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Setiap mitra harus terdaftar resmi, mematuhi harga paket resmi, tidak memungut biaya di luar ketentuan, dan akun dapat dinonaktifkan apabila terbukti melakukan pelanggaran hukum atau penipuan.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 7: PEMBAYARAN JAMAAH</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Langsung ke rekening resmi Bank BSI No. 7275610601 an. PT AMANAH TANGGUH MANDIRI. Dilarang menampung di rekening pribadi (pelanggaran berat).</p>
                                     </div>
 
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 8: PENYELESAIAN SENGKETA DAN PENUTUP</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Segala perselisihan yang timbul akan diselesaikan secara musyawarah mufakat. Perjanjian ini dinyatakan sah dan mengikat secara hukum sejak disetujui secara digital.</p>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 8: KOMISI DAN INSENTIF</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Sesuai skema program; pembayaran komisi maksimal 2 hari setelah keberangkatan jamaah.</p>
+                                    </div>
+
+                                    <div>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 9: KERAHASIAAN</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Kerahasiaan seluruh data jamaah, data bisnis, strategi pemasaran, dan dokumen internal.</p>
+                                    </div>
+
+                                    <div>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 10: LARANGAN</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Dilarang memalsukan data, menyalahgunakan identitas, menipu jamaah, menggunakan rekening pribadi, dan sebar info palsu.</p>
+                                    </div>
+
+                                    <div>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 11: SANKSI</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Teguran tertulis, penangguhan status, penghentian kerja sama, pencabutan status, ganti rugi, hingga proses hukum.</p>
+                                    </div>
+
+                                    <div>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 12: JANGKA WAKTU</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Berlaku sejak ditandatangani hingga diakhiri oleh salah satu pihak sesuai ketentuan perjanjian.</p>
+                                    </div>
+
+                                    <div>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 13: PENYELESAIAN PERSELISIHAN</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Musyawarah mufakat, atau penyelesaian menurut hukum Republik Indonesia.</p>
+                                    </div>
+
+                                    <div>
+                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 14: PENUTUP</strong>
+                                        <p class="text-[11px] mt-0.5 text-slate-600">Telah membaca, memahami, dan menyetujui seluruh isi perjanjian tanpa paksaan dari pihak mana pun.</p>
                                     </div>
                                 </div>
                             </div>

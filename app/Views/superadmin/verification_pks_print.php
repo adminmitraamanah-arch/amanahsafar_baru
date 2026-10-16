@@ -15,11 +15,11 @@
             padding: 0;
         }
         body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #e2e8f0;
-            color: #1e293b;
-            font-size: 13px;
-            line-height: 1.6;
+            font-family: 'Times New Roman', Times, serif, 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9;
+            color: #000000;
+            font-size: 13.5px;
+            line-height: 1.65;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -34,6 +34,7 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .action-bar .title {
             font-size: 14px;
@@ -75,106 +76,108 @@
             max-width: 820px;
             margin: 24px auto;
             background: #ffffff;
-            padding: 48px 56px;
+            padding: 56px 64px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border-radius: 8px;
+            border-radius: 4px;
         }
-        .kop-surat {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            padding-bottom: 16px;
-            border-bottom: 3px double #0f172a;
-            margin-bottom: 24px;
+        .pks-header {
+            text-align: center;
+            margin-bottom: 18px;
         }
-        .kop-surat .logo-container img {
-            height: 60px;
-            width: auto;
-            object-contain: contain;
-        }
-        .kop-surat .info {
-            text-align: right;
-            font-size: 11px;
-            color: #475569;
-            line-height: 1.4;
-        }
-        .kop-surat .info .company-name {
-            font-size: 16px;
+        .pks-header h2 {
+            font-size: 15px;
             font-weight: 800;
-            color: #5e0078;
-            letter-spacing: -0.01em;
-            margin-bottom: 2px;
+            letter-spacing: 0.02em;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .pks-header p {
+            font-size: 12px;
+            line-height: 1.4;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .header-line {
+            border-top: 3px double #000000;
+            margin: 16px 0 22px 0;
         }
         .doc-title-container {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 22px;
         }
         .doc-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #0f172a;
-            text-decoration: underline;
+            letter-spacing: 0.03em;
+            margin-bottom: 4px;
         }
-        .doc-number {
-            font-size: 12px;
-            color: #475569;
-            font-weight: 600;
-            margin-top: 4px;
+        .doc-subtitle {
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-bottom: 6px;
         }
         .doc-body {
-            font-size: 12.5px;
-            line-height: 1.7;
+            font-size: 13.5px;
+            line-height: 1.65;
             text-align: justify;
-            color: #1e293b;
+            color: #000000;
         }
         .doc-body p {
             margin-bottom: 12px;
+            text-indent: 0;
         }
-        .parties-table {
-            width: 100%;
-            margin: 12px 0 18px 0;
-            border-collapse: collapse;
+        .parties-list {
+            margin-bottom: 14px;
         }
-        .parties-table td {
-            vertical-align: top;
-            padding: 3px 0;
-            font-size: 12px;
+        .parties-item {
+            margin-bottom: 10px;
+            text-align: justify;
         }
-        .parties-table .label {
-            width: 160px;
-            color: #475569;
+        .bullet-list {
+            list-style-type: none;
+            padding-left: 18px;
+            margin-bottom: 14px;
         }
-        .parties-table .colon {
-            width: 15px;
+        .bullet-list li {
+            position: relative;
+            padding-left: 14px;
+            margin-bottom: 6px;
+            text-align: justify;
         }
-        .parties-table .val {
-            font-weight: 600;
-            color: #0f172a;
+        .bullet-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        .numbered-list {
+            list-style-type: decimal;
+            padding-left: 24px;
+            margin-bottom: 14px;
+        }
+        .numbered-list li {
+            margin-bottom: 6px;
+            text-align: justify;
         }
         .article-title {
+            font-size: 13.5px;
+            font-weight: 800;
+            text-align: center;
+            margin-top: 22px;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            page-break-after: avoid;
+        }
+        .article-subtitle {
             font-size: 13px;
             font-weight: 800;
             text-align: center;
-            color: #0f172a;
-            margin: 18px 0 6px 0;
+            margin-bottom: 10px;
             text-transform: uppercase;
-        }
-        .article-subtitle {
-            font-size: 12px;
-            font-weight: 700;
-            text-align: center;
-            color: #5e0078;
-            margin-bottom: 8px;
-        }
-        .article-list {
-            padding-left: 20px;
-            margin-bottom: 12px;
-        }
-        .article-list li {
-            margin-bottom: 4px;
+            page-break-after: avoid;
         }
         .signatures-container {
             margin-top: 36px;
@@ -184,53 +187,59 @@
             page-break-inside: avoid;
         }
         .sig-block {
-            width: 45%;
+            width: 44%;
             text-align: center;
-            font-size: 12px;
+            font-size: 13.5px;
         }
         .sig-block .role {
-            font-weight: 700;
-            color: #475569;
-            margin-bottom: 4px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 2px;
         }
         .sig-block .company {
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 10px;
+            font-weight: 700;
+            margin-bottom: 8px;
         }
-        .sig-box {
+        .sig-space {
             height: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 6px 0;
         }
-        .sig-box .digital-seal {
-            border: 2px dashed #059669;
+        .digital-seal {
+            border: 1.5px dashed #059669;
             background: #ecfdf5;
             color: #047857;
             padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 11px;
+            border-radius: 6px;
+            font-size: 10.5px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 700;
             text-align: center;
-            line-height: 1.3;
+            line-height: 1.35;
+        }
+        .sig-pending {
+            font-style: italic;
+            color: #64748b;
+            font-size: 11px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .sig-name {
             font-weight: 800;
-            color: #0f172a;
             text-decoration: underline;
-            margin-top: 8px;
+            margin-top: 6px;
         }
         .sig-title {
-            font-size: 11px;
-            color: #64748b;
+            font-size: 12.5px;
+            margin-top: 2px;
         }
         .footer-note {
-            margin-top: 36px;
-            padding-top: 12px;
+            margin-top: 32px;
+            padding-top: 10px;
             border-top: 1px solid #e2e8f0;
             font-size: 10px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             color: #94a3b8;
             text-align: center;
             line-height: 1.4;
@@ -239,7 +248,8 @@
         @media print {
             body {
                 background: #ffffff;
-                font-size: 11.5px;
+                font-size: 12.5px;
+                line-height: 1.55;
             }
             .action-bar {
                 display: none !important;
@@ -247,13 +257,13 @@
             .page-container {
                 max-width: 100%;
                 margin: 0;
-                padding: 20px 24px;
+                padding: 10px 15px;
                 box-shadow: none;
                 border-radius: 0;
             }
             @page {
                 size: A4;
-                margin: 1.5cm;
+                margin: 1.8cm 1.5cm;
             }
         }
     </style>
@@ -276,184 +286,218 @@
         </div>
     </div>
 
+    <?php
+    $rawDate = $user['agreement_accepted_at'] ?? $verification['created_at'] ?? date('Y-m-d H:i:s');
+    $pksDateFormatted = format_tanggal_indonesia($rawDate, true);
+
+    $pihakKeduaNama = !empty($user['nama_lengkap']) ? strtoupper(trim($user['nama_lengkap'])) : '[Nama Mitra Belum Terdaftar]';
+    $pihakKeduaNik = !empty($verification['nik']) ? trim($verification['nik']) : '-';
+    $pihakKeduaAlamat = !empty($user['domisili']) ? strtoupper(trim($user['domisili'])) : 'INDONESIA';
+    ?>
+
     <!-- Printable Sheet -->
     <div class="page-container">
         
-        <!-- Kop Surat -->
-        <div class="kop-surat">
-            <div class="logo-container">
-                <img src="<?= base_url('assets/images/logo.png') ?>" alt="Amanah Safar" onerror="this.style.display='none'">
-            </div>
-            <div class="info">
-                <div class="company-name">PT AMANAH TANGGUH MANDIRI</div>
-                <div>Amanah Safar Digital Platform &bull; Biro Perjalanan Umrah &amp; Wisata Halal</div>
-                <div>Gedung Pusat Amanah Safar, Jakarta &bull; www.amanahsafar.com</div>
-                <div>Layanan Mitra: support@amanahsafar.com</div>
-            </div>
+        <!-- Kop Surat Persis Sesuai PDF Referensi -->
+        <div class="pks-header">
+            <h2>PT AMANAH TANGGUH MANDIRI (AMANAH SAFAR)</h2>
+            <p>Gedung Graha Pool Lt. 3 Unit 303-304, Jl. Merdeka No. 110, Ciwaringin, Bogor Tengah, Kota Bogor, Jawa Barat</p>
         </div>
+        <div class="header-line"></div>
 
-        <!-- Judul Surat -->
+        <!-- Judul Surat Persis Sesuai PDF Referensi -->
         <div class="doc-title-container">
-            <h1 class="doc-title">SURAT PERJANJIAN KERJA SAMA KEMITRAAN (PKS)</h1>
-            <div class="doc-number">Nomor: <?= esc($pksNumber) ?></div>
+            <h1 class="doc-title">PERJANJIAN KERJA SAMA (PKS)</h1>
+            <div class="doc-subtitle">PT AMANAH TANGGUH MANDIRI DAN MITRA AMANAH</div>
         </div>
 
         <!-- Isi Surat -->
         <div class="doc-body">
             <p>
-                Pada hari ini, tanggal <strong><?= date('d F Y', strtotime($user['agreement_accepted_at'] ?? $verification['created_at'])) ?></strong>, bertempat di kantor pusat PT Amanah Tangguh Mandiri, telah dibuat, disepakati, dan ditandatangani secara digital Perjanjian Kerja Sama Kemitraan (selanjutnya disebut "Perjanjian") oleh dan antara para pihak:
+                Pada hari ini, <strong><?= esc($pksDateFormatted) ?></strong> bertempat di <strong>Bogor</strong>, telah dibuat dan disepakati Perjanjian Kerja Sama (PKS) antara:
             </p>
 
-            <!-- Pihak Pertama -->
-            <table class="parties-table">
-                <tr>
-                    <td class="label">1. Nama Perusahaan</td>
-                    <td class="colon">:</td>
-                    <td class="val">PT Amanah Tangguh Mandiri</td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Platform</td>
-                    <td class="colon">:</td>
-                    <td class="val">Amanah Safar Digital Platform</td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Kedudukan</td>
-                    <td class="colon">:</td>
-                    <td class="val">Penyelenggara Sistem Kemitraan Digital</td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Sebutan</td>
-                    <td class="colon">:</td>
-                    <td class="val">Selanjutnya disebut sebagai <strong>PIHAK PERTAMA</strong>.</td>
-                </tr>
-            </table>
+            <div class="parties-list">
+                <!-- Pihak Pertama (Statis Sesuai PDF Referensi) -->
+                <div class="parties-item">
+                    1. <strong>PT AMANAH TANGGUH MANDIRI (AMANAH SAFAR)</strong>, suatu perseroan terbatas yang didirikan berdasarkan hukum Negara Republik Indonesia, berkedudukan di Gedung Graha Pool Lt. 3 Unit 303-304, Jl. Merdeka No. 110, Ciwaringin, Bogor Tengah, Kota Bogor, Jawa Barat, dalam hal ini diwakili oleh <strong>M. Erwin Saputra</strong> selaku Direktur Utama, bertindak untuk dan atas nama PT Amanah Tangguh Mandiri, selanjutnya disebut <strong>"Pihak Pertama"</strong> atau <strong>"Pusat"</strong>.
+                </div>
 
-            <!-- Pihak Kedua -->
-            <table class="parties-table">
-                <tr>
-                    <td class="label">2. Nama Lengkap</td>
-                    <td class="colon">:</td>
-                    <td class="val"><?= esc($user['nama_lengkap']) ?></td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Kode Mitra</td>
-                    <td class="colon">:</td>
-                    <td class="val"><?= esc($voucher['kode'] ?? ('MITRA-' . $user['id'])) ?></td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Nomor WhatsApp</td>
-                    <td class="colon">:</td>
-                    <td class="val"><?= esc($user['no_wa'] ?: '-') ?></td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Domisili / Alamat</td>
-                    <td class="colon">:</td>
-                    <td class="val"><?= esc($user['domisili'] ?: 'Indonesia') ?></td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Rekening Bank</td>
-                    <td class="colon">:</td>
-                    <td class="val"><?= esc($verification['nama_bank'] ?: '-') ?> &bull; No: <?= esc($verification['nomor_rekening'] ?: '-') ?> (a.n. <?= esc($verification['nama_pemilik_rekening'] ?: $user['nama_lengkap']) ?>)</td>
-                </tr>
-                <tr>
-                    <td class="label">&nbsp;&nbsp;&nbsp;&nbsp;Sebutan</td>
-                    <td class="colon">:</td>
-                    <td class="val">Selanjutnya disebut sebagai <strong>PIHAK KEDUA</strong> (Mitra).</td>
-                </tr>
-            </table>
+                <!-- Pihak Kedua (Dinamis Sesuai Data Mitra) -->
+                <div class="parties-item">
+                    2. <strong><?= esc($pihakKeduaNama) ?></strong>, NIK: <strong><?= esc($pihakKeduaNik) ?></strong>, berkedudukan dan beralamat di <strong><?= esc($pihakKeduaAlamat) ?></strong> dalam hal ini disebut <strong>MITRA AMANAH</strong>, untuk selanjutnya disebut <strong>"Pihak Kedua"</strong>.
+                </div>
+            </div>
 
             <p>
-                PIHAK PERTAMA dan PIHAK KEDUA secara bersama-sama selanjutnya disebut sebagai "PARA PIHAK", dan masing-masing disebut "PIHAK". PARA PIHAK menerangkan terlebih dahulu bahwa PIHAK PERTAMA adalah perusahaan penyelenggara layanan perjalanan ibadah Umrah dan Wisata Halal, dan PIHAK KEDUA adalah individu/badan yang bermaksud menjalin kerja sama syiar, pemasaran, serta referensi pendaftaran jamaah.
+                PIHAK PERTAMA dan PIHAK KEDUA secara bersama-sama disebut <strong>Para Pihak</strong>. Para Pihak terlebih dahulu menerangkan hal-hal sebagai berikut bahwa:
             </p>
 
+            <ul class="bullet-list">
+                <li>Pihak Pertama adalah suatu Perusahaan yang bergerak di bidang Biro Perjalanan Wisata yang telah memiliki izin resmi sebagai penyelenggara perjalanan Umroh dan Haji.</li>
+                <li>Para Pihak setuju dan sepakat untuk melaksanakan kerjasama dalam pemasaran Produk Pihak Pertama dan dengan ini Pihak Kedua mendaftarkan diri sebagai mitra Pihak Pertama.</li>
+            </ul>
+
             <p>
-                Berdasarkan pertimbangan tersebut di atas, PARA PIHAK sepakat untuk saling mengikatkan diri dalam Perjanjian ini dengan syarat dan ketentuan sebagai berikut:
+                Berdasarkan hal-hal tersebut di atas, maka Para Pihak dengan ini setuju dan sepakat untuk mengadakan Perjanjian ini dengan syarat dan ketentuan sebagai berikut:
             </p>
 
             <!-- PASAL 1 -->
             <div class="article-title">PASAL 1</div>
-            <div class="article-subtitle">KETENTUAN UMUM DAN RUANG LINGKUP</div>
+            <div class="article-subtitle">MAKSUD DAN TUJUAN</div>
             <p>
-                Perjanjian ini mengatur kerja sama kemitraan syiar, pemasaran, dan pendaftaran calon jamaah Umrah dan Wisata Halal melalui sistem digital Amanah Safar. PIHAK KEDUA bertindak sebagai mitra perujuk resmi yang berhak memanfaatkan materi promosi, tautan pendaftaran, dan fasilitas pendukung yang disediakan oleh PIHAK PERTAMA.
+                Perjanjian ini dibuat sebagai dasar kerja sama pemasaran produk dan layanan yang diselenggarakan oleh PT Amanah Safar melalui Program Mitra Amanah.
             </p>
 
             <!-- PASAL 2 -->
             <div class="article-title">PASAL 2</div>
-            <div class="article-subtitle">HAK DAN KEWAJIBAN PIHAK PERTAMA</div>
-            <p>
-                1. PIHAK PERTAMA berkewajiban menyediakan fasilitas portal digital, materi pemasaran resmi, kepastian kuota paket ibadah, dan bimbingan kemitraan berkala.<br>
-                2. PIHAK PERTAMA berkewajiban membayarkan hak ujroh / bagi hasil kepada PIHAK KEDUA atas setiap pendaftaran jamaah yang telah lunas dan terverifikasi sesuai skema komisi resmi.<br>
-                3. PIHAK PERTAMA berhak mengevaluasi kinerja dan kepatuhan kode etik kemitraan PIHAK KEDUA sewaktu-waktu.
-            </p>
+            <div class="article-subtitle">RUANG LINGKUP KERJA SAMA</div>
+            <p>PIHAK KEDUA bertugas untuk:</p>
+            <ol class="numbered-list">
+                <li>Memasarkan produk yang disediakan oleh PIHAK PERTAMA. Pihak Kedua memiliki hak dan wewenang untuk menjual dan/atau memasarkan Produk Pihak Pertama secara langsung kepada calon Jemaah atau masyarakat baik secara offline maupun online.</li>
+                <li>Memberikan informasi yang benar kepada calon jamaah.</li>
+                <li>Mengarahkan calon jamaah melakukan pendaftaran melalui sistem resmi Amanah Safar.</li>
+                <li>Mendampingi jamaah selama proses administrasi apabila diperlukan.</li>
+            </ol>
 
             <!-- PASAL 3 -->
             <div class="article-title">PASAL 3</div>
-            <div class="article-subtitle">HAK DAN KEWAJIBAN PIHAK KEDUA (MITRA)</div>
-            <p>
-                1. PIHAK KEDUA berhak menerima pembayaran ujroh kemitraan secara tepat waktu melalui rekening bank terdaftar.<br>
-                2. PIHAK KEDUA berkewajiban menyampaikan informasi paket secara jujur, akurat, dan transparan sesuai ketentuan resmi perusahaan.<br>
-                3. PIHAK KEDUA wajib menjaga nama baik, reputasi, dan integritas brand Amanah Safar dalam setiap aktivitas syiar.<br>
-                4. PIHAK KEDUA dilarang memungut biaya pendaftaran di luar harga resmi yang ditetapkan oleh PIHAK PERTAMA.
-            </p>
+            <div class="article-subtitle">STATUS MITRA</div>
+            <ol class="numbered-list">
+                <li>MITRA bukan merupakan karyawan PT Amanah Safar.</li>
+                <li>Hubungan kerja sama ini bersifat kemitraan.</li>
+                <li>MITRA tidak memiliki kewenangan mewakili perusahaan untuk membuat keputusan hukum tanpa persetujuan tertulis dari PIHAK PERTAMA.</li>
+            </ol>
 
             <!-- PASAL 4 -->
             <div class="article-title">PASAL 4</div>
-            <div class="article-subtitle">PENETAPAN HARGA DAN PENCAIRAN UJROH</div>
-            <p>
-                Harga resmi paket ibadah sepenuhnya ditentukan oleh PIHAK PERTAMA sebagaimana tercantum dalam portal sistem. Pencairan ujroh kemitraan dilakukan melalui transfer langsung ke rekening bank terverifikasi milik PIHAK KEDUA setelah data transaksi dinyatakan valid dan sah oleh manajemen PIHAK PERTAMA.
-            </p>
+            <div class="article-subtitle">HAK PIHAK PERTAMA</div>
+            <p>PIHAK PERTAMA berhak:</p>
+            <ul class="bullet-list">
+                <li>Menentukan kebijakan kemitraan.</li>
+                <li>Melakukan verifikasi identitas mitra.</li>
+                <li>Mengubah SOP operasional.</li>
+                <li>Memberikan pembinaan kepada mitra.</li>
+                <li>Menunda atau menghentikan kemitraan apabila terjadi pelanggaran.</li>
+            </ul>
 
             <!-- PASAL 5 -->
             <div class="article-title">PASAL 5</div>
-            <div class="article-subtitle">JANGKA WAKTU PERJANJIAN</div>
-            <p>
-                Perjanjian ini berlaku efektif terhitung sejak tanggal persetujuan elektronik diberikan oleh PIHAK KEDUA untuk jangka waktu 1 (satu) tahun, dan dapat diperpanjang secara otomatis berdasarkan hasil evaluasi bersama oleh PIHAK PERTAMA.
-            </p>
+            <div class="article-subtitle">HAK MITRA</div>
+            <p>MITRA berhak:</p>
+            <ul class="bullet-list">
+                <li>Memasarkan produk resmi Amanah Safar.</li>
+                <li>Mendapatkan materi promosi.</li>
+                <li>Mengakses dashboard mitra.</li>
+                <li>Mendapatkan komisi atau insentif sesuai ketentuan program yang berlaku.</li>
+                <li>Mengikuti pelatihan dan pembinaan.</li>
+            </ul>
 
             <!-- PASAL 6 -->
             <div class="article-title">PASAL 6</div>
-            <div class="article-subtitle">KERAHASIAAN DAN PERLINDUNGAN DATA</div>
-            <p>
-                PARA PIHAK sepakat untuk menjaga kerahasiaan seluruh data pribadi calon jamaah dan informasi operasional perusahaan, serta tidak membocorkannya kepada pihak ketiga manapun tanpa persetujuan tertulis terlebih dahulu, sesuai Undang-Undang Perlindungan Data Pribadi yang berlaku di Republik Indonesia.
-            </p>
+            <div class="article-subtitle">KEWAJIBAN MITRA</div>
+            <p>MITRA wajib:</p>
+            <ol class="numbered-list">
+                <li>Menjaga nama baik Amanah Safar.</li>
+                <li>Memberikan informasi yang benar kepada calon jamaah.</li>
+                <li>Mematuhi seluruh SOP dan kebijakan perusahaan.</li>
+                <li>Menjaga kerahasiaan data jamaah.</li>
+                <li>Tidak menggunakan logo, merek, atau identitas Amanah Safar di luar ketentuan yang ditetapkan.</li>
+                <li>Tidak membuat janji, promo, atau penawaran di luar kebijakan perusahaan.</li>
+            </ol>
 
             <!-- PASAL 7 -->
             <div class="article-title">PASAL 7</div>
-            <div class="article-subtitle">SYARAT DAN KETENTUAN ANGGOTA JARINGAN</div>
-            <ul class="article-list">
-                <li>Setiap mitra kemitraan harus terdaftar resmi dan memiliki akun aktif pada platform Amanah Safar.</li>
-                <li>Komisi dan insentif dihitung dan dibayarkan sesuai struktur skema resmi yang disetujui perusahaan.</li>
-                <li>Mitra dilarang keras menerima setoran tunai pembayaran paket atas nama pribadi calon jamaah. Seluruh transaksi wajib disalurkan melalui rekening resmi perusahaan.</li>
-                <li>PIHAK PERTAMA berhak menonaktifkan akun mitra secara sepihak apabila terbukti melakukan wanprestasi, manipulasi sistem, atau pelanggaran hukum.</li>
-            </ul>
+            <div class="article-subtitle">PEMBAYARAN JAMAAH</div>
+            <ol class="numbered-list">
+                <li>Seluruh pembayaran jamaah dilakukan langsung ke rekening resmi Amanah Safar, Rekening Bank BSI, No. Rek. 7275610601 an. PT AMANAH TANGGUH MANDIRI.</li>
+                <li>MITRA tidak diperkenankan menerima, menampung, atau mengalihkan dana jamaah ke rekening pribadi, kecuali terdapat penugasan tertulis dari PIHAK PERTAMA.</li>
+                <li>Pelanggaran terhadap ketentuan ini merupakan pelanggaran berat.</li>
+            </ol>
 
             <!-- PASAL 8 -->
             <div class="article-title">PASAL 8</div>
-            <div class="article-subtitle">PENYELESAIAN SENGKETA DAN PENUTUP</div>
+            <div class="article-subtitle">KOMISI DAN INSENTIF</div>
+            <ol class="numbered-list">
+                <li>Besaran komisi mengikuti ketentuan program yang berlaku.</li>
+                <li>Pembayaran komisi dilakukan setelah syarat pencairan terpenuhi dan maksimal pembayaran fee/komisi 2 hari setelah keberangkatan jamaah.</li>
+                <li>Perubahan skema komisi akan diberitahukan kepada mitra.</li>
+            </ol>
+
+            <!-- PASAL 9 -->
+            <div class="article-title">PASAL 9</div>
+            <div class="article-subtitle">KERAHASIAAN</div>
             <p>
-                Segala perselisihan yang timbul dari pelaksanaan Perjanjian ini akan diselesaikan secara musyawarah untuk mencapai mufakat. Apabila musyawarah tidak mencapai mufakat, PARA PIHAK sepakat menyelesaikannya melalui Pengadilan Negeri yang berwenang di wilayah hukum domisili PIHAK PERTAMA. Perjanjian ini sah, memiliki kekuatan hukum yang mengikat, dan diakui secara legal berdasarkan UU ITE No. 11 Tahun 2008 Pasal 5 &amp; 6.
+                MITRA wajib menjaga kerahasiaan seluruh data jamaah, data perusahaan, informasi bisnis, strategi pemasaran, dan dokumen internal yang diperoleh selama masa kerja sama.
             </p>
 
-            <!-- Tanda Tangan Digital -->
+            <!-- PASAL 10 -->
+            <div class="article-title">PASAL 10</div>
+            <div class="article-subtitle">LARANGAN</div>
+            <p>MITRA dilarang:</p>
+            <ol class="numbered-list">
+                <li>Memalsukan data.</li>
+                <li>Menyalahgunakan identitas Amanah Safar.</li>
+                <li>Menipu calon jamaah.</li>
+                <li>Menggunakan rekening pribadi untuk menerima pembayaran jamaah.</li>
+                <li>Menyebarkan informasi yang tidak benar.</li>
+                <li>Melakukan tindakan yang merugikan perusahaan atau jamaah.</li>
+            </ol>
+
+            <!-- PASAL 11 -->
+            <div class="article-title">PASAL 11</div>
+            <div class="article-subtitle">SANKSI</div>
+            <p>Pelanggaran dapat dikenakan:</p>
+            <ol class="numbered-list">
+                <li>Teguran tertulis.</li>
+                <li>Penangguhan status mitra.</li>
+                <li>Penghentian kerja sama.</li>
+                <li>Pencabutan status mitra.</li>
+                <li>Tuntutan ganti rugi apabila menimbulkan kerugian.</li>
+                <li>Proses hukum sesuai peraturan perundang-undangan apabila terdapat unsur pidana atau perdata.</li>
+            </ol>
+
+            <!-- PASAL 12 -->
+            <div class="article-title">PASAL 12</div>
+            <div class="article-subtitle">JANGKA WAKTU</div>
+            <p>
+                Perjanjian ini berlaku sejak tanggal ditandatangani dan tetap berlaku sampai diakhiri oleh salah satu pihak sesuai ketentuan dalam perjanjian ini.
+            </p>
+
+            <!-- PASAL 13 -->
+            <div class="article-title">PASAL 13</div>
+            <div class="article-subtitle">PENYELESAIAN PERSELISIHAN</div>
+            <p>
+                Setiap perselisihan akan diselesaikan terlebih dahulu melalui musyawarah untuk mufakat. Apabila tidak tercapai kesepakatan, penyelesaian dilakukan sesuai ketentuan hukum Republik Indonesia.
+            </p>
+
+            <!-- PASAL 14 -->
+            <div class="article-title">PASAL 14</div>
+            <div class="article-subtitle">PENUTUP</div>
+            <p>
+                Dengan menandatangani perjanjian ini, Para Pihak menyatakan telah membaca, memahami, dan menyetujui seluruh isi Perjanjian Kerja Sama tanpa adanya paksaan dari pihak mana pun.
+            </p>
+
+            <!-- Tanda Tangan Para Pihak Persis Sesuai PDF Referensi -->
             <div class="signatures-container">
                 <div class="sig-block">
                     <div class="role">PIHAK PERTAMA</div>
-                    <div class="company">PT AMANAH TANGGUH MANDIRI</div>
-                    <div class="sig-box">
+                    <div class="company">PT Amanah Safar</div>
+                    <div class="sig-space">
                         <div class="digital-seal">
                             <i class="fas fa-certificate text-emerald-600"></i><br>
                             TERVERIFIKASI DIGITAL<br>
                             <span style="font-size: 9px; font-weight: 500; color: #065f46;">Amanah Safar System</span>
                         </div>
                     </div>
-                    <div class="sig-name">DIREKSI UTAMA</div>
-                    <div class="sig-title">PT Amanah Tangguh Mandiri</div>
+                    <div class="sig-name">M. Erwin Saputra</div>
+                    <div class="sig-title">Direktur Utama</div>
                 </div>
 
                 <div class="sig-block">
-                    <div class="role">PIHAK KEDUA (MITRA)</div>
-                    <div class="company">&nbsp;</div>
-                    <div class="sig-box">
+                    <div class="role">PIHAK KEDUA</div>
+                    <div class="company">Mitra Amanah</div>
+                    <div class="sig-space">
                         <?php if (!empty($user['agreement_accepted_at'])): ?>
                             <div class="digital-seal">
                                 <i class="fas fa-signature text-emerald-600"></i><br>
@@ -463,20 +507,20 @@
                                 </span>
                             </div>
                         <?php else: ?>
-                            <div style="font-style: italic; color: #94a3b8; font-size: 11px;">
+                            <div class="sig-pending">
                                 (Menunggu Persetujuan Elektronik)
                             </div>
                         <?php endif; ?>
                     </div>
-                    <div class="sig-name"><?= strtoupper(esc($user['nama_lengkap'])) ?></div>
-                    <div class="sig-title">Mitra Terdaftar &bull; <?= esc($voucher['kode'] ?? ('ID #' . $user['id'])) ?></div>
+                    <div class="sig-name"><?= esc($pihakKeduaNama) ?></div>
+                    <div class="sig-title">NIK: <?= esc($pihakKeduaNik) ?></div>
                 </div>
             </div>
 
             <!-- Footer Note -->
             <div class="footer-note">
                 Dokumen ini merupakan salinan resmi elektronik yang diterbitkan secara otomatis oleh sistem Amanah Safar Digital Platform.<br>
-                &copy; 2026 PT Amanah Tangguh Mandiri. All Rights Reserved. | Amanah Safar Digital Platform.
+                &copy; <?= date('Y') ?> PT Amanah Tangguh Mandiri. All Rights Reserved. | PKS Digital Kemitraan
             </div>
 
         </div>
