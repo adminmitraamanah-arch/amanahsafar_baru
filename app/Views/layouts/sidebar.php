@@ -102,8 +102,12 @@
     <div class="p-4 border-t border-slate-100 bg-slate-50/50">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-full bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
-                    <?= strtoupper(substr(session('nama') ?? 'U', 0, 1)) ?>
+                <div class="w-8 h-8 rounded-full bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+                    <?php if (!empty(session('foto_profil')) && is_file(FCPATH . 'uploads/profiles/' . session('foto_profil'))): ?>
+                        <img src="<?= base_url('uploads/profiles/' . esc(session('foto_profil'))) ?>" alt="<?= esc(session('nama') ?? 'User') ?>" class="w-full h-full object-cover">
+                    <?php else: ?>
+                        <?= strtoupper(substr(session('nama') ?? 'U', 0, 1)) ?>
+                    <?php endif; ?>
                 </div>
                 <div class="min-w-0">
                     <p class="text-xs font-bold text-slate-800 truncate leading-tight"><?= esc(session('nama') ?? 'User') ?></p>

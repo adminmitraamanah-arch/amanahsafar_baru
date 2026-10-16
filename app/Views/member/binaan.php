@@ -105,8 +105,12 @@
                                             data-search="<?= strtolower(esc($b['nama_lengkap'] . ' ' . $b['email'] . ' ' . $b['no_wa'] . ' ' . $b['role'])) ?>">
                                             <td class="px-5 py-4">
                                                 <div class="flex items-center gap-3">
-                                                    <div class="w-8 h-8 rounded-full bg-purple-100 text-[#5e0078] font-bold text-xs flex items-center justify-center shrink-0">
-                                                        <?= $initial ?>
+                                                    <div class="w-8 h-8 rounded-full bg-purple-100 text-[#5e0078] font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                                                        <?php if (!empty($b['foto_profil']) && is_file(FCPATH . 'uploads/profiles/' . $b['foto_profil'])): ?>
+                                                            <img src="<?= base_url('uploads/profiles/' . esc($b['foto_profil'])) ?>" alt="<?= esc($b['nama_lengkap']) ?>" class="w-full h-full object-cover">
+                                                        <?php else: ?>
+                                                            <?= $initial ?>
+                                                        <?php endif; ?>
                                                     </div>
                                                     <span class="font-bold text-slate-900"><?= esc($b['nama_lengkap']) ?></span>
                                                 </div>

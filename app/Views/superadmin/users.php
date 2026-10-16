@@ -310,8 +310,12 @@
                                             <!-- User Details (Avatar, Name, Email) -->
                                             <td class="px-5 py-4">
                                                 <div class="flex items-center gap-3">
-                                                    <div class="w-9 h-9 rounded-full <?= $isTrash ? 'bg-rose-100 text-rose-700' : 'bg-purple-100 text-[#5e0078]' ?> font-bold text-xs flex items-center justify-center shrink-0">
-                                                        <?= $initial ?>
+                                                    <div class="w-9 h-9 rounded-full <?= $isTrash ? 'bg-rose-100 text-rose-700' : 'bg-purple-100 text-[#5e0078]' ?> font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                                                        <?php if (!empty($user['foto_profil']) && is_file(FCPATH . 'uploads/profiles/' . $user['foto_profil'])): ?>
+                                                            <img src="<?= base_url('uploads/profiles/' . esc($user['foto_profil'])) ?>" alt="<?= esc($user['nama_lengkap']) ?>" class="w-full h-full object-cover">
+                                                        <?php else: ?>
+                                                            <?= $initial ?>
+                                                        <?php endif; ?>
                                                     </div>
                                                     <div class="min-w-0">
                                                         <div class="font-bold text-slate-900 flex items-center gap-1.5 leading-tight text-xs sm:text-sm">

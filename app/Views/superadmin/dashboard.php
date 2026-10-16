@@ -163,8 +163,12 @@
                                             <!-- User Details (Avatar Circle, Name, Email) -->
                                             <td class="px-5 py-3.5">
                                                 <div class="flex items-center gap-3">
-                                                    <div class="w-9 h-9 rounded-full bg-purple-100 text-[#5e0078] font-bold text-xs flex items-center justify-center shrink-0">
-                                                        <?= $initial ?>
+                                                    <div class="w-9 h-9 rounded-full bg-purple-100 text-[#5e0078] font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                                                        <?php if (!empty($user['foto_profil']) && is_file(FCPATH . 'uploads/profiles/' . $user['foto_profil'])): ?>
+                                                            <img src="<?= base_url('uploads/profiles/' . esc($user['foto_profil'])) ?>" alt="<?= esc($user['nama_lengkap']) ?>" class="w-full h-full object-cover">
+                                                        <?php else: ?>
+                                                            <?= $initial ?>
+                                                        <?php endif; ?>
                                                     </div>
                                                     <div class="min-w-0">
                                                         <p class="font-bold text-slate-900 truncate leading-tight text-xs sm:text-sm"><?= esc($user['nama_lengkap']) ?></p>

@@ -337,8 +337,12 @@
                             <div class="p-5 space-y-4 text-xs">
                                 <!-- Profile Hero -->
                                 <div class="flex items-center gap-3.5 pb-4 border-b border-slate-100">
-                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5e0078] to-[#8f20ad] text-white flex items-center justify-center font-black text-lg shadow-sm">
-                                        <?= strtoupper(substr($user['nama_lengkap'] ?? 'U', 0, 1)) ?>
+                                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#5e0078] to-[#8f20ad] text-white flex items-center justify-center font-black text-lg shadow-sm overflow-hidden">
+                                        <?php if (!empty($user['foto_profil']) && is_file(FCPATH . 'uploads/profiles/' . $user['foto_profil'])): ?>
+                                            <img src="<?= base_url('uploads/profiles/' . esc($user['foto_profil'])) ?>" alt="<?= esc($user['nama_lengkap']) ?>" class="w-full h-full object-cover">
+                                        <?php else: ?>
+                                            <?= strtoupper(substr($user['nama_lengkap'] ?? 'U', 0, 1)) ?>
+                                        <?php endif; ?>
                                     </div>
                                     <div class="min-w-0 flex-1">
                                         <h3 class="font-extrabold text-slate-900 text-sm truncate"><?= esc($user['nama_lengkap']) ?></h3>
