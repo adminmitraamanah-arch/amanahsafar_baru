@@ -18,6 +18,18 @@ if (!function_exists('base_url')) {
     }
 }
 
+if (!function_exists('csrf_token')) {
+    function csrf_token() {
+        return 'csrf_token';
+    }
+}
+
+if (!function_exists('csrf_hash')) {
+    function csrf_hash() {
+        return 'dummy_csrf_token';
+    }
+}
+
 if (!function_exists('csrf_field')) {
     function csrf_field() {
         return '<input type="hidden" name="csrf_token" value="dummy_csrf_token">';

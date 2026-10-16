@@ -73,6 +73,7 @@ class Auth extends BaseController
                 'email' => $user['email'],
                 'nama' => $user['nama_lengkap'],
                 'role' => $user['role'],
+                'foto_profil' => $user['foto_profil'] ?? null,
                 'logged_in' => true
             ]);
 
@@ -442,6 +443,7 @@ class Auth extends BaseController
                 'email' => $user['email'],
                 'nama' => $user['nama_lengkap'],
                 'role' => $user['role'],
+                'foto_profil' => $user['foto_profil'] ?? null,
                 'logged_in' => true
             ]);
 

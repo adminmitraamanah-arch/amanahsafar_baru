@@ -34,8 +34,12 @@
             <!-- User Profile Dropdown -->
             <div class="relative group">
                 <button type="button" class="flex items-center gap-3 p-1.5 sm:px-3 sm:py-1.5 rounded-xl text-slate-700 hover:text-[#5e0078] hover:bg-purple-50/60 transition duration-150 focus:outline-none">
-                    <div class="w-8 h-8 rounded-full bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm ring-2 ring-purple-100">
-                        <?= strtoupper(substr(session('nama') ?? 'U', 0, 1)) ?>
+                    <div class="w-8 h-8 rounded-full bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm ring-2 ring-purple-100 overflow-hidden">
+                        <?php if (!empty(session('foto_profil')) && is_file(FCPATH . 'uploads/profiles/' . session('foto_profil'))): ?>
+                            <img src="<?= base_url('uploads/profiles/' . esc(session('foto_profil'))) ?>" alt="Foto Profil" class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <?= strtoupper(substr(session('nama') ?? 'U', 0, 1)) ?>
+                        <?php endif; ?>
                     </div>
                     <div class="hidden sm:block text-left">
                         <p class="text-xs font-bold text-slate-800 leading-tight"><?= esc(session('nama') ?? 'User') ?></p>

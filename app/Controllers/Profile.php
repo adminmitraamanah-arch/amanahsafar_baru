@@ -145,6 +145,127 @@ class Profile extends BaseController
     }
 
     /**
+     * Unggah dan perbarui foto profil pengguna aktif
+     */
+    public function uploadPhoto()
+    {
+        if (!session('logged_in')) {
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setStatusCode(401)->setJSON([
+                    'success' => false,
+                    'message' => 'Sesi login telah berakhir. Silakan login kembali.'
+                ]);
+            }
+            return redirect()->to('/login');
+        }
+
+        // Keamanan Otorisasi: Hanya user_id dari sesi login aktif (anti-tampering)
+        $userId = (int) session('user_id');
+        $user = $this->userModel->find($userId);
+
+        if (!$user) {
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setStatusCode(404)->setJSON([
+                    'success' => false,
+                    'message' => 'Pengguna tidak ditemukan.'
+                ]);
+            }
+            return redirect()->to('/login')->with('error', 'Pengguna tidak ditemukan.');
+        }
+
+        $file = $this->request->getFile('foto_profil');
+
+        if (!$file || !$file->isValid() || $file->hasMoved()) {
+            $errorMsg = ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) 
+                ? $file->getErrorString() 
+                : 'Silakan pilih file foto terlebih dahulu.';
+
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'success' => false,
+                    'message' => $errorMsg
+                ]);
+            }
+            return redirect()->back()->with('error', $errorMsg);
+        }
+
+        // 1. Validasi Ukuran Maksimal 2MB
+        $maxSize = 2 * 1024 * 1024;
+        if ($file->getSize() > $maxSize) {
+            $errorMsg = 'Ukuran foto profil melebihi batas maksimal 2MB.';
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'success' => false,
+                    'message' => $errorMsg
+                ]);
+            }
+            return redirect()->back()->with('error', $errorMsg);
+        }
+
+        // 2. Validasi Ekstensi dan MIME Type
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        $allowedExts  = ['jpg', 'jpeg', 'png', 'webp'];
+        $mimeType     = $file->getMimeType();
+        $extension    = strtolower($file->getClientExtension() ?: $file->getExtension() ?: '');
+
+        if (!in_array($mimeType, $allowedMimes, true) || !in_array($extension, $allowedExts, true)) {
+            $errorMsg = 'Format file tidak didukung. Harap gunakan format gambar JPG, PNG, atau WEBP.';
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setStatusCode(400)->setJSON([
+                    'success' => false,
+                    'message' => $errorMsg
+                ]);
+            }
+            return redirect()->back()->with('error', $errorMsg);
+        }
+
+        // 3. Pastikan direktori tujuan tersedia
+        $uploadDir = FCPATH . 'uploads/profiles';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        // 4. Generate nama unik aman dan simpan file
+        $newFileName = $file->getRandomName();
+        $file->move($uploadDir, $newFileName);
+
+        if (!is_file($uploadDir . '/' . $newFileName)) {
+            $errorMsg = 'Gagal menyimpan file foto ke server. Silakan coba kembali.';
+            if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+                return $this->response->setStatusCode(500)->setJSON([
+                    'success' => false,
+                    'message' => $errorMsg
+                ]);
+            }
+            return redirect()->back()->with('error', $errorMsg);
+        }
+
+        // 5. Update database & session aktif
+        $oldPhoto = $user['foto_profil'] ?? null;
+        $this->userModel->update($userId, ['foto_profil' => $newFileName]);
+        session()->set('foto_profil', $newFileName);
+
+        // 6. Hapus foto lama secara aman setelah file baru berhasil tersimpan
+        if (!empty($oldPhoto) && $oldPhoto !== $newFileName && is_file($uploadDir . '/' . $oldPhoto)) {
+            @unlink($uploadDir . '/' . $oldPhoto);
+        }
+
+        $photoUrl = base_url('uploads/profiles/' . $newFileName);
+
+        if ($this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest') {
+            return $this->response->setJSON([
+                'success'    => true,
+                'message'    => 'Foto profil berhasil diperbarui.',
+                'foto_url'   => $photoUrl,
+                'csrf_token' => csrf_token(),
+                'csrf_hash'  => csrf_hash(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Foto profil berhasil diperbarui.');
+    }
+
+    /**
      * Unduh berkas fisik PDF PKS resmi milik pengguna yang sedang login
      */
     public function downloadPks()

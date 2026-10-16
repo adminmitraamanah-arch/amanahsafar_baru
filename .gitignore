@@ -39,6 +39,8 @@ public/uploads/proofs/*
 !public/uploads/proofs/.gitkeep
 public/uploads/documents/*
 !public/uploads/documents/.gitkeep
+public/uploads/profiles/*
+!public/uploads/profiles/index.html
 public/uploads/_backup_originals/
 public/uploads/_backup_originals/*
 public/null/
@@ -65,3 +67,6 @@ Desktop.ini
 # Test Artifacts
 # --------------------------------------------------------------------
 .phpunit.result.cache
+
+# Local manual-testing database ownership, sessions, uploads, and runtime credentials
+/writable/manual-testing/

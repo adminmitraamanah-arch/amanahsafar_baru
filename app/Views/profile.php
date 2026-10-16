@@ -28,8 +28,32 @@
                     
                     <!-- Card Top Banner / User Badge -->
                     <div class="p-6 sm:p-8 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center gap-5 bg-slate-50/50">
-                        <div class="w-16 h-16 rounded-2xl bg-[#5e0078] text-white font-extrabold text-2xl flex items-center justify-center shadow-md ring-4 ring-purple-100 shrink-0 select-none">
-                            <?= strtoupper(substr($user['nama_lengkap'] ?? (session('nama') ?? 'U'), 0, 1)) ?>
+                        <!-- Avatar Container with Edit Pencil Button -->
+                        <div class="relative shrink-0">
+                            <div id="profileAvatarDisplay" class="w-16 h-16 rounded-2xl bg-[#5e0078] text-white font-extrabold text-2xl flex items-center justify-center shadow-md ring-4 ring-purple-100 shrink-0 select-none overflow-hidden">
+                                <?php if (!empty($user['foto_profil']) && is_file(FCPATH . 'uploads/profiles/' . $user['foto_profil'])): ?>
+                                    <img id="avatarImage" src="<?= base_url('uploads/profiles/' . esc($user['foto_profil'])) ?>" alt="Foto Profil <?= esc($user['nama_lengkap'] ?? '') ?>" class="w-full h-full object-cover">
+                                <?php else: ?>
+                                    <span id="avatarInitial"><?= strtoupper(substr($user['nama_lengkap'] ?? (session('nama') ?? 'U'), 0, 1)) ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Tombol Edit Pencil (Sudut Kanan Atas) -->
+                            <button type="button" 
+                                    id="btnEditAvatar" 
+                                    class="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-white text-[#5e0078] hover:bg-purple-50 hover:text-[#4c0062] border border-purple-200 shadow-md flex items-center justify-center text-[10px] transition transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-[#5e0078] cursor-pointer z-10"
+                                    title="Ubah foto profil" 
+                                    aria-label="Ubah foto profil">
+                                <i id="btnEditAvatarIcon" class="fas fa-pencil text-[9px]"></i>
+                            </button>
+
+                            <!-- Input File Tersembunyi -->
+                            <input type="file" 
+                                   id="avatarFileInput" 
+                                   name="foto_profil" 
+                                   accept="image/jpeg,image/png,image/webp" 
+                                   class="hidden" 
+                                   aria-hidden="true">
                         </div>
                         <div class="space-y-1">
                             <div class="flex flex-wrap items-center gap-2.5">
@@ -225,6 +249,128 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('page_confirm_password')?.focus();
                     return;
                 }
+            }
+        });
+    }
+
+    // Penanganan Interaktif Tombol Edit Foto Profil
+    const btnEditAvatar = document.getElementById('btnEditAvatar');
+    const avatarFileInput = document.getElementById('avatarFileInput');
+    const profileAvatarDisplay = document.getElementById('profileAvatarDisplay');
+    const btnEditAvatarIcon = document.getElementById('btnEditAvatarIcon');
+
+    if (btnEditAvatar && avatarFileInput) {
+        btnEditAvatar.addEventListener('click', function(e) {
+            e.preventDefault();
+            avatarFileInput.click();
+        });
+
+        avatarFileInput.addEventListener('change', async function() {
+            const file = this.files && this.files[0];
+            // Kriteria 7: Jika pengguna membatalkan pemilihan file, jangan mengubah foto profil
+            if (!file) {
+                return;
+            }
+
+            // Kriteria 2 & 3: Validasi format gambar
+            const validMimes = ['image/jpeg', 'image/png', 'image/webp'];
+            const validExts = ['jpg', 'jpeg', 'png', 'webp'];
+            const fileExt = file.name.split('.').pop().toLowerCase();
+
+            if (!validMimes.includes(file.type) && !validExts.includes(fileExt)) {
+                const errorMsg = 'Format file tidak didukung. Harap gunakan format gambar JPG, PNG, atau WEBP.';
+                if (window.toastNotification) {
+                    window.toastNotification.error(errorMsg);
+                } else {
+                    alert(errorMsg);
+                }
+                avatarFileInput.value = '';
+                return;
+            }
+
+            // Kriteria 3: Validasi ukuran file maksimal 2MB
+            const maxSize = 2 * 1024 * 1024;
+            if (file.size > maxSize) {
+                const errorMsg = 'Ukuran file foto melebihi batas maksimal 2MB.';
+                if (window.toastNotification) {
+                    window.toastNotification.error(errorMsg);
+                } else {
+                    alert(errorMsg);
+                }
+                avatarFileInput.value = '';
+                return;
+            }
+
+            // Tampilkan indikator proses pada tombol pencil
+            btnEditAvatar.disabled = true;
+            btnEditAvatar.classList.add('opacity-75', 'cursor-wait');
+            if (btnEditAvatarIcon) {
+                btnEditAvatarIcon.className = 'fas fa-spinner fa-spin text-[9px]';
+            }
+
+            const formData = new FormData();
+            formData.append('foto_profil', file);
+
+            // Ambil CSRF token aktif
+            const csrfInput = document.querySelector('input[name="<?= csrf_token() ?>"]');
+            const csrfTokenName = '<?= csrf_token() ?>';
+            const csrfHash = csrfInput ? csrfInput.value : '<?= csrf_hash() ?>';
+            formData.append(csrfTokenName, csrfHash);
+
+            try {
+                const response = await fetch('<?= base_url('/profile/upload-photo') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // Perbarui CSRF token di form utama jika hash baru diberikan
+                if (data.csrf_hash) {
+                    document.querySelectorAll('input[name="' + csrfTokenName + '"]').forEach(el => el.value = data.csrf_hash);
+                }
+
+                if (response.ok && data.success) {
+                    // Kriteria 5: Perbarui foto profil pada UI
+                    const cacheBustUrl = data.foto_url + '?t=' + Date.now();
+                    profileAvatarDisplay.innerHTML = `<img id="avatarImage" src="${cacheBustUrl}" alt="Foto Profil" class="w-full h-full object-cover">`;
+
+                    // Sinkronisasi avatar mini di header navbar
+                    const navAvatar = document.querySelector('header button div.rounded-full');
+                    if (navAvatar) {
+                        navAvatar.innerHTML = `<img src="${cacheBustUrl}" alt="Foto Profil" class="w-full h-full object-cover">`;
+                        navAvatar.classList.add('overflow-hidden');
+                    }
+
+                    if (window.toastNotification) {
+                        window.toastNotification.success(data.message || 'Foto profil berhasil diperbarui.');
+                    }
+                } else {
+                    // Kriteria 4 & 8: Tampilkan pesan kesalahan yang jelas dan pertahankan foto profil lama
+                    const errorMsg = data.message || 'Gagal mengunggah foto profil.';
+                    if (window.toastNotification) {
+                        window.toastNotification.error(errorMsg);
+                    } else {
+                        alert(errorMsg);
+                    }
+                }
+            } catch (err) {
+                const errorMsg = 'Terjadi kesalahan koneksi saat mengunggah foto profil.';
+                if (window.toastNotification) {
+                    window.toastNotification.error(errorMsg);
+                } else {
+                    alert(errorMsg);
+                }
+            } finally {
+                btnEditAvatar.disabled = false;
+                btnEditAvatar.classList.remove('opacity-75', 'cursor-wait');
+                if (btnEditAvatarIcon) {
+                    btnEditAvatarIcon.className = 'fas fa-pencil text-[9px]';
+                }
+                avatarFileInput.value = '';
             }
         });
     }

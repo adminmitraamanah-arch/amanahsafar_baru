@@ -37,6 +37,7 @@ $routes->get('/dashboard', 'Dashboard::index', ['filter' => 'portalMaintenance']
 // Profil Saya
 $routes->get('/profile', 'Profile::index', ['filter' => 'roleFilter']);
 $routes->post('/profile/update', 'Profile::update', ['filter' => 'roleFilter']);
+$routes->post('/profile/upload-photo', 'Profile::uploadPhoto', ['filter' => 'roleFilter']);
 $routes->get('/profile/pks/download', 'Profile::downloadPks', ['filter' => 'roleFilter']);
 
 // Katalog

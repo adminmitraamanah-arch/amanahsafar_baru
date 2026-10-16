@@ -16,6 +16,7 @@ class UserModel extends Model
         'email',
         'no_wa',
         'domisili',
+        'foto_profil',
         'password_hash',
         'role',
         'pembina_id',
