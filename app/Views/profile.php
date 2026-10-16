@@ -62,9 +62,16 @@
                                     <?= esc(str_replace('_', ' ', $user['role'] ?? session('role'))) ?>
                                 </span>
                             </div>
-                            <p class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-                                <i class="fas fa-envelope text-slate-400 text-xs"></i> <?= esc($user['email'] ?? session('email')) ?>
-                            </p>
+                            <div class="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-500 font-medium">
+                                <p class="flex items-center gap-1.5">
+                                    <i class="fas fa-envelope text-slate-400 text-xs"></i> <?= esc($user['email'] ?? session('email')) ?>
+                                </p>
+                                <?php if (!empty($user['no_wa'] ?? session('no_wa'))): ?>
+                                    <p class="flex items-center gap-1.5">
+                                        <i class="fab fa-whatsapp text-emerald-500 text-xs"></i> <?= esc($user['no_wa'] ?? session('no_wa')) ?>
+                                    </p>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
 
@@ -73,7 +80,7 @@
                         <?= csrf_field() ?>
 
                         <!-- Grid Informasi Akun (Readonly) -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50/80 rounded-xl border border-slate-200/70">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50/80 rounded-xl border border-slate-200/70">
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
                                     <i class="fas fa-envelope text-slate-400 mr-1.5"></i> Alamat Email
@@ -81,7 +88,17 @@
                                 <input type="email" value="<?= esc($user['email'] ?? session('email')) ?>" readonly 
                                        class="w-full bg-slate-100/90 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-600 font-medium cursor-not-allowed select-none">
                                 <span class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-                                    <i class="fas fa-lock text-[10px]"></i> Email bersifat permanen dan tidak dapat diubah
+                                    <i class="fas fa-lock text-[10px]"></i> Email permanen (tidak dapat diubah)
+                                </span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                    <i class="fas fa-phone text-slate-400 mr-1.5"></i> Nomor Telepon / WA
+                                </label>
+                                <input type="text" id="profile_no_wa" value="<?= esc($user['no_wa'] ?? session('no_wa') ?? '-') ?>" readonly 
+                                       class="w-full bg-slate-100/90 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-600 font-medium cursor-not-allowed select-none">
+                                <span class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                                    <i class="fas fa-lock text-[10px]"></i> Nomor terdaftar saat registrasi
                                 </span>
                             </div>
                             <div>
