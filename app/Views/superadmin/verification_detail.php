@@ -457,24 +457,25 @@
                             </div>
 
                             <div class="p-5 space-y-4 text-xs">
-                                <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 text-white shadow-sm space-y-3">
+                                <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important; color: #ffffff !important;" class="rounded-xl p-4 shadow-sm space-y-3">
                                     <div class="flex items-center justify-between">
-                                        <span class="text-[11px] font-bold uppercase tracking-wider text-purple-300">
+                                        <span style="color: #d8b4fe !important;" class="text-[11px] font-bold uppercase tracking-wider">
                                             <?= esc($verification['nama_bank'] ?: 'Bank Mitra') ?>
                                         </span>
                                         <i class="fas fa-credit-card text-slate-400 text-lg"></i>
                                     </div>
 
                                     <div>
-                                        <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Nomor Rekening</div>
+                                        <div style="color: #94a3b8 !important;" class="text-[10px] uppercase tracking-wider font-semibold">Nomor Rekening</div>
                                         <div class="flex items-center justify-between gap-2 mt-0.5">
-                                            <span class="font-mono text-lg font-bold tracking-widest text-white">
+                                            <span style="color: #ffffff !important;" class="font-mono text-lg font-bold tracking-widest">
                                                 <?= esc($verification['nomor_rekening'] ?: '-') ?>
                                             </span>
                                             <?php if (!empty($verification['nomor_rekening'])): ?>
                                                 <button type="button" 
                                                         onclick="copyToClipboard('<?= esc($verification['nomor_rekening']) ?>', 'Nomor rekening berhasil disalin')"
-                                                        class="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition text-xs" 
+                                                        style="background-color: rgba(255, 255, 255, 0.15); color: #ffffff;"
+                                                        class="p-1.5 rounded-lg hover:bg-white/30 transition text-xs" 
                                                         title="Salin Nomor Rekening">
                                                     <i class="fas fa-copy"></i>
                                                 </button>
@@ -482,10 +483,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="pt-2 border-t border-slate-700/60 flex items-center justify-between text-[11px]">
+                                    <div style="border-top: 1px solid rgba(255, 255, 255, 0.15);" class="pt-2 flex items-center justify-between text-[11px]">
                                         <div>
-                                            <div class="text-[9px] text-slate-400 uppercase tracking-wider font-semibold">Atas Nama (Pemilik)</div>
-                                            <div class="font-bold text-slate-100 uppercase mt-0.5">
+                                            <div style="color: #94a3b8 !important;" class="text-[9px] uppercase tracking-wider font-semibold">Atas Nama (Pemilik)</div>
+                                            <div style="color: #f8fafc !important;" class="font-bold uppercase mt-0.5">
                                                 <?= esc($verification['nama_pemilik_rekening'] ?: ($user['nama_lengkap'] ?: '-')) ?>
                                             </div>
                                         </div>
@@ -495,7 +496,7 @@
                                             $isMatch = (!empty($pemilikNama) && !empty($userNama)) && (str_contains($userNama, $pemilikNama) || str_contains($pemilikNama, $userNama));
                                         ?>
                                         <?php if ($isMatch): ?>
-                                            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-semibold flex items-center gap-1">
+                                            <span style="background-color: rgba(16, 185, 129, 0.25) !important; color: #6ee7b7 !important; border: 1px solid rgba(16, 185, 129, 0.5) !important;" class="px-2 py-0.5 rounded text-[10px] font-semibold flex items-center gap-1">
                                                 <i class="fas fa-check text-[9px]"></i> Sesuai Nama
                                             </span>
                                         <?php endif; ?>
