@@ -32,18 +32,27 @@ class Profile extends BaseController
             return redirect()->to('/login')->with('error', 'Pengguna tidak ditemukan');
         }
 
-        $isAccepted = !empty($user['agreement_accepted_at']);
-        $pksInfo = [
-            'is_accepted' => $isAccepted,
-            'accepted_at' => $user['agreement_accepted_at'] ?? null,
-            'pks_number'  => $isAccepted ? $this->pksPdfService->getPksNumber($user) : null,
-            'has_pdf'     => $isAccepted && $this->pksPdfService->hasPdf($userId),
-            'download_url'=> base_url('profile/pks/download'),
-        ];
+        $userRole = (string) ($user['role'] ?? session('role') ?? '');
+        $isAdminRole = in_array($userRole, ['admin', 'super_admin', 'superadmin'], true);
+
+        $showPks = !$isAdminRole;
+        $pksInfo = null;
+
+        if ($showPks) {
+            $isAccepted = !empty($user['agreement_accepted_at']);
+            $pksInfo = [
+                'is_accepted' => $isAccepted,
+                'accepted_at' => $user['agreement_accepted_at'] ?? null,
+                'pks_number'  => $isAccepted ? $this->pksPdfService->getPksNumber($user) : null,
+                'has_pdf'     => $isAccepted && $this->pksPdfService->hasPdf($userId),
+                'download_url'=> base_url('profile/pks/download'),
+            ];
+        }
 
         $data = [
             'title'   => 'Profil Saya',
             'user'    => $user,
+            'showPks' => $showPks,
             'pksInfo' => $pksInfo,
         ];
 
@@ -150,6 +159,11 @@ class Profile extends BaseController
 
         if (!$user) {
             return redirect()->to('/login')->with('error', 'Pengguna tidak ditemukan.');
+        }
+
+        // Akun administratif (admin, super_admin, superadmin) tidak memiliki PKS kemitraan
+        if (in_array((string) $user['role'], ['admin', 'super_admin', 'superadmin'], true)) {
+            return redirect()->back()->with('error', 'Akun administratif tidak memiliki dokumen Perjanjian Kerja Sama (PKS).');
         }
 
         // Validasi: Pengguna wajib telah menyetujui PKS
