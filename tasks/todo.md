@@ -21,7 +21,7 @@
   - [x] 3.5: Rapikan header duplikasi tombol di `app/Views/member/dashboard.php` (UI-08).
   - [x] 3.6: Verifikasi sintaks PHP dan buat commit lokal Tahap 3.
 
-- [ ] Task 4: Verifikasi Pengujian Menyeluruh
-  - [ ] 4.1: Jalankan sintaks linting `php -l` pada semua berkas yang diubah.
-  - [ ] 4.2: Jalankan test suite verifikasi.
-  - [ ] 4.3: Periksa `git status` dan buat laporan akhir.
+- [x] Task 4: Verifikasi Pengujian Menyeluruh
+  - [x] 4.1: Jalankan sintaks linting `php -l` pada semua berkas yang diubah.
+  - [x] 4.2: Jalankan test suite verifikasi.
+  - [x] 4.3: Periksa `git status` dan buat laporan akhir.
