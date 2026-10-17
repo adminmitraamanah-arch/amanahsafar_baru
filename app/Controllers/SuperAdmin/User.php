@@ -31,16 +31,18 @@ class User extends BaseController
         // Fetch users based on selected tab
         if ($tab === 'trash') {
             $users = $db->table('users u')
-                ->select('u.*, p.nama_lengkap as nama_pembina')
+                ->select('u.*, p.nama_lengkap as nama_pembina, v.nik')
                 ->join('users p', 'p.id = u.pembina_id', 'left')
+                ->join('verifications v', 'v.user_id = u.id', 'left')
                 ->where('u.deleted_at IS NOT NULL', null, false)
                 ->orderBy('u.deleted_at', 'DESC')
                 ->get()
                 ->getResultArray();
         } else {
             $users = $db->table('users u')
-                ->select('u.*, p.nama_lengkap as nama_pembina')
+                ->select('u.*, p.nama_lengkap as nama_pembina, v.nik')
                 ->join('users p', 'p.id = u.pembina_id', 'left')
+                ->join('verifications v', 'v.user_id = u.id', 'left')
                 ->where('u.deleted_at', null)
                 ->orderBy('u.id', 'ASC')
                 ->get()

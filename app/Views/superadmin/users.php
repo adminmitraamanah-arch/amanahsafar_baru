@@ -336,11 +336,15 @@
                                             <td class="px-5 py-4">
                                                 <div class="text-xs text-slate-700 font-medium flex items-center gap-1.5">
                                                     <i class="fab fa-whatsapp text-emerald-500 text-xs"></i>
-                                                    <span><?= esc($cleanWa ?: '-') ?></span>
+                                                    <span><?= esc($cleanWa ?: 'Belum diisi') ?></span>
                                                 </div>
                                                 <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
                                                     <i class="fas fa-map-marker-alt text-slate-300 text-[10px]"></i>
                                                     <span><?= esc($user['domisili'] ?: 'Belum diisi') ?></span>
+                                                </div>
+                                                <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1.5 font-mono">
+                                                    <i class="fas fa-id-card text-slate-300 text-[10px]"></i>
+                                                    <span>NIK: <?= esc(!empty($user['nik']) ? $user['nik'] : 'Belum diisi') ?></span>
                                                 </div>
                                             </td>
 
@@ -572,6 +576,16 @@
                 <label for="edit_domisili" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Domisili / Kota</label>
                 <input type="text" id="edit_domisili" name="domisili" required 
                        class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-900 font-medium focus:ring-2 focus:ring-[#5e0078] focus:bg-white focus:outline-none transition">
+            </div>
+
+            <!-- NIK (Readonly) -->
+            <div>
+                <label for="edit_nik" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">NIK (Nomor Induk Kependudukan)</label>
+                <input type="text" id="edit_nik" readonly 
+                       class="w-full px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm font-mono text-slate-700 cursor-not-allowed select-none">
+                <span class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                    <i class="fas fa-lock text-[10px]"></i> Sesuai data identitas KTP terdaftar pengguna
+                </span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -864,6 +878,8 @@
         document.getElementById('edit_email').value = user.email || '';
         document.getElementById('edit_no_wa').value = user.no_wa || '';
         document.getElementById('edit_domisili').value = user.domisili || '';
+        const nikEl = document.getElementById('edit_nik');
+        if (nikEl) nikEl.value = user.nik || 'Belum diisi';
         document.getElementById('edit_role').value = user.role || 'mitra';
         document.getElementById('edit_verification_status').value = user.verification_status || 'belum_verifikasi';
         document.getElementById('edit_pembina_id').value = user.pembina_id || '';

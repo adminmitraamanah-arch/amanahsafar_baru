@@ -485,9 +485,10 @@
                     <?php
                     $rawDate = $user['agreement_accepted_at'] ?? $verification['created_at'] ?? date('Y-m-d H:i:s');
                     $pksDateFormatted = format_tanggal_indonesia($rawDate, true);
-                    $pihakKeduaNama = !empty($user['nama_lengkap']) ? strtoupper(trim($user['nama_lengkap'])) : 'MITRA TERDAFTAR';
-                    $pihakKeduaNik = !empty($verification['nik']) ? trim($verification['nik']) : '-';
-                    $pihakKeduaAlamat = !empty($user['domisili']) ? strtoupper(trim($user['domisili'])) : 'INDONESIA';
+                    $pihakKeduaNama = !empty($user['nama_lengkap']) ? strtoupper(trim($user['nama_lengkap'])) : 'Belum diisi';
+                    $pihakKeduaNik = !empty($verification['nik']) ? trim($verification['nik']) : 'Belum diisi';
+                    $pihakKeduaAlamat = !empty($user['domisili']) ? strtoupper(trim($user['domisili'])) : 'Belum diisi';
+                    $pihakKeduaHp = !empty($user['no_wa']) ? trim($user['no_wa']) : 'Belum diisi';
                     ?>
 
                     <!-- Ringkasan Para Pihak -->
@@ -502,7 +503,7 @@
                             <div class="border-l-2 border-amber-500 pl-2.5">
                                 <span class="font-bold text-slate-900 block text-[11px]">PIHAK KEDUA (MITRA AMANAH)</span>
                                 <span class="text-xs font-semibold block text-slate-800"><?= esc($pihakKeduaNama) ?></span>
-                                <span class="text-[11px] text-slate-500">NIK: <?= esc($pihakKeduaNik) ?> &bull; <?= esc($pihakKeduaAlamat) ?></span>
+                                <span class="text-[11px] text-slate-500">NIK: <?= esc($pihakKeduaNik) ?> &bull; Alamat: <?= esc($pihakKeduaAlamat) ?> &bull; No. HP: <?= esc($pihakKeduaHp) ?></span>
                             </div>
                         </div>
                     </div>

@@ -49,11 +49,19 @@ class Profile extends BaseController
             ];
         }
 
+        $db = \Config\Database::connect();
+        $verification = $db->table('verifications')
+            ->where('user_id', $userId)
+            ->orderBy('id', 'DESC')
+            ->get()
+            ->getRowArray();
+
         $data = [
-            'title'   => 'Profil Saya',
-            'user'    => $user,
-            'showPks' => $showPks,
-            'pksInfo' => $pksInfo,
+            'title'        => 'Profil Saya',
+            'user'         => $user,
+            'verification' => $verification,
+            'showPks'      => $showPks,
+            'pksInfo'      => $pksInfo,
         ];
 
         return view('profile', $data);

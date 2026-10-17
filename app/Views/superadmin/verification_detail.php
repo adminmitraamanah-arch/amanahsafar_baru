@@ -221,8 +221,8 @@
                                         </div>
                                         <div class="border-l-2 border-amber-500 pl-2.5">
                                             <span class="font-bold text-slate-900 block text-[11px]">PIHAK KEDUA (MITRA)</span>
-                                            <span class="text-xs font-bold text-slate-900"><?= esc($user['nama_lengkap']) ?></span>
-                                            <span class="block text-[10px] text-slate-400">Domisili: <?= esc($user['domisili'] ?: 'Indonesia') ?></span>
+                                            <span class="text-xs font-bold text-slate-900"><?= esc($user['nama_lengkap'] ?: 'Belum diisi') ?></span>
+                                            <span class="block text-[10px] text-slate-400">Domisili: <?= esc($user['domisili'] ?: 'Belum diisi') ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -307,7 +307,7 @@
                                     <div class="flex items-center justify-between py-1.5 border-b border-slate-50">
                                         <span class="text-slate-500 font-medium">Nomor WhatsApp:</span>
                                         <div class="flex items-center gap-1.5 font-mono">
-                                            <span class="font-semibold text-slate-900"><?= esc($user['no_wa'] ?: '-') ?></span>
+                                            <span class="font-semibold text-slate-900"><?= esc($user['no_wa'] ?: 'Belum diisi') ?></span>
                                             <?php if (!empty($user['no_wa'])): ?>
                                                 <?php 
                                                     $cleanWa = preg_replace('/[^0-9]/', '', $user['no_wa']);
@@ -316,8 +316,8 @@
                                                     }
                                                 ?>
                                                 <a href="https://wa.me/<?= $cleanWa ?>" target="_blank"
-                                                   class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-bold inline-flex items-center gap-1 transition"
-                                                   title="Chat via WhatsApp">
+                                                    class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-bold inline-flex items-center gap-1 transition"
+                                                    title="Chat via WhatsApp">
                                                     <i class="fab fa-whatsapp"></i> Chat
                                                 </a>
                                             <?php endif; ?>
@@ -328,7 +328,7 @@
                                     <div class="flex items-center justify-between py-1.5 border-b border-slate-50">
                                         <span class="text-slate-500 font-medium">NIK KTP (16 Digit):</span>
                                         <span class="font-mono font-bold text-slate-900 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
-                                            <?= esc($verification['nik'] ?? 'Belum diisi') ?>
+                                            <?= esc(!empty($verification['nik']) ? $verification['nik'] : 'Belum diisi') ?>
                                         </span>
                                     </div>
 
@@ -336,7 +336,7 @@
                                     <div class="flex items-center justify-between py-1.5 border-b border-slate-50">
                                         <span class="text-slate-500 font-medium">Email:</span>
                                         <span class="font-semibold text-slate-900 truncate max-w-[200px]" title="<?= esc($user['email']) ?>">
-                                            <?= esc($user['email'] ?: '-') ?>
+                                            <?= esc($user['email'] ?: 'Belum diisi') ?>
                                         </span>
                                     </div>
 
@@ -344,7 +344,7 @@
                                     <div class="flex items-center justify-between py-1.5 border-b border-slate-50">
                                         <span class="text-slate-500 font-medium">Domisili / Wilayah:</span>
                                         <span class="font-semibold text-slate-900">
-                                            <?= esc($user['domisili'] ?: '-') ?>
+                                            <?= esc($user['domisili'] ?: 'Belum diisi') ?>
                                         </span>
                                     </div>
 

@@ -80,7 +80,7 @@
                         <?= csrf_field() ?>
 
                         <!-- Grid Informasi Akun (Readonly) -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-slate-50/80 rounded-xl border border-slate-200/70">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-slate-50/80 rounded-xl border border-slate-200/70">
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
                                     <i class="fas fa-envelope text-slate-400 mr-1.5"></i> Alamat Email
@@ -99,6 +99,26 @@
                                        class="w-full bg-slate-100/90 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-600 font-medium cursor-not-allowed select-none">
                                 <span class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
                                     <i class="fas fa-lock text-[10px]"></i> Nomor terdaftar saat registrasi
+                                </span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                    <i class="fas fa-id-card text-slate-400 mr-1.5"></i> NIK (Nomor Induk Kependudukan)
+                                </label>
+                                <input type="text" id="profile_nik" value="<?= esc(!empty($verification['nik']) ? $verification['nik'] : 'Belum diisi') ?>" readonly 
+                                       class="w-full bg-slate-100/90 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs font-mono font-medium text-slate-700 cursor-not-allowed select-none">
+                                <span class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                                    <i class="fas fa-lock text-[10px]"></i> Sesuai identitas KTP resmi terverifikasi
+                                </span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">
+                                    <i class="fas fa-map-marker-alt text-slate-400 mr-1.5"></i> Alamat / Domisili
+                                </label>
+                                <input type="text" id="profile_domisili" value="<?= esc(!empty($user['domisili']) ? $user['domisili'] : 'Belum diisi') ?>" readonly 
+                                       class="w-full bg-slate-100/90 border border-slate-200 rounded-lg px-3.5 py-2.5 text-xs text-slate-600 font-medium cursor-not-allowed select-none">
+                                <span class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+                                    <i class="fas fa-lock text-[10px]"></i> Wilayah operasional terdaftar
                                 </span>
                             </div>
                             <div>

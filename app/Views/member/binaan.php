@@ -102,7 +102,7 @@
                                             data-wa="<?= esc($b['no_wa']) ?>"
                                             data-role="<?= esc($b['role']) ?>"
                                             data-status="<?= esc($b['status']) ?>"
-                                            data-search="<?= strtolower(esc($b['nama_lengkap'] . ' ' . $b['email'] . ' ' . $b['no_wa'] . ' ' . $b['role'])) ?>">
+                                            data-search="<?= strtolower(esc($b['nama_lengkap'] . ' ' . $b['email'] . ' ' . $b['no_wa'] . ' ' . ($b['domisili'] ?? '') . ' ' . $b['role'])) ?>">
                                             <td class="px-5 py-4">
                                                 <div class="flex items-center gap-3">
                                                     <div class="w-8 h-8 rounded-full bg-purple-100 text-[#5e0078] font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
@@ -119,8 +119,14 @@
                                                 <?= esc($b['email']) ?>
                                             </td>
                                             <td class="px-5 py-4 text-xs text-slate-700 font-medium">
-                                                <i class="fab fa-whatsapp text-emerald-500 mr-1"></i>
-                                                <?= esc($b['no_wa'] ?: '-') ?>
+                                                <div class="flex items-center gap-1">
+                                                    <i class="fab fa-whatsapp text-emerald-500 mr-1"></i>
+                                                    <span><?= esc($b['no_wa'] ?: 'Belum diisi') ?></span>
+                                                </div>
+                                                <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                                    <i class="fas fa-map-marker-alt text-slate-300 text-[10px]"></i>
+                                                    <span><?= esc($b['domisili'] ?: 'Belum diisi') ?></span>
+                                                </div>
                                             </td>
                                             <td class="px-5 py-4">
                                                 <span class="inline-block px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
