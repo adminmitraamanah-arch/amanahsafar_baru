@@ -135,11 +135,6 @@
                                                     <i class="fas fa-search-plus text-[11px]"></i>
                                                     <span>Perbesar</span>
                                                 </button>
-                                                <a href="<?= esc($ktpUrl) ?>" target="_blank"
-                                                   class="btn-interactive px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 transition">
-                                                    <i class="fas fa-arrow-up-right-from-square text-[11px]"></i>
-                                                    <span>Buka Tab Baru</span>
-                                                </a>
                                                 <a href="<?= esc($ktpUrl) ?>?download=1"
                                                    class="btn-interactive px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5 transition">
                                                     <i class="fas fa-download text-[11px]"></i>
@@ -232,81 +227,14 @@
                                     </div>
                                 </div>
 
-                                <!-- Box Preview Isi Perjanjian (Pasal 1-14) -->
-                                <div class="bg-slate-50/70 border border-slate-200 rounded-xl p-4 text-xs leading-relaxed text-slate-700 space-y-3 shadow-inner" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain;">
-                                    <div class="text-center pb-2 border-b border-slate-200">
-                                        <strong class="text-xs text-slate-900 block font-black uppercase">RINGKASAN KLAUSUL PERJANJIAN KERJA SAMA (PKS)</strong>
-                                        <span class="text-[10px] text-slate-500">Nomor: <?= esc($pksNumber) ?></span>
+                                <!-- Keterangan Dokumen PKS Resmi (19 Pasal) -->
+                                <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 text-xs leading-relaxed text-slate-600 flex items-start gap-3">
+                                    <div class="w-7 h-7 rounded-lg bg-purple-50 text-[#5e0078] flex items-center justify-center shrink-0 mt-0.5">
+                                        <i class="fas fa-circle-info text-xs"></i>
                                     </div>
-
                                     <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 1: MAKSUD DAN TUJUAN</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Dasar kerja sama pemasaran produk dan layanan PT Amanah Safar melalui Program Mitra Amanah.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 2: RUANG LINGKUP KERJA SAMA</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Memasarkan produk resmi (online/offline), informasi benar, pendaftaran melalui sistem resmi, dan pendampingan administrasi jamaah.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 3: STATUS MITRA</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Bukan karyawan; hubungan bersifat kemitraan tanpa wewenang keputusan hukum mandiri.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 4: HAK PIHAK PERTAMA</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Kebijakan kemitraan, verifikasi identitas, ubah SOP, pembinaan, serta menunda/menghentikan kemitraan jika melanggar.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 5: HAK MITRA</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Pemasaran produk resmi, materi promosi, akses dashboard mitra, komisi/insentif program, serta pelatihan.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 6: KEWAJIBAN MITRA</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Menjaga nama baik, info benar, patuhi SOP, jaga kerahasiaan data jamaah, taat merek resmi, dan tidak membuat janji di luar SOP.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 7: PEMBAYARAN JAMAAH</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Langsung ke rekening resmi Bank BSI No. 7275610601 an. PT AMANAH TANGGUH MANDIRI. Dilarang menampung di rekening pribadi (pelanggaran berat).</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 8: KOMISI DAN INSENTIF</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Sesuai skema program; pembayaran komisi maksimal 2 hari setelah keberangkatan jamaah.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 9: KERAHASIAAN</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Kerahasiaan seluruh data jamaah, data bisnis, strategi pemasaran, dan dokumen internal.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 10: LARANGAN</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Dilarang memalsukan data, menyalahgunakan identitas, menipu jamaah, menggunakan rekening pribadi, dan sebar info palsu.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 11: SANKSI</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Teguran tertulis, penangguhan status, penghentian kerja sama, pencabutan status, ganti rugi, hingga proses hukum.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 12: JANGKA WAKTU</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Berlaku sejak ditandatangani hingga diakhiri oleh salah satu pihak sesuai ketentuan perjanjian.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 13: PENYELESAIAN PERSELISIHAN</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Musyawarah mufakat, atau penyelesaian menurut hukum Republik Indonesia.</p>
-                                    </div>
-
-                                    <div>
-                                        <strong class="text-slate-900 block font-bold text-[11px]">PASAL 14: PENUTUP</strong>
-                                        <p class="text-[11px] mt-0.5 text-slate-600">Telah membaca, memahami, dan menyetujui seluruh isi perjanjian tanpa paksaan dari pihak mana pun.</p>
+                                        <p class="font-bold text-slate-800 mb-0.5">Naskah Resmi Perjanjian Kerja Sama (19 Pasal)</p>
+                                        <p class="text-[11px] text-slate-500">Perjanjian mengacu secara utuh pada naskah hukum resmi 19 pasal beserta matriks kewenangan dan lampiran. Klik tombol <strong>Lihat &amp; Cetak PKS Resmi</strong> di atas untuk meninjau atau mencetak dokumen lengkap berformat PDF.</p>
                                     </div>
                                 </div>
                             </div>

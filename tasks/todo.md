@@ -7,11 +7,11 @@
   - [x] 1.4: Perbaiki teks profile & package form di `app/Views/profile.php` dan `app/Views/superadmin/package_form.php` (T-15, T-16).
   - [x] 1.5: Verifikasi sintaks PHP dan buat commit lokal Tahap 1.
 
-- [ ] Task 2: Eliminasi Dead Code & Sinkronisasi Dokumen Hukum PKS
-  - [ ] 2.1: Hapus berkas view yatim `app/Views/landing_payungmadinah.php` (UI-04).
-  - [ ] 2.2: Hapus 4 berkas view mati di `app/Views/partners/` dan rapikan `app/Controllers/Partners.php` (UI-05).
-  - [ ] 2.3: Hapus box ringkasan 14 pasal usang dan rapikan tombol KTP di `app/Views/superadmin/verification_detail.php` (T-11, UI-06).
-  - [ ] 2.4: Verifikasi sintaks PHP dan buat commit lokal Tahap 2.
+- [x] Task 2: Eliminasi Dead Code & Sinkronisasi Dokumen Hukum PKS
+  - [x] 2.1: Hapus berkas view yatim `app/Views/landing_payungmadinah.php` (UI-04).
+  - [x] 2.2: Hapus 4 berkas view mati di `app/Views/partners/` dan rapikan `app/Controllers/Partners.php` (UI-05).
+  - [x] 2.3: Hapus box ringkasan 14 pasal usang dan rapikan tombol KTP di `app/Views/superadmin/verification_detail.php` (T-11, UI-06).
+  - [x] 2.4: Verifikasi sintaks PHP dan buat commit lokal Tahap 2.
 
 - [ ] Task 3: Navigasi, Standarisasi Bahasa & Penyempurnaan UX
   - [ ] 3.1: Hapus dot merah statis lonceng notifikasi di `app/Views/layouts/navbar.php` (UI-01).
