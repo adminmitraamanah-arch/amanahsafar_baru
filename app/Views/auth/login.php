@@ -508,18 +508,9 @@
 
                     <!-- Flash Message Notifications -->
                     <?php if (session()->getFlashdata('error')): ?>
-                        <?php $flashError = (string) session()->getFlashdata('error'); ?>
-                        <div class="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center justify-between gap-3 shadow-2xs">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <i class="fas fa-circle-exclamation text-rose-500 text-sm shrink-0"></i>
-                                <div class="font-semibold break-words"><?= esc($flashError) ?></div>
-                            </div>
-                            <?php if (str_contains(strtolower($flashError), 'belum terdaftar') || str_contains(strtolower($flashError), 'daftar akun')): ?>
-                                <a href="<?= base_url('/register') ?>" class="shrink-0 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition inline-flex items-center gap-1.5 shadow-xs">
-                                    <span>Daftar Akun</span>
-                                    <i class="fas fa-arrow-right text-[10px]"></i>
-                                </a>
-                            <?php endif; ?>
+                        <div class="mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2.5 shadow-2xs">
+                            <i class="fas fa-circle-exclamation text-rose-500 text-sm shrink-0"></i>
+                            <div class="font-semibold break-words"><?= esc(session()->getFlashdata('error')) ?></div>
                         </div>
                     <?php endif; ?>
 
