@@ -112,6 +112,15 @@
         outline: none;
         box-shadow: 0 0 0 3px rgba(107, 0, 138, 0.15);
     }
+    .input-pill[readonly],
+    .input-pill.input-locked {
+        background-color: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #334155 !important;
+        cursor: not-allowed !important;
+        user-select: none !important;
+        box-shadow: none !important;
+    }
     #namaBankManual {
         text-align: left;
         padding-left: 1rem !important;
@@ -726,7 +735,7 @@
                                 <label for="namaPemilikRekening" class="block text-xs font-bold text-slate-700">
                                     Nama Pemilik Rekening <span class="text-rose-500">*</span>
                                 </label>
-                                <button type="button" onclick="copyKtpName()" class="text-xs font-bold text-[#6b008a] hover:text-[#55006e] hover:underline inline-flex items-center gap-1 focus:outline-none">
+                                <button type="button" id="btnCopyNamaKtp" onclick="copyKtpName()" class="hidden text-xs font-bold text-[#6b008a] hover:text-[#55006e] hover:underline items-center gap-1 focus:outline-none" disabled style="display: none;">
                                     <i class="fas fa-clone text-[10px]"></i> Salin dari Nama KTP
                                 </button>
                             </div>
@@ -798,6 +807,21 @@ const systemState = {
     currentScanId: 0
 };
 
+// Fungsi Helper Penguncian Field Identitas & Rekening
+function lockField(el) {
+    if (!el || !el.value || !el.value.trim()) return;
+    el.readOnly = true;
+    el.classList.add('input-locked');
+    el.setAttribute('tabindex', '-1');
+}
+
+function unlockField(el) {
+    if (!el) return;
+    el.readOnly = false;
+    el.classList.remove('input-locked');
+    el.removeAttribute('tabindex');
+}
+
 // Pemeriksaan Kesesuaian Nama Pemilik Rekening dengan Nama KTP
 function checkRekeningOwnerMatch() {
     const namaKtpEl = document.getElementById('namaKtp');
@@ -808,13 +832,13 @@ function checkRekeningOwnerMatch() {
     const valKtp = namaKtpEl.value.trim().toUpperCase().replace(/\s+/g, ' ');
     const valPemilik = namaPemilikEl.value.trim().toUpperCase().replace(/\s+/g, ' ');
 
-    if (!valPemilik) {
+    if (!valPemilik || !valKtp) {
         if (errorEl) errorEl.classList.add('hidden');
         namaPemilikEl.classList.remove('border-rose-500', 'bg-rose-50/40');
         return false;
     }
 
-    if (valKtp && valPemilik && valKtp !== valPemilik) {
+    if (valKtp !== valPemilik) {
         if (errorEl) errorEl.classList.remove('hidden');
         namaPemilikEl.classList.add('border-rose-500', 'bg-rose-50/40');
         return false;
@@ -831,6 +855,9 @@ function copyKtpName() {
     const targetInput = document.getElementById('namaPemilikRekening');
     if (namaKtpInput && targetInput) {
         targetInput.value = namaKtpInput.value.trim();
+        if (targetInput.value.trim() && namaKtpInput.readOnly) {
+            lockField(targetInput);
+        }
         checkRekeningOwnerMatch();
         refreshSubmitButton();
     }
@@ -1331,16 +1358,25 @@ async function handleKtpFile(file) {
                 if (nikText) nikText.textContent = extracted.nik || '(Tidak terbaca otomatis)';
                 if (namaText) namaText.textContent = extracted.nama || '(Tidak terbaca otomatis)';
 
-                // Auto-fill langsung NIK dan Nama dari KTP ke form
+                // Auto-fill langsung NIK dan Nama dari KTP ke form serta kunci field
                 const nikInput = document.getElementById('nikInput');
                 const namaInput = document.getElementById('namaKtp');
+                const namaPemilikInput = document.getElementById('namaPemilikRekening');
 
                 if (extracted.nik && nikInput) {
                     nikInput.value = extracted.nik;
+                    lockField(nikInput);
                 }
 
                 if (extracted.nama && namaInput) {
                     namaInput.value = extracted.nama;
+                    lockField(namaInput);
+
+                    // Sinkronisasi otomatis ke Nama Pemilik Rekening & kunci field
+                    if (namaPemilikInput) {
+                        namaPemilikInput.value = extracted.nama;
+                        lockField(namaPemilikInput);
+                    }
                 }
 
                 // Cocokkan data input dengan KTP & validasi kesesuaian rekening
@@ -1450,6 +1486,26 @@ document.addEventListener('DOMContentLoaded', function() {
             refreshSubmitButton();
         });
     }
+
+    // 4. Inisialisasi penguncian jika data KTP dan rekening sudah tersimpan sebelumnya
+    if (systemState.hasExistingKtp) {
+        if (namaInput && namaInput.value.trim()) lockField(namaInput);
+        if (nikInput && nikInput.value.trim()) lockField(nikInput);
+        if (namaPemilikInput && namaPemilikInput.value.trim()) lockField(namaPemilikInput);
+    }
+
+    // Blokir pengeditan manual (ketik, hapus, paste, potong, drag-drop) pada field yang terkunci
+    ['keydown', 'paste', 'cut', 'drop'].forEach(evt => {
+        [namaInput, nikInput, namaPemilikInput].forEach(el => {
+            if (el) {
+                el.addEventListener(evt, function(e) {
+                    if (this.readOnly) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    });
 
     // 5. Checkbox Persetujuan
     if (agreeCheck) {
