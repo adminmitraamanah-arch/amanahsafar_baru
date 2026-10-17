@@ -605,18 +605,6 @@
                                         <p id="ktpStatusDesc" class="text-[11px] leading-relaxed text-slate-600">
                                             <?= !empty($verification['ktp_path']) ? 'KTP Anda telah tersimpan di sistem. Unggah berkas baru apabila Anda ingin mengganti dokumen KTP.' : 'Unggah foto KTP asli yang jelas dan terbaca. Sistem akan memverifikasi NIK dan nama secara otomatis.' ?>
                                         </p>
-                                        
-                                        <!-- Ringkasan Ekstraksi Dokumen Terbaca -->
-                                        <div id="ktpExtractedSummary" class="hidden mt-2 p-2.5 rounded-xl bg-white/80 border border-slate-200/80 text-[11px] space-y-1">
-                                            <div class="flex items-center justify-between font-mono">
-                                                <span class="text-slate-500 font-sans">NIK Terdeteksi:</span>
-                                                <span id="extractedNikText" class="font-bold text-slate-800 tracking-wider">-</span>
-                                            </div>
-                                            <div class="flex items-center justify-between">
-                                                <span class="text-slate-500">Nama Terdeteksi:</span>
-                                                <span id="extractedNamaText" class="font-bold text-slate-800 uppercase">-</span>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1439,7 +1427,7 @@ function validateIdentityMatch() {
 
     // Jika NIK belum lengkap 16 digit
     if (valNik.length !== 16) {
-        updateStatusBox('warning', 'KTP Valid - Lengkapi NIK',
+        updateStatusBox('success', 'KTP Valid - Lengkapi NIK',
             'Silakan masukkan 16 digit NIK lengkap sesuai KTP Anda.',
             'KTP Valid'
         );
@@ -1449,7 +1437,7 @@ function validateIdentityMatch() {
 
     // Jika Nama belum lengkap
     if (!valNama || valNama.length < 3) {
-        updateStatusBox('warning', 'KTP Valid - Lengkapi Nama',
+        updateStatusBox('success', 'KTP Valid - Lengkapi Nama',
             'Silakan masukkan Nama Lengkap Anda sesuai yang tertera pada KTP.',
             'KTP Valid'
         );
@@ -1640,15 +1628,6 @@ async function handleKtpFile(file) {
                 // Dokumen KTP Dinyatakan Sah & Valid
                 systemState.isKtpValid = true;
 
-                // Tampilkan summary ekstraksi secara informatif (tidak memblokir jika tidak terbaca)
-                const summaryBox = document.getElementById('ktpExtractedSummary');
-                const nikText = document.getElementById('extractedNikText');
-                const namaText = document.getElementById('extractedNamaText');
-
-                if (summaryBox) summaryBox.classList.remove('hidden');
-                if (nikText) nikText.textContent = extracted.nik || '(Diisi manual)';
-                if (namaText) namaText.textContent = extracted.nama || '(Diisi manual)';
-
                 // Auto-fill nilai awal jika teks terbaca, TETAPI JANGAN KUNCI field NIK & Nama KTP
                 const nikInput = document.getElementById('nikInput');
                 const namaInput = document.getElementById('namaKtp');
@@ -1679,9 +1658,9 @@ async function handleKtpFile(file) {
             } catch (err) {
                 if (scanId !== systemState.currentScanId) return;
                 console.error('OCR Error:', err);
-                updateStatusBox('warning', 'Dokumen KTP Terunggah',
+                updateStatusBox('success', 'Dokumen KTP Terunggah',
                     'Dokumen KTP berhasil diunggah. Silakan lengkapi Nama Lengkap dan 16 digit NIK Anda pada formulir di bawah ini.',
-                    'KTP Terunggah'
+                    'KTP Valid'
                 );
                 // Berikan toleransi jika OCR engine gagal termuat di browser
                 systemState.isKtpValid = true;
