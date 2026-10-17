@@ -957,20 +957,20 @@ function analyzeImageQuality(img) {
         const width = img.naturalWidth || img.width;
         const height = img.naturalHeight || img.height;
 
-        // 1. Validasi Dimensi Minimum
-        if (width < 400 || height < 250) {
+        // 1. Validasi Dimensi Minimum (toleransi resolusi 320x200 untuk KTP)
+        if (width < 320 || height < 200) {
             return resolve({
                 valid: false,
                 reason: 'Resolusi gambar KTP terlalu kecil atau tidak jelas. Mohon unggah foto KTP dengan resolusi lebih tinggi.'
             });
         }
 
-        // 2. Validasi Aspek Rasio (Standar KTP 85.6mm x 53.98mm = ~1.58, tolerir rotasi/crop 0.65 - 2.8)
+        // 2. Validasi Aspek Rasio (Toleransi rasio 0.45 - 3.2 untuk foto portrait smartphone maupun landscape)
         const ratio = width / height;
-        if (ratio < 0.65 || ratio > 2.8) {
+        if (ratio < 0.45 || ratio > 3.2) {
             return resolve({
                 valid: false,
-                reason: 'Proporsi dokumen tidak proporsional untuk kartu identitas KTP. Mohon pastikan foto berorientasi mendatar/landscape.'
+                reason: 'Proporsi dokumen tidak proporsional untuk kartu identitas KTP. Mohon pastikan foto kartu terlihat penuh.'
             });
         }
 
@@ -1000,16 +1000,16 @@ function analyzeImageQuality(img) {
             const sampledCount = Math.floor(pixelCount / step);
             const avgLum = totalLum / sampledCount;
 
-            // Foto terlalu gelap (underexposed)
-            if (avgLum < 30) {
+            // Foto terlalu gelap (underexposed) - toleransi dilonggarkan ke < 20
+            if (avgLum < 20) {
                 return resolve({
                     valid: false,
                     reason: 'Foto KTP terlalu gelap atau buram. Pastikan foto diambil dalam pencahayaan yang cukup.'
                 });
             }
 
-            // Foto silau / putih total (overexposed / flash glare)
-            if (avgLum > 248) {
+            // Foto silau / putih total (overexposed) - toleransi dilonggarkan ke > 252
+            if (avgLum > 252) {
                 return resolve({
                     valid: false,
                     reason: 'Foto KTP terlalu silau atau terdapat pantulan cahaya berlebih. Mohon ambil foto tanpa pantulan cahaya.'
@@ -1024,6 +1024,63 @@ function analyzeImageQuality(img) {
     });
 }
 
+// Preprocessing citra KTP di Canvas sebelum OCR (Scale Normalization & Kontras Teks vs Latar Batik Biru)
+function preprocessKtpCanvas(img) {
+    const origW = img.naturalWidth || img.width;
+    const origH = img.naturalHeight || img.height;
+    if (!origW || !origH) return null;
+
+    // Normalisasi resolusi optimal untuk engine Tesseract (1100 - 1600px)
+    let targetW = origW;
+    let targetH = origH;
+    if (origW > 1600) {
+        targetW = 1500;
+        targetH = Math.round((origH / origW) * targetW);
+    } else if (origW < 1000) {
+        targetW = 1200;
+        targetH = Math.round((origH / origW) * targetW);
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = targetW;
+    canvas.height = targetH;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    ctx.drawImage(img, 0, 0, targetW, targetH);
+
+    try {
+        const imgData = ctx.getImageData(0, 0, targetW, targetH);
+        const d = imgData.data;
+
+        // Kontras adaptif: Latar KTP Indonesia dominan biru/cyan (Blue tinggi, Red rendah).
+        // Teks KTP hitam pekat (semua kanal rendah).
+        // Bobot Red tinggi mempertajam perbedaan teks vs latar biru.
+        for (let i = 0; i < d.length; i += 4) {
+            const r = d[i];
+            const g = d[i + 1];
+            const b = d[i + 2];
+            let gray = (0.5 * r + 0.35 * g + 0.15 * b);
+
+            // S-curve penegasan teks: gelap ditarik lebih hitam, terang ditarik lebih putih
+            if (gray < 115) {
+                gray = Math.max(0, gray * 0.72);
+            } else if (gray > 135) {
+                gray = Math.min(255, gray * 1.22);
+            }
+
+            d[i] = gray;
+            d[i + 1] = gray;
+            d[i + 2] = gray;
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        return canvas;
+    } catch (e) {
+        return null;
+    }
+}
+
 // Pembersihan & Normalisasi String untuk Komparasi
 function normalizeText(str) {
     if (!str) return '';
@@ -1034,14 +1091,34 @@ function normalizeText(str) {
         .trim();
 }
 
-// Ekstraksi Kata Kunci KTP Indonesia
+// Daftar Kode Provinsi Indonesia Sah untuk Validasi Format NIK
+const VALID_PROV_CODES = new Set([
+    11, 12, 13, 14, 15, 16, 17, 18, 19, 21,
+    31, 32, 33, 34, 35, 36,
+    51, 52, 53,
+    61, 62, 63, 64, 65,
+    71, 72, 73, 74, 75, 76,
+    81, 82,
+    91, 92, 93, 94, 95, 96
+]);
+
+function isValidNikFormat(candidate) {
+    if (!candidate || typeof candidate !== 'string') return false;
+    const clean = candidate.trim();
+    if (!/^[1-9][0-9]{15}$/.test(clean)) return false;
+    const prov = parseInt(clean.substring(0, 2), 10);
+    return VALID_PROV_CODES.has(prov);
+}
+
+// Ekstraksi Kata Kunci KTP Indonesia (dengan toleransi variasi kata)
 function checkIndonesianKtpKeywords(rawText) {
     const text = normalizeText(rawText);
     const keywords = [
         'REPUBLIK', 'INDONESIA', 'KARTU', 'TANDA', 'PENDUDUK',
         'NIK', 'PROVINSI', 'KABUPATEN', 'KOTA', 'AGAMA',
         'STATUS', 'PERKAWINAN', 'PEKERJAAN', 'KEWARGANEGARAAN',
-        'BERLAKU', 'DARAH', 'ALAMAT', 'TEMPAT', 'LAHIR', 'KELURAHAN', 'KECAMATAN'
+        'BERLAKU', 'DARAH', 'ALAMAT', 'TEMPAT', 'LAHIR', 'KELURAHAN', 'KECAMATAN',
+        'KELAMIN', 'SEUMUR', 'HIDUP', 'DESA', 'WARGANEGARA', 'WNI', 'GOLONGAN', 'KAWIN'
     ];
 
     let matchCount = 0;
@@ -1054,9 +1131,9 @@ function checkIndonesianKtpKeywords(rawText) {
         }
     });
 
-    // Indikasi kuat KTP: Ada 'NIK' atau kombinasi nama negara/provinsi/tanda penduduk
-    const hasCoreAnchor = text.includes('NIK') || (text.includes('PENDUDUK') && text.includes('INDONESIA')) || (text.includes('PROVINSI') && text.includes('KABUPATEN'));
-    const isIndonesianKtp = matchCount >= 2 || (hasCoreAnchor && matchCount >= 1);
+    const hasNik = /\bN[\s\.\-_]*[I1l|!]?[\s\.\-_]*[KkRr]\b/i.test(rawText) || text.includes('NIK');
+    const hasCoreAnchor = hasNik || (text.includes('PENDUDUK') && text.includes('INDONESIA')) || (text.includes('PROVINSI') && text.includes('KABUPATEN'));
+    const isIndonesianKtp = matchCount >= 2 || (hasCoreAnchor && matchCount >= 1) || hasNik;
 
     return {
         isKtp: isIndonesianKtp,
@@ -1065,59 +1142,155 @@ function checkIndonesianKtpKeywords(rawText) {
     };
 }
 
+// Ekstraksi 16 Digit NIK dengan Toleransi Spasi & OCR Typos
+function extractNikFromText(rawText) {
+    if (!rawText) return null;
+
+    const fixOcrDigits = (str) => {
+        return str
+            .replace(/[oODQ]/g, '0')
+            .replace(/[Il|!\]\[]/g, '1')
+            .replace(/[Zz]/g, '2')
+            .replace(/[A]/g, '4')
+            .replace(/[Ss]/g, '5')
+            .replace(/[bG]/g, '6')
+            .replace(/[T]/g, '7')
+            .replace(/[B]/g, '8')
+            .replace(/[gq]/g, '9');
+    };
+
+    // 1. Coba pola 16 digit langsung (tanpa spasi)
+    const exactMatches = rawText.match(/\b([1-9][0-9]{15})\b/g);
+    if (exactMatches) {
+        for (const m of exactMatches) {
+            if (isValidNikFormat(m)) return m;
+        }
+    }
+
+    const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+
+    // 2. Coba periksa baris yang mengandung indikasi kata NIK (dengan toleransi typo N1K, NlK, NIR, dll)
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (/\bN[\s\.\-_]*[I1l|!]?[\s\.\-_]*[KkRr]\b/i.test(line) || /NIK/i.test(line)) {
+            let candidateLine = line.replace(/.*?\bN[\s\.\-_]*[I1l|!]?[\s\.\-_]*[KkRr]\b\s*[:;\-=_~!\.]*\s*/i, '');
+            if (!candidateLine.trim() && i + 1 < lines.length) {
+                candidateLine = lines[i + 1];
+            }
+            
+            let cleaned = fixOcrDigits(candidateLine).replace(/[^0-9]/g, '');
+            if (cleaned.length >= 16) {
+                for (let j = 0; j <= cleaned.length - 16; j++) {
+                    const sub = cleaned.substring(j, j + 16);
+                    if (isValidNikFormat(sub)) return sub;
+                }
+            }
+        }
+    }
+
+    // 3. Coba cari baris mana saja yang memiliki kombinasi angka (minimal 8 digit asli)
+    for (const line of lines) {
+        let candidateStr = line.replace(/.*?\b(NIK|N1K|NOMOR|NO|KTP)\b\s*[:;\-=_~!\.]*\s*/i, '');
+        const rawDigitsCount = (candidateStr.match(/[0-9]/g) || []).length;
+        if (rawDigitsCount >= 8) {
+            let cleaned = fixOcrDigits(candidateStr).replace(/[^0-9]/g, '');
+            if (cleaned.length >= 16) {
+                for (let j = 0; j <= cleaned.length - 16; j++) {
+                    const sub = cleaned.substring(j, j + 16);
+                    if (isValidNikFormat(sub)) return sub;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+// Ekstraksi Nama Sesuai KTP dengan Toleransi Variasi Spasi & Separator
+function extractNamaFromText(rawText, foundNik) {
+    if (!rawText) return null;
+
+    const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
+
+    const labelBlacklist = [
+        'REPUBLIK', 'INDONESIA', 'PROVINSI', 'KABUPATEN', 'KOTA', 'KARTU', 'TANDA', 'PENDUDUK',
+        'NIK', 'TEMPAT', 'LAHIR', 'GOL', 'DARAH', 'ALAMAT', 'RT', 'RW', 'KEL', 'DESA',
+        'KECAMATAN', 'AGAMA', 'STATUS', 'PERKAWINAN', 'PEKERJAAN', 'KEWARGANEGARAAN',
+        'BERLAKU', 'HINGGA', 'SEUMUR', 'HIDUP', 'ISLAM', 'KRISTEN', 'KATOLIK', 'HINDU',
+        'BUDDHA', 'KONGHUCU', 'WNI', 'WNA', 'KAWIN', 'BELUM', 'CERAI'
+    ];
+
+    const isBlacklisted = (str) => {
+        const upper = str.toUpperCase();
+        return labelBlacklist.some(label => {
+            const regex = new RegExp(`\\b${label}\\b`, 'i');
+            return regex.test(upper);
+        });
+    };
+
+    const cleanCandidateName = (str) => {
+        if (!str) return '';
+        let cleaned = str.replace(/.*?\bN[\s\.\-_]*A[\s\.\-_]*M[\s\.\-_]*A\b\s*[:;\-=_~!\.]*\s*/i, '');
+        cleaned = cleaned.replace(/\b(TEMPAT|LAHIR|GOL|DARAH|ALAMAT|JENIS|KELAMIN)\b.*/i, '');
+        cleaned = cleaned.replace(/[^A-Za-z\s'\.]/g, ' ');
+        cleaned = cleaned.replace(/\s+/g, ' ').trim();
+        if (cleaned.length >= 3 && /[AEIOUaeiou]/.test(cleaned) && !isBlacklisted(cleaned)) {
+            return cleaned.toUpperCase();
+        }
+        return '';
+    };
+
+    // 1. Coba cari baris yang memuat kata 'NAMA' (dengan toleransi spasi atau titik: N A M A, NAM A, NA.MA, HAM A)
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (/\bN[\s\.\-_]*A[\s\.\-_]*M[\s\.\-_]*A\b/i.test(line) || /\b(HAM\s*A|MAMA)\b/i.test(line)) {
+            const cleaned = cleanCandidateName(line);
+            if (cleaned) {
+                return cleaned;
+            }
+            if (i + 1 < lines.length) {
+                const nextLineClean = cleanCandidateName(lines[i + 1]);
+                if (nextLineClean) {
+                    return nextLineClean;
+                }
+            }
+        }
+    }
+
+    // 2. Posisi struktural: jika kata 'NAMA' tidak terbaca, periksa baris setelah NIK
+    let nikLineIndex = -1;
+    if (foundNik) {
+        for (let i = 0; i < lines.length; i++) {
+            const digitsOnly = lines[i].replace(/[oODQ]/g, '0').replace(/[Il|!\]\[]/g, '1').replace(/[^0-9]/g, '');
+            if (digitsOnly.includes(foundNik)) {
+                nikLineIndex = i;
+                break;
+            }
+        }
+    }
+
+    if (nikLineIndex !== -1 && nikLineIndex + 1 < lines.length) {
+        for (let offset = 1; offset <= 2 && (nikLineIndex + offset) < lines.length; offset++) {
+            const candidateLine = lines[nikLineIndex + offset];
+            const cleaned = cleanCandidateName(candidateLine);
+            if (cleaned && !cleaned.includes(foundNik)) {
+                return cleaned;
+            }
+        }
+    }
+
+    return null;
+}
+
 // Ekstraksi 16 Digit NIK dan Nama dari Teks OCR
 function extractKtpData(rawText) {
-    let nik = null;
-    let nama = null;
-
-    // 1. Ekstraksi NIK (Pola 16 Digit Angka)
-    // Coba regex langsung
-    const rawMatches = rawText.match(/\b([1-9][0-9]{15})\b/g);
-    if (rawMatches && rawMatches.length > 0) {
-        nik = rawMatches[0];
-    } else {
-        // Coba cari di baris yang mengandung 'NIK' dan normalisasi OCR typos (misal O -> 0, I -> 1)
-        const lines = rawText.split('\n');
-        for (let line of lines) {
-            if (/NIK/i.test(line)) {
-                let candidate = line.replace(/NIK/gi, '')
-                    .replace(/[:\-=_]/g, '')
-                    .replace(/[oOD]/g, '0')
-                    .replace(/[Il|!]/g, '1')
-                    .replace(/[Ss]/g, '5')
-                    .replace(/[B]/g, '8')
-                    .replace(/[^0-9]/g, '');
-                if (candidate.length >= 16) {
-                    nik = candidate.slice(0, 16);
-                    break;
-                }
-            }
-        }
+    if (!rawText) return { nik: null, nama: null };
+    const upper = rawText.toUpperCase();
+    if (upper.includes('KARTU KELUARGA') || upper.includes('SURAT IZIN MENGEMUDI') || upper.includes('PASPOR')) {
+        return { nik: null, nama: null };
     }
-
-    // 2. Ekstraksi Nama Sesuai KTP
-    const lines = rawText.split('\n').map(l => l.trim()).filter(Boolean);
-    for (let i = 0; i < lines.length; i++) {
-        const lineUpper = lines[i].toUpperCase();
-        if (lineUpper.includes('NAMA')) {
-            // Ambil teks di sebelah kata NAMA atau di baris berikutnya
-            let candidate = lineUpper.replace(/.*NAMA\s*[:\-=]?\s*/i, '').trim();
-            // Bersihkan label KTP yang tidak sengaja terbawa
-            candidate = candidate.replace(/\b(TEMPAT|LAHIR|GOL|DARAH|ALAMAT)\b.*/i, '').trim();
-            if (candidate.length >= 3 && !/^(KTP|NIK|REPUBLIK|INDONESIA|PROVINSI)/i.test(candidate)) {
-                nama = candidate;
-                break;
-            } else if (i + 1 < lines.length) {
-                let nextLine = lines[i + 1].toUpperCase().replace(/.*[:\-=]?\s*/, '').trim();
-                nextLine = nextLine.replace(/\b(TEMPAT|LAHIR|GOL|DARAH|ALAMAT)\b.*/i, '').trim();
-                if (nextLine.length >= 3 && !/^(TEMPAT|LAHIR|GOL|ALAMAT|AGAMA|STATUS)/i.test(nextLine)) {
-                    nama = nextLine;
-                    break;
-                }
-            }
-        }
-    }
-
+    const nik = extractNikFromText(rawText);
+    const nama = extractNamaFromText(rawText, nik);
     return { nik, nama };
 }
 
@@ -1141,7 +1314,7 @@ function validateIdentityMatch() {
     const valNik = nikInput ? nikInput.value.trim() : '';
     const valNama = namaInput ? namaInput.value.trim() : '';
 
-    // Jika tidak ada data yang berhasil diekstrak (KTP blur/terpotong)
+    // 1. Kasus jika kedua data NIK & Nama sama sekali tidak terbaca
     if (!systemState.extractedNik && !systemState.extractedNama) {
         updateStatusBox('warning', 'KTP Terdeteksi Namun Teks Kurang Jelas',
             'KTP terdeteksi namun NIK/Nama tidak dapat dibaca jelas. Pastikan seluruh bagian KTP terlihat penuh tanpa terpotong atau silau.',
@@ -1152,7 +1325,29 @@ function validateIdentityMatch() {
         return;
     }
 
-    // 1. Validasi NIK
+    // 2. Kasus jika NIK berhasil dibaca namun Nama belum terbaca jelas
+    if (systemState.extractedNik && !systemState.extractedNama) {
+        updateStatusBox('warning', 'NIK Terbaca, Nama Belum Terbaca Jelas',
+            'NIK berhasil dibaca otomatis (' + systemState.extractedNik + '), namun Nama pada KTP belum terbaca jelas. Mohon unggah foto KTP dengan pencahayaan lebih merata agar nama terisi otomatis.',
+            'Nama Belum Terbaca'
+        );
+        systemState.isKtpValid = false;
+        refreshSubmitButton();
+        return;
+    }
+
+    // 3. Kasus jika Nama berhasil dibaca namun NIK belum terbaca jelas
+    if (!systemState.extractedNik && systemState.extractedNama) {
+        updateStatusBox('warning', 'Nama Terbaca, NIK Belum Terbaca',
+            'Nama berhasil dibaca otomatis (' + systemState.extractedNama + '), namun nomor NIK belum terbaca jelas. Pastikan 16 digit NIK pada foto KTP tidak terpotong atau silau.',
+            'NIK Belum Terbaca'
+        );
+        systemState.isKtpValid = false;
+        refreshSubmitButton();
+        return;
+    }
+
+    // 4. Validasi Kesesuaian NIK
     let nikMismatch = false;
     if (systemState.extractedNik) {
         if (valNik && valNik !== systemState.extractedNik) {
@@ -1170,13 +1365,12 @@ function validateIdentityMatch() {
         return;
     }
 
-    // 2. Validasi Nama
+    // 5. Validasi Kesesuaian Nama
     let namaMismatch = false;
     if (systemState.extractedNama && valNama) {
         const normInput = normalizeText(valNama);
         const normExtracted = normalizeText(systemState.extractedNama);
 
-        // Periksa apakah nama input mengandung nama KTP atau sebaliknya
         const isMatch = normInput.includes(normExtracted) || 
                         normExtracted.includes(normInput) ||
                         calculateSimilarity(normInput, normExtracted) >= 0.65;
@@ -1318,7 +1512,11 @@ async function handleKtpFile(file) {
                     throw new Error('Modul OCR belum selesai dimuat. Silakan periksa koneksi internet Anda.');
                 }
 
-                const result = await Tesseract.recognize(tempImg, 'eng', {
+                // Preprocessing citra KTP ke Canvas (normalisasi resolusi & penajaman kontras teks vs latar batik biru)
+                const preprocessedCanvas = preprocessKtpCanvas(tempImg);
+                const ocrSource = preprocessedCanvas || tempImg;
+
+                const result = await Tesseract.recognize(ocrSource, 'eng', {
                     logger: m => {
                         if (m.status === 'recognizing text' && scanId === systemState.currentScanId) {
                             const pct = Math.round(m.progress * 100);
@@ -1332,9 +1530,14 @@ async function handleKtpFile(file) {
 
                 const ocrText = result.data.text || '';
 
-                // Validasi Kata Kunci KTP Indonesia
+                // Ekstraksi NIK & Nama
+                const extracted = extractKtpData(ocrText);
+                systemState.extractedNik = extracted.nik;
+                systemState.extractedNama = extracted.nama;
+
+                // Validasi Kata Kunci KTP Indonesia (atau jika NIK 16 digit Indonesia yang sah berhasil terdeteksi)
                 const ktpCheck = checkIndonesianKtpKeywords(ocrText);
-                if (!ktpCheck.isKtp) {
+                if (!ktpCheck.isKtp && !extracted.nik) {
                     updateStatusBox('error', 'Dokumen Bukan KTP Indonesia',
                         'Dokumen yang diunggah bukan KTP Indonesia. Silakan unggah foto KTP yang benar.',
                         'Bukan KTP'
@@ -1343,11 +1546,6 @@ async function handleKtpFile(file) {
                     refreshSubmitButton();
                     return;
                 }
-
-                // Ekstraksi NIK & Nama
-                const extracted = extractKtpData(ocrText);
-                systemState.extractedNik = extracted.nik;
-                systemState.extractedNama = extracted.nama;
 
                 // Tampilkan summary di status box
                 const summaryBox = document.getElementById('ktpExtractedSummary');
