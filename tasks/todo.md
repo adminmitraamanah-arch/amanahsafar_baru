@@ -1,26 +1,27 @@
-# Task List: Fitur Select All & Hapus Massal Data Super Admin
+# Task List: Implementasi Hasil Audit Konten, UI/UX, dan Fitur
 
-- [x] Task 1: Rute & Backend Bulk Delete Controllers
-  - Acceptance: Rute `vouchers/bulk-delete`, `users/bulk-delete`, `packages/bulk-delete`, `tasks/bulk-delete` terdaftar. Keempat controller memiliki method `bulkDelete()` dengan validasi CSRF, otentikasi Super Admin, dan proteksi keselamatan.
-  - Verify: Syntax lint `php -l` lulus pada Routes dan semua controller.
-  - Files: `app/Config/Routes.php`, `app/Controllers/SuperAdmin/Voucher.php`, `app/Controllers/SuperAdmin/User.php`, `app/Controllers/SuperAdmin/Package.php`, `app/Controllers/SuperAdmin/Task.php`
+- [x] Task 1: Pembersihan Teks, Copywriting & Redundansi Form
+  - [x] 1.1: Perbaiki teks login form di `app/Views/auth/login.php` (T-01, T-02, T-03).
+  - [x] 1.2: Perbaiki teks register form di `app/Views/auth/register.php` (T-04, T-05, T-06).
+  - [x] 1.3: Perbaiki teks verify form di `app/Views/auth/verify.php` (T-07, T-08, T-09, T-10).
+  - [x] 1.4: Perbaiki teks profile & package form di `app/Views/profile.php` dan `app/Views/superadmin/package_form.php` (T-15, T-16).
+  - [x] 1.5: Verifikasi sintaks PHP dan buat commit lokal Tahap 1.
 
-- [x] Task 2: UI Select All & Hapus Massal pada Kelola Voucher
-  - Acceptance: Checkbox header `#selectAllVouchers`, checkbox di setiap baris, bilah aksi massal muncul saat dipilih, konfirmasi hapus terhubung ke rute bulk delete.
-  - Verify: DOM inspection & pagination sync check.
-  - Files: `app/Views/superadmin/vouchers.php`
+- [ ] Task 2: Eliminasi Dead Code & Sinkronisasi Dokumen Hukum PKS
+  - [ ] 2.1: Hapus berkas view yatim `app/Views/landing_payungmadinah.php` (UI-04).
+  - [ ] 2.2: Hapus 4 berkas view mati di `app/Views/partners/` dan rapikan `app/Controllers/Partners.php` (UI-05).
+  - [ ] 2.3: Hapus box ringkasan 14 pasal usang dan rapikan tombol KTP di `app/Views/superadmin/verification_detail.php` (T-11, UI-06).
+  - [ ] 2.4: Verifikasi sintaks PHP dan buat commit lokal Tahap 2.
 
-- [x] Task 3: UI Select All & Hapus Massal pada Kelola Pengguna
-  - Acceptance: Checkbox header `#selectAllUsers`, checkbox di setiap baris (disabled untuk `isSelf`), bilah aksi massal dengan konfirmasi.
-  - Verify: DOM inspection & self-account disabled check.
-  - Files: `app/Views/superadmin/users.php`
+- [ ] Task 3: Navigasi, Standarisasi Bahasa & Penyempurnaan UX
+  - [ ] 3.1: Hapus dot merah statis lonceng notifikasi di `app/Views/layouts/navbar.php` (UI-01).
+  - [ ] 3.2: Aktifkan link `/profile` di profil sidebar bawah & standarisasi bahasa menu sidebar di `app/Views/layouts/sidebar.php` (UI-02, T-13, T-14).
+  - [ ] 3.3: Standarisasi Bahasa Indonesia kartu statistik di `app/Views/superadmin/users.php` (T-12).
+  - [ ] 3.4: Auto-populate nama dari akun ke form verifikasi di `app/Controllers/Auth.php` dan `app/Views/auth/verify.php`.
+  - [ ] 3.5: Rapikan header duplikasi tombol di `app/Views/member/dashboard.php` (UI-08).
+  - [ ] 3.6: Verifikasi sintaks PHP dan buat commit lokal Tahap 3.
 
-- [x] Task 4: UI Select All & Hapus Massal pada Katalog Paket & Tugas
-  - Acceptance: Checkbox "Pilih Semua" di toolbar, checkbox pada kartu Grid dan baris List, bilah aksi massal dengan konfirmasi.
-  - Verify: DOM inspection pada grid card & table rows.
-  - Files: `app/Views/superadmin/packages.php`, `app/Views/superadmin/tasks.php`
-
-- [x] Task 5: Pengujian Otomatis & Verifikasi Akhir
-  - Acceptance: Test script `tests/test_superadmin_bulk_delete.php` menguji penghapusan massal voucher, user, paket, tugas, dan proteksi akun Super Admin. Lulus 100%.
-  - Verify: Menjalankan test via CLI PHP.
-  - Files: `tests/test_superadmin_bulk_delete.php`
+- [ ] Task 4: Verifikasi Pengujian Menyeluruh
+  - [ ] 4.1: Jalankan sintaks linting `php -l` pada semua berkas yang diubah.
+  - [ ] 4.2: Jalankan test suite verifikasi.
+  - [ ] 4.3: Periksa `git status` dan buat laporan akhir.

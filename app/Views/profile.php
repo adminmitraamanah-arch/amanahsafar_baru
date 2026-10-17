@@ -137,7 +137,7 @@
                                 <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
                                     <i class="fas fa-key text-[#5e0078]"></i> Ubah Kata Sandi / Password
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-0.5">Biarkan kolom-kolom password ini kosong jika Anda tidak ingin mengubah password akun saat ini.</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Kosongkan jika tidak ingin mengubah kata sandi.</p>
                             </div>
 
                             <!-- Password Lama -->

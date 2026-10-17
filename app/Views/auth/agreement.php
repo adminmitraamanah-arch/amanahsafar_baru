@@ -886,7 +886,7 @@
 
                 <!-- Footer Kartu -->
                 <div class="auth-card-footer">
-                    &copy; <?= date('Y') ?> PT Amanah Tangguh Mandiri. All Rights Reserved. | Amanah Safar Digital Platform.
+                    &copy; <?= date('Y') ?> Amanah Safar. Hak cipta dilindungi.
                 </div>
             </div>
         </div>

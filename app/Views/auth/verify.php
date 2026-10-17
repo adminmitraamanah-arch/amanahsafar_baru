@@ -594,7 +594,7 @@
                                             </span>
                                         </div>
                                         <p id="ktpStatusDesc" class="text-[11px] leading-relaxed text-slate-600">
-                                            <?= !empty($verification['ktp_path']) ? 'KTP Anda telah tersimpan di sistem. Unggah berkas baru apabila Anda ingin mengganti dokumen KTP.' : 'Unggah foto KTP asli Anda pada kotak di atas. Sistem akan memeriksa format citra, memastikan dokumen KTP Indonesia yang sah, serta mencocokkan NIK dan Nama Anda secara otomatis.' ?>
+                                            <?= !empty($verification['ktp_path']) ? 'KTP Anda telah tersimpan di sistem. Unggah berkas baru apabila Anda ingin mengganti dokumen KTP.' : 'Unggah foto KTP asli yang jelas dan terbaca. Sistem akan memverifikasi NIK dan nama secara otomatis.' ?>
                                         </p>
                                         
                                         <!-- Ringkasan Ekstraksi Dokumen Terbaca -->
@@ -616,24 +616,23 @@
                         <!-- 3. BAGIAN IDENTITAS: NAMA SESUAI KTP -->
                         <div class="form-group-spaced">
                             <label for="namaKtp" class="block text-xs font-bold text-slate-700 mb-1.5">
-                                Nama Sesuai KTP <span class="text-rose-500">*</span>
+                                Nama Lengkap (KTP) <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
                                     <i class="fas fa-user"></i>
                                 </span>
                                 <input type="text" id="namaKtp" name="nama_ktp" required
-                                    value="<?= esc(old('nama_ktp', '')) ?>"
+                                    value="<?= esc(old('nama_ktp', $verification['nama_ktp'] ?? ($user['nama_lengkap'] ?? session('nama') ?? ''))) ?>"
                                     class="input-pill"
-                                    placeholder="Contoh: AHMAD DAHLAN (Sesuai KTP)">
+                                    placeholder="Contoh: Ahmad Dahlan">
                             </div>
-                            <span class="block text-[10px] text-slate-400 mt-1">Pastikan nama lengkap persis seperti yang tertera pada kartu identitas KTP Anda.</span>
                         </div>
 
                         <!-- 4. BAGIAN IDENTITAS: NOMOR INDUK KEPENDUDUKAN (NIK) -->
                         <div class="form-group-spaced">
                             <label for="nikInput" class="block text-xs font-bold text-slate-700 mb-1.5">
-                                Nomor Induk Kependudukan (NIK KTP - 16 Digit) <span class="text-rose-500">*</span>
+                                NIK (Nomor Induk Kependudukan) <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
@@ -642,10 +641,10 @@
                                 <input type="text" id="nikInput" name="nik" required pattern="[0-9]{16}" minlength="16" maxlength="16" inputmode="numeric"
                                     value="<?= esc($verification['nik'] ?? '') ?>"
                                     class="input-pill font-mono tracking-wider"
-                                    placeholder="Contoh: 3201012345670001"
+                                    placeholder="16 digit angka KTP"
                                     oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16)">
                             </div>
-                            <span class="block text-[10px] text-slate-400 mt-1">Wajib 16 digit angka sesuai KTP resmi. 1 NIK hanya berlaku untuk 1 akun kemitraan.</span>
+                            <span class="block text-[10px] text-slate-400 mt-1">1 NIK hanya berlaku untuk 1 akun kemitraan.</span>
                         </div>
 
                         <!-- 5. BAGIAN REKENING: NAMA BANK & NOMOR REKENING -->
@@ -736,14 +735,14 @@
                                     <i class="fas fa-user-check"></i>
                                 </span>
                                 <input type="text" id="namaPemilikRekening" name="nama_pemilik_rekening" required
-                                    value="<?= esc($verification['nama_pemilik_rekening'] ?? '') ?>"
+                                    value="<?= esc(old('nama_pemilik_rekening', $verification['nama_pemilik_rekening'] ?? ($user['nama_lengkap'] ?? session('nama') ?? ''))) ?>"
                                     class="input-pill"
                                     placeholder="Nama lengkap sesuai KTP">
                             </div>
                             <span id="rekeningOwnerError" class="hidden text-[10px] text-rose-600 font-semibold mt-1 flex items-center gap-1">
                                 <i class="fas fa-circle-exclamation"></i> Nama pemilik rekening harus sama persis dengan nama pada KTP.
                             </span>
-                            <span class="block text-[10px] text-slate-400 mt-1">Nama pemilik rekening bank wajib sama persis dengan nama identitas KTP Anda.</span>
+                            <span id="rekeningOwnerHint" class="block text-[10px] text-slate-400 mt-1">Nama pemilik rekening bank wajib sama persis dengan nama identitas KTP Anda.</span>
                         </div>
 
                         <!-- 8. Checkbox Persetujuan Kebenaran Data -->
@@ -768,7 +767,7 @@
 
                 <!-- Footer Kartu -->
                 <div class="auth-card-footer">
-                    &copy; <?= date('Y') ?> PT Amanah Tangguh Mandiri. All Rights Reserved. | Amanah Safar Digital Platform.
+                    &copy; <?= date('Y') ?> Amanah Safar. Hak cipta dilindungi.
                 </div>
             </div>
         </div>

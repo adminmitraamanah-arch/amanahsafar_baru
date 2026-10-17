@@ -77,7 +77,7 @@ if (!$isEdit) {
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
                                     Nama Paket <span class="text-rose-500">*</span>
                                 </label>
-                                <input type="text" name="nama" required value="<?= esc($package['nama'] ?? '') ?>" placeholder="Contoh: Paket Umroh VIP Plus Thaif 12 Hari"
+                                <input type="text" name="nama" required value="<?= esc($package['nama'] ?? '') ?>" placeholder="Paket Umroh VIP Plus Thaif 12 Hari"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                             </div>
 
@@ -153,7 +153,7 @@ if (!$isEdit) {
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
                                     Program / Durasi
                                 </label>
-                                <input type="text" name="program_durasi" value="<?= esc($package['program_durasi'] ?? '') ?>" placeholder="Contoh: 9D, 12D Free Thaif, 13D"
+                                <input type="text" name="program_durasi" value="<?= esc($package['program_durasi'] ?? '') ?>" placeholder="12 Hari (Free Thaif)"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                             </div>
 
@@ -161,7 +161,7 @@ if (!$isEdit) {
                                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
                                     Maskapai Penerbangan
                                 </label>
-                                <input type="text" name="maskapai" value="<?= esc($package['maskapai'] ?? '') ?>" placeholder="Contoh: Saudia Airlines, Garuda Indonesia"
+                                <input type="text" name="maskapai" value="<?= esc($package['maskapai'] ?? '') ?>" placeholder="Saudia Airlines / Garuda Indonesia"
                                     class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                             </div>
                         </div>
@@ -186,7 +186,7 @@ if (!$isEdit) {
                                 </label>
                                 <div class="relative">
                                     <i class="fas fa-kaaba absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input type="text" name="hotel_mekkah" value="<?= esc($package['hotel_mekkah'] ?? '') ?>" placeholder="Contoh: Pullman Zamzam / Setaraf (5★)"
+                                    <input type="text" name="hotel_mekkah" value="<?= esc($package['hotel_mekkah'] ?? '') ?>" placeholder="Pullman Zamzam / Setaraf (5★)"
                                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                                 </div>
                             </div>
@@ -197,7 +197,7 @@ if (!$isEdit) {
                                 </label>
                                 <div class="relative">
                                     <i class="fas fa-mosque absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input type="text" name="hotel_madinah" value="<?= esc($package['hotel_madinah'] ?? '') ?>" placeholder="Contoh: Rove Al Madinah / Setaraf (4★)"
+                                    <input type="text" name="hotel_madinah" value="<?= esc($package['hotel_madinah'] ?? '') ?>" placeholder="Rove Al Madinah / Setaraf (4★)"
                                         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                                 </div>
                             </div>
@@ -291,8 +291,8 @@ if (!$isEdit) {
                                 </label>
                                 <div class="relative">
                                     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                                    <input type="number" name="komisi_mitra" id="komisiMitraInput" required step="1" oninput="calculateCommissionPool()"
-                                        value="<?= (int)($package['komisi_mitra'] ?? 2000000) ?>" placeholder="2000000"
+                                    <input type="number" name="komisi_mitra" id="komisiMitraInput" required min="0" step="1" oninput="calculateCommissionPool()"
+                                        value="<?= (int)($package['komisi_mitra'] ?? 0) ?>" placeholder="0"
                                         class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                                 </div>
                                 <span class="text-[10px] text-slate-400 mt-1 block">Komisi closing mitra per pax</span>
@@ -305,8 +305,8 @@ if (!$isEdit) {
                                 </label>
                                 <div class="relative">
                                     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                                    <input type="number" name="komisi_manager" id="komisiManagerInput" required step="1" oninput="calculateCommissionPool()"
-                                        value="<?= (int)($package['komisi_manager'] ?? 500000) ?>" placeholder="500000"
+                                    <input type="number" name="komisi_manager" id="komisiManagerInput" required min="0" step="1" oninput="calculateCommissionPool()"
+                                        value="<?= (int)($package['komisi_manager'] ?? 0) ?>" placeholder="0"
                                         class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                                 </div>
                                 <span class="text-[10px] text-slate-400 mt-1 block">Override pembina manager per pax</span>
@@ -319,8 +319,8 @@ if (!$isEdit) {
                                 </label>
                                 <div class="relative">
                                     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
-                                    <input type="number" name="komisi_cabang_pusat" id="komisiCabangInput" required step="1" oninput="calculateCommissionPool()"
-                                        value="<?= (int)($package['komisi_cabang_pusat'] ?? 500000) ?>" placeholder="500000"
+                                    <input type="number" name="komisi_cabang_pusat" id="komisiCabangInput" required min="0" step="1" oninput="calculateCommissionPool()"
+                                        value="<?= (int)($package['komisi_cabang_pusat'] ?? 0) ?>" placeholder="0"
                                         class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#5e0078]/20 focus:border-[#5e0078] transition">
                                 </div>
                                 <span class="text-[10px] text-slate-400 mt-1 block">Hak cabang / limpahan pusat</span>
@@ -334,7 +334,7 @@ if (!$isEdit) {
                                 <div class="relative">
                                     <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Rp</span>
                                     <input type="number" name="total_pool_komisi" id="totalPoolInput" readonly
-                                        value="<?= (int)($package['total_pool_komisi'] ?? 3000000) ?>"
+                                        value="<?= (int)($package['total_pool_komisi'] ?? 0) ?>"
                                         class="w-full pl-10 pr-3 py-2.5 bg-purple-50/70 border border-purple-200 rounded-xl text-xs sm:text-sm font-extrabold text-[#5e0078] focus:outline-none cursor-not-allowed">
                                 </div>
                                 <span class="text-[10px] text-emerald-600 font-semibold mt-1 block flex items-center gap-1">
@@ -342,6 +342,8 @@ if (!$isEdit) {
                                 </span>
                             </div>
                         </div>
+
+                        <?= $this->include('shared/commission_simulation') ?>
 
                         <!-- Minimal DP Default -->
                         <div class="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -583,12 +585,31 @@ function addExcludeItem(value = '') {
 }
 
 function calculateCommissionPool() {
-    const mitra = parseFloat(document.getElementById('komisiMitraInput').value) || 0;
-    const manager = parseFloat(document.getElementById('komisiManagerInput').value) || 0;
-    const cabang = parseFloat(document.getElementById('komisiCabangInput').value) || 0;
+    const mitraEl = document.getElementById('komisiMitraInput');
+    const managerEl = document.getElementById('komisiManagerInput');
+    const cabangEl = document.getElementById('komisiCabangInput');
+    const poolEl = document.getElementById('totalPoolInput');
+    if (!poolEl) return;
+    const mitra = mitraEl && mitraEl.value !== '' ? (parseFloat(mitraEl.value) || 0) : 0;
+    const manager = managerEl && managerEl.value !== '' ? (parseFloat(managerEl.value) || 0) : 0;
+    const cabang = cabangEl && cabangEl.value !== '' ? (parseFloat(cabangEl.value) || 0) : 0;
     const pool = mitra + manager + cabang;
-    document.getElementById('totalPoolInput').value = pool;
+    poolEl.value = pool;
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    ['komisiMitraInput', 'komisiManagerInput', 'komisiCabangInput'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('blur', function() {
+            if (this.value.trim() === '') {
+                this.value = '0';
+                calculateCommissionPool();
+                this.dispatchEvent(new Event('input'));
+            }
+        });
+    });
+});
 
 function addDpRuleRow() {
     const container = document.getElementById('dpRulesContainer');

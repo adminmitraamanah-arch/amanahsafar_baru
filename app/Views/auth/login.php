@@ -557,10 +557,10 @@
                     <form method="POST" action="<?= base_url('/login' . (!empty($isAdminAccess) ? '?admin=1' : '')) ?>" class="mt-6">
                         <?= csrf_field() ?>
 
-                        <!-- Email Input (Hanya Menggunakan Email Aktif) -->
+                        <!-- Email Input -->
                         <div class="form-group-spaced">
                             <label for="email" class="block text-xs font-bold text-slate-700 mb-1.5">
-                                Email Aktif
+                                Alamat Email
                             </label>
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
@@ -571,7 +571,6 @@
                                     class="input-pill"
                                     placeholder="nama@email.com">
                             </div>
-                            <p class="text-[11px] text-slate-400 mt-1.5">Masukkan alamat email aktif yang terdaftar pada akun Anda.</p>
                         </div>
 
                         <!-- Password Input -->
@@ -590,7 +589,7 @@
                                 </span>
                                 <input type="password" id="password" name="password" required
                                     class="input-pill pr-11"
-                                    placeholder="Masukkan kata sandi akun Anda">
+                                    placeholder="Kata sandi akun">
                                 <button type="button" id="togglePassword" onclick="togglePasswordVisibility()" aria-label="Tampilkan atau sembunyikan kata sandi"
                                     class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition focus:outline-none">
                                     <i id="eyeIcon" class="fas fa-eye text-sm"></i>
@@ -620,7 +619,7 @@
 
                 <!-- Footer Kartu -->
                 <div class="auth-card-footer">
-                    &copy; <?= date('Y') ?> PT Amanah Tangguh Mandiri. All Rights Reserved. | Amanah Safar Digital Platform.
+                    &copy; <?= date('Y') ?> Amanah Safar. Hak cipta dilindungi.
                 </div>
             </div>
         </div>

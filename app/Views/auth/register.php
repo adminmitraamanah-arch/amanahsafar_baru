@@ -537,15 +537,14 @@
                         </div>
                     </div>
 
-                    <!-- Callout Info: Pendaftaran Kemitraan (Cabang, Manager Mitra, Mitra) -->
+                    <!-- Callout Info: Pendaftaran Kemitraan -->
                     <div class="info-card-amber">
                         <div class="info-card-icon">
                             <i class="fas fa-circle-info"></i>
                         </div>
                         <div class="info-card-content">
-                            <strong class="info-card-title">Pendaftaran Akses Kemitraan Amanah Safar</strong>
-                            <p class="info-card-desc">
-                                Pastikan Anda memiliki <strong>Kode Voucher</strong> dari Pembina. Voucher ini otomatis menentukan tingkat akses (Cabang, Manager Mitra, atau Mitra) dan jaringan pembinaan Anda.
+                            <p class="info-card-desc text-xs">
+                                Masukkan <strong>Kode Voucher</strong> dari Pembina untuk mengaktifkan akun dan tingkat kemitraan Anda.
                             </p>
                         </div>
                     </div>
@@ -584,7 +583,7 @@
                                 <input type="text" id="kodeVoucher" name="kode_voucher" required autofocus
                                     value="<?= esc(old('kode_voucher') ?? '') ?>"
                                     class="input-pill font-mono font-bold uppercase text-[#6b008a]"
-                                    placeholder="masukan kode voucher">
+                                    placeholder="Contoh: VCR-ABC123">
                             </div>
                         </div>
 
@@ -601,7 +600,7 @@
                                     <input type="text" id="namaLengkap" name="nama_lengkap" required
                                         value="<?= esc(old('nama_lengkap') ?? '') ?>"
                                         class="input-pill"
-                                        placeholder="masukan nama anda">
+                                        placeholder="Nama sesuai KTP">
                                 </div>
                             </div>
                             <div>
@@ -720,7 +719,7 @@
 
                 <!-- Footer Kartu -->
                 <div class="auth-card-footer">
-                    &copy; <?= date('Y') ?> PT Amanah Tangguh Mandiri. All Rights Reserved. | Amanah Safar Digital Platform.
+                    &copy; <?= date('Y') ?> Amanah Safar. Hak cipta dilindungi.
                 </div>
             </div>
         </div>
