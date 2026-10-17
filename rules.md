@@ -1,6 +1,7 @@
 # Aturan Kerja Agent AI
 
-Aturan ini berlaku untuk agent AI yang bekerja pada proyek `amanahsafar`. Baca sebelum melakukan perubahan dan gunakan bersama `AGENTS.md` serta skill yang relevan.
+Aturan ini berlaku untuk agent AI yang bekerja pada proyek `amanahsafar`. Baca sebelum melakukan perubahan dan gunakan bersama `AGENTS.md`, `rules_ui.md` (untuk pekerjaan antarmuka/UI/UX), serta skill yang relevan.
+
 
 ## 1. Fokus pada instruksi pengguna
 
