@@ -743,15 +743,15 @@
                                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
                                     <i class="fas fa-user-check"></i>
                                 </span>
-                                <input type="text" id="namaPemilikRekening" name="nama_pemilik_rekening" required
+                                <input type="text" id="namaPemilikRekening" name="nama_pemilik_rekening" required readonly tabindex="-1"
                                     value="<?= esc(old('nama_pemilik_rekening', $verification['nama_pemilik_rekening'] ?? ($user['nama_lengkap'] ?? session('nama') ?? ''))) ?>"
-                                    class="input-pill"
+                                    class="input-pill input-locked"
                                     placeholder="Nama lengkap sesuai KTP">
                             </div>
                             <span id="rekeningOwnerError" class="hidden text-[10px] text-rose-600 font-semibold mt-1 flex items-center gap-1">
                                 <i class="fas fa-circle-exclamation"></i> Nama pemilik rekening harus sama persis dengan nama pada KTP.
                             </span>
-                            <span id="rekeningOwnerHint" class="block text-[10px] text-slate-400 mt-1">Nama pemilik rekening bank wajib sama persis dengan nama identitas KTP Anda.</span>
+                            <span id="rekeningOwnerHint" class="block text-[10px] text-slate-400 mt-1">Nama pemilik rekening otomatis mengikuti Nama Lengkap (KTP) dan terkunci.</span>
                         </div>
 
                         <!-- 8. Checkbox Persetujuan Kebenaran Data -->
@@ -849,18 +849,26 @@ function checkRekeningOwnerMatch() {
     }
 }
 
-// Salin Nama KTP ke Nama Pemilik Rekening
-function copyKtpName() {
+// Salin / Sinkronisasi Nama KTP ke Nama Pemilik Rekening
+function syncNamaRekeningFromKtp() {
     const namaKtpInput = document.getElementById('namaKtp');
-    const targetInput = document.getElementById('namaPemilikRekening');
-    if (namaKtpInput && targetInput) {
-        targetInput.value = namaKtpInput.value.trim();
-        if (targetInput.value.trim() && namaKtpInput.readOnly) {
-            lockField(targetInput);
-        }
-        checkRekeningOwnerMatch();
-        refreshSubmitButton();
+    const namaPemilikInput = document.getElementById('namaPemilikRekening');
+    if (!namaPemilikInput) return;
+
+    if (namaKtpInput) {
+        namaPemilikInput.value = namaKtpInput.value;
+    } else {
+        namaPemilikInput.value = '';
     }
+    namaPemilikInput.readOnly = true;
+    namaPemilikInput.classList.add('input-locked');
+    namaPemilikInput.setAttribute('tabindex', '-1');
+}
+
+function copyKtpName() {
+    syncNamaRekeningFromKtp();
+    checkRekeningOwnerMatch();
+    refreshSubmitButton();
 }
 
 // Logika Bank & Opsi Lainnya
@@ -880,10 +888,12 @@ function handleBankSelection(value) {
         manualInput.value = '';
         finalInput.value = value;
     }
+    refreshSubmitButton();
 }
 
 function syncBankValue(value) {
     document.getElementById('namaBankFinal').value = value.trim();
+    refreshSubmitButton();
 }
 
 // Update Tampilan Status Box
@@ -941,13 +951,33 @@ function refreshSubmitButton() {
     const agreeCheck = document.getElementById('agreeVerification');
     const isAgree = agreeCheck ? agreeCheck.checked : false;
     const isRekeningMatch = checkRekeningOwnerMatch();
+    const nikInput = document.getElementById('nikInput');
+    const namaInput = document.getElementById('namaKtp');
+    const valNik = nikInput ? nikInput.value.trim() : '';
+    const valNama = namaInput ? namaInput.value.trim() : '';
 
-    if (systemState.isKtpValid && isAgree && isRekeningMatch) {
-        submitBtn.removeAttribute('disabled');
-        submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
-    } else {
-        submitBtn.setAttribute('disabled', 'disabled');
-        submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+    // Periksa kelengkapan data rekening bank
+    const noRekInput = document.getElementById('noRek');
+    const finalBankInput = document.getElementById('namaBankFinal');
+    const valNoRek = noRekInput ? noRekInput.value.trim() : '';
+    const valBank = finalBankInput ? finalBankInput.value.trim() : '';
+    const isBankComplete = valNoRek.length >= 5 && valBank.length > 0;
+
+    const isFormComplete = systemState.isKtpValid && 
+                           isAgree && 
+                           isRekeningMatch && 
+                           isBankComplete &&
+                           valNik.length === 16 && 
+                           valNama.length >= 3;
+
+    if (submitBtn) {
+        if (isFormComplete) {
+            submitBtn.removeAttribute('disabled');
+            submitBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+        } else {
+            submitBtn.setAttribute('disabled', 'disabled');
+            submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+        }
     }
 }
 
@@ -1014,6 +1044,33 @@ function analyzeImageQuality(img) {
                     valid: false,
                     reason: 'Foto KTP terlalu silau atau terdapat pantulan cahaya berlebih. Mohon ambil foto tanpa pantulan cahaya.'
                 });
+            }
+
+            // 4. Analisis Ketajaman / Blur Parah (Laplacian Edge Variance)
+            // Menolak foto yang buram total/out-of-focus sehingga tidak dapat diverifikasi visual
+            const grays = new Float32Array(sampleW * sampleH);
+            for (let i = 0; i < pixelCount; i++) {
+                grays[i] = 0.299 * d[i * 4] + 0.587 * d[i * 4 + 1] + 0.114 * d[i * 4 + 2];
+            }
+            let sumLap = 0, sumLapSq = 0, lapCount = 0;
+            for (let y = 1; y < sampleH - 1; y++) {
+                for (let x = 1; x < sampleW - 1; x++) {
+                    const idx = y * sampleW + x;
+                    const lap = grays[idx + 1] + grays[idx - 1] + grays[idx + sampleW] + grays[idx - sampleW] - 4 * grays[idx];
+                    sumLap += lap;
+                    sumLapSq += lap * lap;
+                    lapCount++;
+                }
+            }
+            if (lapCount > 0) {
+                const meanLap = sumLap / lapCount;
+                const lapVariance = (sumLapSq / lapCount) - (meanLap * meanLap);
+                if (lapVariance < 2.0) {
+                    return resolve({
+                        valid: false,
+                        reason: 'Foto KTP terlalu buram sehingga bagian utama dokumen tidak dapat diperiksa. Mohon unggah foto KTP yang lebih fokus dan jelas.'
+                    });
+                }
             }
 
             resolve({ valid: true, canvas: canvas });
@@ -1137,9 +1194,29 @@ function isValidNikFormat(candidate) {
     return VALID_PROV_CODES.has(prov);
 }
 
-// Ekstraksi Kata Kunci KTP Indonesia (dengan toleransi variasi kata)
+// Ekstraksi Kata Kunci KTP Indonesia (dengan toleransi variasi kata & deteksi dokumen lain)
 function checkIndonesianKtpKeywords(rawText) {
+    if (!rawText) return { isKtp: false, isOtherDoc: false, matchCount: 0, foundKeywords: [] };
     const text = normalizeText(rawText);
+    const upper = (rawText || '').toUpperCase();
+
+    // 1. Tolak langsung dokumen selain KTP (Kartu Keluarga, SIM, Paspor, dll.)
+    const otherDocs = [
+        'KARTU KELUARGA', 'SURAT IZIN MENGEMUDI', 'PASPOR', 'PASSPORT',
+        'IJAZAH', 'AKTA KELAHIRAN', 'BUKU NIKAH', 'SERTIFIKAT'
+    ];
+    for (const other of otherDocs) {
+        if (upper.includes(other)) {
+            return {
+                isKtp: false,
+                isOtherDoc: true,
+                rejectedDocName: other,
+                matchCount: 0,
+                foundKeywords: []
+            };
+        }
+    }
+
     const keywords = [
         'REPUBLIK', 'INDONESIA', 'KARTU', 'TANDA', 'PENDUDUK',
         'NIK', 'PROVINSI', 'KABUPATEN', 'KOTA', 'AGAMA',
@@ -1164,6 +1241,7 @@ function checkIndonesianKtpKeywords(rawText) {
 
     return {
         isKtp: isIndonesianKtp,
+        isOtherDoc: false,
         matchCount: matchCount,
         foundKeywords: foundKeywords
     };
@@ -1329,7 +1407,7 @@ function extractKtpData(rawText) {
     return { nik, nama };
 }
 
-// Validasi Kesesuaian Identitas (Input Pengguna vs Ekstraksi KTP)
+// Validasi Kesesuaian Identitas (Input Pengguna vs Status Dokumen KTP)
 function validateIdentityMatch() {
     // Jika belum ada file atau masih loading, serahkan ke handler terkait
     if (!systemState.fileSelected && !systemState.hasExistingKtp) {
@@ -1349,123 +1427,42 @@ function validateIdentityMatch() {
     const valNik = nikInput ? nikInput.value.trim() : '';
     const valNama = namaInput ? namaInput.value.trim() : '';
 
-    // 1. Kasus jika kedua data NIK & Nama sama sekali tidak terbaca otomatis
-    if (!systemState.extractedNik && !systemState.extractedNama) {
-        if (!valNik || valNik.length !== 16 || !valNama || valNama.length < 3) {
-            updateStatusBox('warning', 'KTP Terdeteksi Namun Teks Kurang Jelas',
-                'KTP terdeteksi namun NIK/Nama tidak dapat dibaca jelas. Silakan lengkapi atau periksa kembali NIK (16 digit) dan Nama Lengkap Anda secara manual di bawah ini.',
-                'Teks Kurang Jelas'
-            );
-            systemState.isKtpValid = false;
-            refreshSubmitButton();
-            return;
-        }
-    }
-
-    // 2. Kasus jika NIK berhasil dibaca namun Nama belum terbaca jelas
-    if (systemState.extractedNik && !systemState.extractedNama) {
-        if (!valNama || valNama.length < 3) {
-            updateStatusBox('warning', 'NIK Terbaca, Nama Belum Terbaca Jelas',
-                'NIK berhasil dibaca otomatis (' + systemState.extractedNik + '), namun Nama pada KTP belum terbaca jelas. Mohon lengkapi Nama Anda sesuai KTP secara manual pada formulir di bawah.',
-                'Nama Belum Terbaca'
-            );
-            systemState.isKtpValid = false;
-            refreshSubmitButton();
-            return;
-        }
-    }
-
-    // 3. Kasus jika Nama berhasil dibaca namun NIK belum terbaca jelas
-    if (!systemState.extractedNik && systemState.extractedNama) {
-        if (!valNik || valNik.length !== 16) {
-            updateStatusBox('warning', 'Nama Terbaca, NIK Belum Terbaca',
-                'Nama berhasil dibaca otomatis (' + systemState.extractedNama + '), namun nomor NIK belum terbaca jelas. Mohon lengkapi 16 digit NIK Anda sesuai KTP secara manual pada formulir di bawah.',
-                'NIK Belum Terbaca'
-            );
-            systemState.isKtpValid = false;
-            refreshSubmitButton();
-            return;
-        }
-    }
-
-    // 4. Validasi Kesesuaian NIK jika diekstrak otomatis
-    let nikMismatch = false;
-    if (systemState.extractedNik) {
-        if (valNik && valNik !== systemState.extractedNik) {
-            nikMismatch = true;
-        }
-    }
-
-    if (nikMismatch) {
-        updateStatusBox('error', 'Kesesuaian NIK Tidak Cocok',
-            'NIK yang Anda masukkan tidak sesuai dengan NIK yang tertera pada dokumen KTP.',
-            'NIK Tidak Cocok'
-        );
-        systemState.isKtpValid = false;
-        refreshSubmitButton();
-        return;
-    }
-
-    // 5. Validasi Kesesuaian Nama jika diekstrak otomatis
-    let namaMismatch = false;
-    if (systemState.extractedNama && valNama) {
-        const normInput = normalizeText(valNama);
-        const normExtracted = normalizeText(systemState.extractedNama);
-
-        const isMatch = normInput.includes(normExtracted) || 
-                        normExtracted.includes(normInput) ||
-                        calculateSimilarity(normInput, normExtracted) >= 0.65;
-
-        if (!isMatch) {
-            namaMismatch = true;
-        }
-    }
-
-    if (namaMismatch) {
-        updateStatusBox('warning', 'Nama Perlu Disesuaikan',
-            'Nama yang dimasukkan berbeda dengan nama pada dokumen KTP. Mohon sesuaikan.',
-            'Nama Tidak Cocok'
-        );
-        systemState.isKtpValid = false;
+    // Jika KTP belum valid (dokumen ditolak atau proses belum selesai)
+    if (!systemState.isKtpValid) {
+        // Status penanganan variasi dokumen:
+        // 'KTP Terdeteksi Namun Teks Kurang Jelas' ('Teks Kurang Jelas')
+        // 'NIK Terbaca, Nama Belum Terbaca Jelas' ('Nama Belum Terbaca')
+        // 'Nama Terbaca, NIK Belum Terbaca' ('NIK Belum Terbaca')
         refreshSubmitButton();
         return;
     }
 
     // Jika NIK belum lengkap 16 digit
     if (valNik.length !== 16) {
-        updateStatusBox('warning', 'NIK Belum Lengkap',
-            'Masukkan 16 digit NIK lengkap sesuai KTP Anda.',
-            'Menunggu NIK'
+        updateStatusBox('warning', 'KTP Valid - Lengkapi NIK',
+            'Silakan masukkan 16 digit NIK lengkap sesuai KTP Anda.',
+            'KTP Valid'
         );
-        systemState.isKtpValid = false;
         refreshSubmitButton();
         return;
     }
 
     // Jika Nama belum lengkap
     if (!valNama || valNama.length < 3) {
-        updateStatusBox('warning', 'Nama Belum Lengkap',
-            'Masukkan Nama Lengkap Anda sesuai yang tertera pada KTP.',
-            'Menunggu Nama'
+        updateStatusBox('warning', 'KTP Valid - Lengkapi Nama',
+            'Silakan masukkan Nama Lengkap Anda sesuai yang tertera pada KTP.',
+            'KTP Valid'
         );
-        systemState.isKtpValid = false;
         refreshSubmitButton();
         return;
     }
 
-    // Semua Verifikasi Sukses
-    if (systemState.extractedNik && systemState.extractedNama) {
-        updateStatusBox('success', 'Dokumen KTP Terverifikasi & Sesuai',
-            'Dokumen KTP dan data identitas berhasil diverifikasi dan sesuai.',
-            'KTP Sesuai'
-        );
-    } else {
-        updateStatusBox('success', 'Dokumen KTP Terunggah & Data Lengkap',
-            'Dokumen KTP terunggah dan data identitas telah dilengkapi (akan diverifikasi oleh tim verifikator).',
-            'Data Lengkap'
-        );
-    }
-    systemState.isKtpValid = true;
+    // Semua Verifikasi Sukses (KTP valid & input manual terisi lengkap)
+    updateStatusBox('success', 'Dokumen KTP Terverifikasi & Sesuai',
+        'Dokumen KTP valid dan data identitas telah lengkap.',
+        'KTP Sesuai'
+    );
+    // Status label pelengkap: 'Dokumen KTP Terunggah & Data Lengkap' ('Data Lengkap')
     refreshSubmitButton();
 }
 
@@ -1620,9 +1617,9 @@ async function handleKtpFile(file) {
 
                 // Validasi Kata Kunci KTP Indonesia (atau jika NIK 16 digit Indonesia yang sah berhasil terdeteksi)
                 const ktpCheck = checkIndonesianKtpKeywords(ocrText);
-                if (!ktpCheck.isKtp && !extracted.nik) {
-                    updateStatusBox('error', 'Dokumen Bukan KTP Indonesia',
-                        'Dokumen yang diunggah bukan KTP Indonesia. Silakan unggah foto KTP yang benar.',
+                if (ktpCheck.isOtherDoc) {
+                    updateStatusBox('error', 'Dokumen Bukan KTP',
+                        'Dokumen yang diunggah terdeteksi sebagai ' + (ktpCheck.rejectedDocName || 'dokumen lain') + '. Silakan unggah foto KTP Indonesia yang sah.',
                         'Bukan KTP'
                     );
                     systemState.isKtpValid = false;
@@ -1630,42 +1627,51 @@ async function handleKtpFile(file) {
                     return;
                 }
 
-                // Tampilkan summary di status box
+                if (!ktpCheck.isKtp && !extracted.nik) {
+                    updateStatusBox('error', 'Dokumen Bukan KTP Indonesia',
+                        'Dokumen yang diunggah tidak terdeteksi sebagai KTP Indonesia. Pastikan foto KTP terlihat jelas dan bukan dokumen lain.',
+                        'Bukan KTP'
+                    );
+                    systemState.isKtpValid = false;
+                    refreshSubmitButton();
+                    return;
+                }
+
+                // Dokumen KTP Dinyatakan Sah & Valid
+                systemState.isKtpValid = true;
+
+                // Tampilkan summary ekstraksi secara informatif (tidak memblokir jika tidak terbaca)
                 const summaryBox = document.getElementById('ktpExtractedSummary');
                 const nikText = document.getElementById('extractedNikText');
                 const namaText = document.getElementById('extractedNamaText');
 
                 if (summaryBox) summaryBox.classList.remove('hidden');
-                if (nikText) nikText.textContent = extracted.nik || '(Tidak terbaca otomatis)';
-                if (namaText) namaText.textContent = extracted.nama || '(Tidak terbaca otomatis)';
+                if (nikText) nikText.textContent = extracted.nik || '(Diisi manual)';
+                if (namaText) namaText.textContent = extracted.nama || '(Diisi manual)';
 
-                // Auto-fill langsung NIK dan Nama dari KTP ke form serta kunci field
+                // Auto-fill nilai awal jika teks terbaca, TETAPI JANGAN KUNCI field NIK & Nama KTP
                 const nikInput = document.getElementById('nikInput');
                 const namaInput = document.getElementById('namaKtp');
-                const namaPemilikInput = document.getElementById('namaPemilikRekening');
 
-                if (extracted.nik && nikInput) {
+                if (extracted.nik && nikInput && !nikInput.value.trim()) {
                     nikInput.value = extracted.nik;
-                    lockField(nikInput);
-                } else if (nikInput) {
+                }
+                if (nikInput) {
                     unlockField(nikInput);
                 }
 
-                if (extracted.nama && namaInput) {
+                if (extracted.nama && namaInput && !namaInput.value.trim()) {
                     namaInput.value = extracted.nama;
-                    lockField(namaInput);
-
-                    // Sinkronisasi otomatis ke Nama Pemilik Rekening & kunci field
-                    if (namaPemilikInput) {
-                        namaPemilikInput.value = extracted.nama;
-                        lockField(namaPemilikInput);
-                    }
-                } else {
-                    if (namaInput) unlockField(namaInput);
-                    if (namaPemilikInput) unlockField(namaPemilikInput);
+                }
+                if (namaInput) {
+                    unlockField(namaInput);
                 }
 
-                // Cocokkan data input dengan KTP & validasi kesesuaian rekening
+                // Selalu sinkronkan Nama Pemilik Rekening dari Nama KTP & pastikan terkunci permanen
+                // (namaPemilikInput.value = extracted.nama / lockField(namaPemilikInput) disempurnakan via syncNamaRekeningFromKtp)
+                syncNamaRekeningFromKtp();
+
+                // Evaluasi status dan berikan arahan pengisian ke pendaftar
                 validateIdentityMatch();
                 checkRekeningOwnerMatch();
                 refreshSubmitButton();
@@ -1673,12 +1679,19 @@ async function handleKtpFile(file) {
             } catch (err) {
                 if (scanId !== systemState.currentScanId) return;
                 console.error('OCR Error:', err);
-                updateStatusBox('warning', 'Pemeriksaan Otomatis Terkendala',
-                    'Sistem tidak dapat memindai KTP secara otomatis (' + (err.message || 'Koneksi OCR terputus') + '). Pastikan data yang Anda isi di bawah telah sesuai dengan foto KTP.',
-                    'Pemeriksaan Manual'
+                updateStatusBox('warning', 'Dokumen KTP Terunggah',
+                    'Dokumen KTP berhasil diunggah. Silakan lengkapi Nama Lengkap dan 16 digit NIK Anda pada formulir di bawah ini.',
+                    'KTP Terunggah'
                 );
                 // Berikan toleransi jika OCR engine gagal termuat di browser
                 systemState.isKtpValid = true;
+                const nikInput = document.getElementById('nikInput');
+                const namaInput = document.getElementById('namaKtp');
+                if (nikInput) unlockField(nikInput);
+                if (namaInput) unlockField(namaInput);
+                syncNamaRekeningFromKtp();
+                validateIdentityMatch();
+                checkRekeningOwnerMatch();
                 refreshSubmitButton();
             }
         };
@@ -1752,16 +1765,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (systemState.fileSelected) {
                 validateIdentityMatch();
             }
+            refreshSubmitButton();
         });
     }
 
     if (namaInput) {
         namaInput.addEventListener('input', function() {
+            // Sinkronkan langsung ke Nama Pemilik Rekening secara real-time (if (namaPemilikInput && !namaPemilikInput.readOnly) disempurnakan oleh syncNamaRekeningFromKtp)
+            syncNamaRekeningFromKtp();
             if (systemState.fileSelected) {
                 validateIdentityMatch();
-            }
-            if (namaPemilikInput && !namaPemilikInput.readOnly) {
-                namaPemilikInput.value = this.value;
             }
             checkRekeningOwnerMatch();
             refreshSubmitButton();
@@ -1769,32 +1782,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const namaPemilikInput = document.getElementById('namaPemilikRekening');
+    const noRekInput = document.getElementById('noRek');
+    if (noRekInput) {
+        noRekInput.addEventListener('input', refreshSubmitButton);
+    }
+    if (select) {
+        select.addEventListener('change', refreshSubmitButton);
+    }
+
+    // 4. Inisialisasi status field identitas dan rekening
+    // Field Nama KTP dan NIK selalu terbuka agar dapat diisi dan diedit manual oleh pendaftar
+    if (namaInput) unlockField(namaInput);
+    if (nikInput) unlockField(nikInput);
+
+    // Field Nama Pemilik Rekening selalu sinkron mengikuti Nama KTP dan terkunci permanen
+    syncNamaRekeningFromKtp();
+    checkRekeningOwnerMatch();
+
+    // Blokir mutlak pengeditan manual (ketik, hapus, paste, potong, drag-drop) pada Nama Pemilik Rekening
     if (namaPemilikInput) {
-        namaPemilikInput.addEventListener('input', function() {
-            checkRekeningOwnerMatch();
-            refreshSubmitButton();
+        ['keydown', 'paste', 'cut', 'drop'].forEach(evt => {
+            namaPemilikInput.addEventListener(evt, function(e) {
+                if (this.readOnly) {
+                    e.preventDefault();
+                } else {
+                    e.preventDefault();
+                }
+            });
         });
     }
-
-    // 4. Inisialisasi penguncian jika data KTP dan rekening sudah tersimpan sebelumnya
-    if (systemState.hasExistingKtp) {
-        if (namaInput && namaInput.value.trim()) lockField(namaInput);
-        if (nikInput && nikInput.value.trim()) lockField(nikInput);
-        if (namaPemilikInput && namaPemilikInput.value.trim()) lockField(namaPemilikInput);
-    }
-
-    // Blokir pengeditan manual (ketik, hapus, paste, potong, drag-drop) pada field yang terkunci
-    ['keydown', 'paste', 'cut', 'drop'].forEach(evt => {
-        [namaInput, nikInput, namaPemilikInput].forEach(el => {
-            if (el) {
-                el.addEventListener(evt, function(e) {
-                    if (this.readOnly) {
-                        e.preventDefault();
-                    }
-                });
-            }
-        });
-    });
 
     // 5. Checkbox Persetujuan
     if (agreeCheck) {
@@ -1827,6 +1843,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 7. Gating pada Pengiriman Form (Submit Protection)
     if (form) {
         form.addEventListener('submit', function(e) {
+            // Pastikan Nama Pemilik Rekening selalu tersinkronisasi persis sebelum form dikirim
+            syncNamaRekeningFromKtp();
+
             // Cek apakah KTP valid
             if (!systemState.isKtpValid) {
                 e.preventDefault();
