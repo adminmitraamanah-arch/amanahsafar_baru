@@ -13,13 +13,13 @@
   - [x] 2.3: Hapus box ringkasan 14 pasal usang dan rapikan tombol KTP di `app/Views/superadmin/verification_detail.php` (T-11, UI-06).
   - [x] 2.4: Verifikasi sintaks PHP dan buat commit lokal Tahap 2.
 
-- [ ] Task 3: Navigasi, Standarisasi Bahasa & Penyempurnaan UX
-  - [ ] 3.1: Hapus dot merah statis lonceng notifikasi di `app/Views/layouts/navbar.php` (UI-01).
-  - [ ] 3.2: Aktifkan link `/profile` di profil sidebar bawah & standarisasi bahasa menu sidebar di `app/Views/layouts/sidebar.php` (UI-02, T-13, T-14).
-  - [ ] 3.3: Standarisasi Bahasa Indonesia kartu statistik di `app/Views/superadmin/users.php` (T-12).
-  - [ ] 3.4: Auto-populate nama dari akun ke form verifikasi di `app/Controllers/Auth.php` dan `app/Views/auth/verify.php`.
-  - [ ] 3.5: Rapikan header duplikasi tombol di `app/Views/member/dashboard.php` (UI-08).
-  - [ ] 3.6: Verifikasi sintaks PHP dan buat commit lokal Tahap 3.
+- [x] Task 3: Navigasi, Standarisasi Bahasa & Penyempurnaan UX
+  - [x] 3.1: Hapus dot merah statis lonceng notifikasi di `app/Views/layouts/navbar.php` (UI-01).
+  - [x] 3.2: Aktifkan link `/profile` di profil sidebar bawah & standarisasi bahasa menu sidebar di `app/Views/layouts/sidebar.php` (UI-02, T-13, T-14).
+  - [x] 3.3: Standarisasi Bahasa Indonesia kartu statistik di `app/Views/superadmin/users.php` (T-12).
+  - [x] 3.4: Auto-populate nama dari akun ke form verifikasi di `app/Controllers/Auth.php` dan `app/Views/auth/verify.php`.
+  - [x] 3.5: Rapikan header duplikasi tombol di `app/Views/member/dashboard.php` (UI-08).
+  - [x] 3.6: Verifikasi sintaks PHP dan buat commit lokal Tahap 3.
 
 - [ ] Task 4: Verifikasi Pengujian Menyeluruh
   - [ ] 4.1: Jalankan sintaks linting `php -l` pada semua berkas yang diubah.

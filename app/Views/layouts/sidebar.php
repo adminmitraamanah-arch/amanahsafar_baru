@@ -33,35 +33,35 @@
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/admin/packages'],
                         ['icon' => 'fas fa-shopping-cart', 'label' => 'Kelola Pesanan', 'url' => '/admin/orders'],
                         ['icon' => 'fas fa-handshake', 'label' => 'Komisi', 'url' => '/admin/commissions'],
-                        ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/admin/tasks'],
+                        ['icon' => 'fas fa-tasks', 'label' => 'Tugas & Promosi', 'url' => '/admin/tasks'],
                     ],
                     'superadmin' => [
                         ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'url' => '/superadmin/'],
-                        ['icon' => 'fas fa-desktop', 'label' => 'Landing Page', 'url' => '/superadmin/landing'],
-                        ['icon' => 'fas fa-ticket-alt', 'label' => 'Vouchers', 'url' => '/superadmin/vouchers'],
+                        ['icon' => 'fas fa-desktop', 'label' => 'Kelola Landing Page', 'url' => '/superadmin/landing'],
+                        ['icon' => 'fas fa-ticket-alt', 'label' => 'Voucher Kemitraan', 'url' => '/superadmin/vouchers'],
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/superadmin/packages'],
                         ['icon' => 'fas fa-shopping-cart', 'label' => 'Kelola Pesanan', 'url' => '/superadmin/orders'],
-                        ['icon' => 'fas fa-users', 'label' => 'Users', 'url' => '/superadmin/users'],
+                        ['icon' => 'fas fa-users', 'label' => 'Data Pengguna', 'url' => '/superadmin/users'],
                         ['icon' => 'fas fa-handshake', 'label' => 'Komisi', 'url' => '/superadmin/commissions'],
                         ['icon' => 'fas fa-wallet', 'label' => 'Penarikan Dana', 'url' => '/superadmin/withdrawals'],
-                        ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/superadmin/tasks'],
-                        ['icon' => 'fas fa-check-circle', 'label' => 'Verifications', 'url' => '/superadmin/verifications'],
+                        ['icon' => 'fas fa-tasks', 'label' => 'Tugas & Promosi', 'url' => '/superadmin/tasks'],
+                        ['icon' => 'fas fa-check-circle', 'label' => 'Verifikasi Pengguna', 'url' => '/superadmin/verifications'],
                     ],
                     'pusat' => [
                         ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'url' => '/app/dashboard'],
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/admin/packages'],
                         ['icon' => 'fas fa-users', 'label' => 'Binaan', 'url' => '/app/binaan'],
-                        ['icon' => 'fas fa-shopping-cart', 'label' => 'Orders', 'url' => '/app/orders'],
+                        ['icon' => 'fas fa-shopping-cart', 'label' => 'Pesanan', 'url' => '/app/orders'],
                         ['icon' => 'fas fa-receipt', 'label' => 'Mutasi & Komisi', 'url' => '/app/commissions'],
-                        ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/app/tasks'],
+                        ['icon' => 'fas fa-tasks', 'label' => 'Tugas & Promosi', 'url' => '/app/tasks'],
                     ],
                     'member' => [
                         ['icon' => 'fas fa-tachometer-alt', 'label' => 'Dashboard', 'url' => '/app/dashboard'],
                         ['icon' => 'fas fa-box', 'label' => 'Katalog Paket', 'url' => '/app/packages'],
                         ['icon' => 'fas fa-users', 'label' => 'Binaan', 'url' => '/app/binaan'],
-                        ['icon' => 'fas fa-shopping-cart', 'label' => 'Orders', 'url' => '/app/orders'],
+                        ['icon' => 'fas fa-shopping-cart', 'label' => 'Pesanan', 'url' => '/app/orders'],
                         ['icon' => 'fas fa-receipt', 'label' => 'Mutasi & Komisi', 'url' => '/app/commissions'],
-                        ['icon' => 'fas fa-tasks', 'label' => 'Tasks', 'url' => '/app/tasks'],
+                        ['icon' => 'fas fa-tasks', 'label' => 'Tugas & Promosi', 'url' => '/app/tasks'],
                     ]
                 ];
                 
@@ -101,8 +101,8 @@
     <!-- Bottom Account & Logout Section -->
     <div class="p-4 border-t border-slate-100 bg-slate-50/50">
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5 min-w-0">
-                <div class="w-8 h-8 rounded-full bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm overflow-hidden">
+            <a href="<?= base_url('/profile') ?>" class="flex items-center gap-2.5 min-w-0 group/prof p-1 -m-1 rounded-xl hover:bg-white hover:shadow-2xs transition" title="Pengaturan Profil">
+                <div class="w-8 h-8 rounded-full bg-[#5e0078] text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-sm overflow-hidden group-hover/prof:ring-2 group-hover/prof:ring-[#5e0078]/20 transition">
                     <?php if (!empty(session('foto_profil')) && is_file(FCPATH . 'uploads/profiles/' . session('foto_profil'))): ?>
                         <img src="<?= base_url('uploads/profiles/' . esc(session('foto_profil'))) ?>" alt="<?= esc(session('nama') ?? 'User') ?>" class="w-full h-full object-cover">
                     <?php else: ?>
@@ -110,10 +110,10 @@
                     <?php endif; ?>
                 </div>
                 <div class="min-w-0">
-                    <p class="text-xs font-bold text-slate-800 truncate leading-tight"><?= esc(session('nama') ?? 'User') ?></p>
+                    <p class="text-xs font-bold text-slate-800 truncate leading-tight group-hover/prof:text-[#5e0078] transition"><?= esc(session('nama') ?? 'User') ?></p>
                     <p class="text-[10px] text-slate-400 capitalize truncate"><?= str_replace('_', ' ', session('role') ?? 'Role') ?></p>
                 </div>
-            </div>
+            </a>
             <a href="<?= base_url('/logout') ?>" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Logout">
                 <i class="fas fa-arrow-right-from-bracket text-xs"></i>
             </a>

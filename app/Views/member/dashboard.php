@@ -11,21 +11,10 @@
             <div class="max-w-7xl mx-auto space-y-6">
                 
                 <!-- Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
                         <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard Mitra</h1>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <a href="<?= base_url('/app/commissions') ?>" 
-                           class="btn-interactive inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-purple-50 text-[#5e0078] hover:bg-purple-100 text-xs sm:text-sm font-bold border border-purple-200 shadow-2xs transition">
-                            <i class="fas fa-receipt text-xs"></i>
-                            <span>Buku Mutasi</span>
-                        </a>
-                        <a href="<?= base_url('/app/orders') ?>" 
-                           class="btn-interactive inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5e0078] hover:bg-[#4c0062] text-white text-xs sm:text-sm font-bold shadow-sm transition">
-                            <i class="fas fa-shopping-cart text-xs"></i>
-                            <span>Lihat Pesanan</span>
-                        </a>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Ringkasan performa penjualan dan jaringan kemitraan Anda.</p>
                     </div>
                 </div>
 

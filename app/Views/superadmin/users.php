@@ -83,12 +83,12 @@
                             </div>
                         </div>
                         <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Active Users</span>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Pengguna Aktif</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= number_format($activeUsers, 0, ',', '.') ?></span>
                         </div>
                     </div>
 
-                    <!-- Card 2: Banned / Nonaktif -->
+                    <!-- Card 2: Pengguna Nonaktif -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
@@ -96,12 +96,12 @@
                             </div>
                         </div>
                         <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Banned / Nonaktif</span>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Pengguna Nonaktif</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-rose-600"><?= number_format($inactiveUsers, 0, ',', '.') ?></span>
                         </div>
                     </div>
 
-                    <!-- Card 3: KYC Verified -->
+                    <!-- Card 3: KYC Terverifikasi -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
@@ -109,12 +109,12 @@
                             </div>
                         </div>
                         <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Verified</span>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Terverifikasi</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-emerald-600"><?= number_format($kycVerified, 0, ',', '.') ?></span>
                         </div>
                     </div>
 
-                    <!-- Card 4: KYC In Review -->
+                    <!-- Card 4: KYC Menunggu Review -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
@@ -122,12 +122,12 @@
                             </div>
                         </div>
                         <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Review</span>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Menunggu Review</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-amber-600"><?= number_format($kycReview, 0, ',', '.') ?></span>
                         </div>
                     </div>
 
-                    <!-- Card 5: KYC Unverified -->
+                    <!-- Card 5: KYC Belum Lengkap -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-sm transition-transform group-hover:scale-105">
@@ -135,12 +135,12 @@
                             </div>
                         </div>
                         <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Unverified</span>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">KYC Belum Lengkap</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-slate-700"><?= number_format($kycUnverified, 0, ',', '.') ?></span>
                         </div>
                     </div>
 
-                    <!-- Card 6: Total Users -->
+                    <!-- Card 6: Total Pengguna -->
                     <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between">
                         <div class="flex items-center justify-between mb-3">
                             <div class="w-9 h-9 rounded-xl bg-purple-50 text-[#5e0078] flex items-center justify-center text-sm transition-transform group-hover:scale-105">
@@ -148,7 +148,7 @@
                             </div>
                         </div>
                         <div>
-                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Total Users</span>
+                            <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-0.5">Total Pengguna</span>
                             <span class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= number_format($totalUsers, 0, ',', '.') ?></span>
                         </div>
                     </div>

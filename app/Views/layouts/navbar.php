@@ -26,9 +26,8 @@
         
         <?php if (session('logged_in')): ?>
             <!-- Notifications Icon -->
-            <button type="button" class="w-9 h-9 rounded-xl text-slate-400 hover:text-[#5e0078] hover:bg-purple-50/70 flex items-center justify-center text-sm transition relative" title="Notifikasi">
+            <button type="button" class="w-9 h-9 rounded-xl text-slate-400 hover:text-[#5e0078] hover:bg-purple-50/70 flex items-center justify-center text-sm transition relative" title="Belum ada notifikasi baru">
                 <i class="fas fa-bell"></i>
-                <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" style="background-color: #ef4444;"></span>
             </button>
 
             <!-- User Profile Dropdown -->
