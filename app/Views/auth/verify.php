@@ -739,7 +739,7 @@
                             <span id="rekeningOwnerError" class="hidden text-[10px] text-rose-600 font-semibold mt-1 flex items-center gap-1">
                                 <i class="fas fa-circle-exclamation"></i> Nama pemilik rekening harus sama persis dengan nama pada KTP.
                             </span>
-                            <span id="rekeningOwnerHint" class="block text-[10px] text-slate-400 mt-1">Nama pemilik rekening otomatis mengikuti Nama Lengkap (KTP) dan terkunci.</span>
+                            <span id="rekeningOwnerHint" class="block text-[10px] text-slate-400 mt-1">Nama pemilik rekening wajib sama dengan nama KTP.</span>
                         </div>
 
                         <!-- 8. Checkbox Persetujuan Kebenaran Data -->
