@@ -1,6 +1,19 @@
-<IfModule authz_core_module>
-	Require all denied
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Lindungi seluruh file fisik nyata di dalam folder app (seperti .php, .env, konfigurasi)
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [F,L]
+
+    # Teruskan request virtual route (seperti /app/packages, /app/dashboard) ke front controller CodeIgniter
+    RewriteRule ^(.*)$ ../public/index.php/app/$1 [L,QSA]
 </IfModule>
-<IfModule !authz_core_module>
-	Deny from all
+
+<IfModule !mod_rewrite.c>
+    <IfModule authz_core_module>
+        Require all denied
+    </IfModule>
+    <IfModule !authz_core_module>
+        Deny from all
+    </IfModule>
 </IfModule>
