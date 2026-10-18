@@ -94,19 +94,21 @@
             break-after: auto;
         }
 
-        /* Header & footer: float, bukan flex */
         .pks-running-header {
-            overflow: hidden;
+            display: table;
+            width: 100%;
+            table-layout: fixed;
             font-size: 8.5pt;
             font-weight: 400;
             color: #334155;
             padding-bottom: 4px;
             margin-bottom: 10px;
         }
-        .pks-running-header .header-left  { float: left; }
-        .pks-running-header .header-right { float: right; }
+        .pks-running-header .header-left  { display: table-cell; text-align: left; width: 50%; }
+        .pks-running-header .header-right { display: table-cell; text-align: right; width: 50%; }
         .pks-running-header.empty-header {
             visibility: hidden;
+            display: none;
             height: 0;
             margin: 0;
             padding: 0;
@@ -332,10 +334,15 @@
         <?php if (!empty($isPdf)): ?>
         body { background: #ffffff !important; }
         .pks-page {
+            box-sizing: content-box !important;
+            width: 166mm !important;
+            height: 282mm !important;
             margin: 0 !important;
             box-shadow: none !important;
             border: none !important;
-            height: 282mm !important;
+        }
+        .pks-running-footer {
+            width: 166mm !important;
         }
         <?php endif; ?>
     </style>
