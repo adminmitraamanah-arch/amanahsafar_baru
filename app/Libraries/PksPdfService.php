@@ -82,15 +82,17 @@ class PksPdfService
             }
         }
 
-        // Cek jika tersedia di PATH sistem
-        $whichCmd = DIRECTORY_SEPARATOR === '\\' ? 'where' : 'which';
-        foreach (['msedge.exe', 'chrome.exe', 'google-chrome', 'chromium'] as $cmdName) {
-            $check = @shell_exec("$whichCmd " . escapeshellarg($cmdName) . " 2>&1");
-            if ($check) {
-                $lines = array_filter(array_map('trim', explode("\n", $check)));
-                foreach ($lines as $line) {
-                    if (is_file($line)) {
-                        return $line;
+        // Cek jika tersedia di PATH sistem (hanya jika shell_exec diizinkan)
+        if (function_exists('shell_exec')) {
+            $whichCmd = DIRECTORY_SEPARATOR === '\\' ? 'where' : 'which';
+            foreach (['msedge.exe', 'chrome.exe', 'google-chrome', 'chromium'] as $cmdName) {
+                $check = @shell_exec("$whichCmd " . escapeshellarg($cmdName) . " 2>&1");
+                if ($check) {
+                    $lines = array_filter(array_map('trim', explode("\n", $check)));
+                    foreach ($lines as $line) {
+                        if (is_file($line)) {
+                            return $line;
+                        }
                     }
                 }
             }
@@ -139,41 +141,65 @@ class PksPdfService
             'isPdf'        => true,
         ]);
 
-        $browserBinary = $this->findBrowserBinary();
-        if (!$browserBinary) {
-            log_message('error', 'PksPdfService: Tidak ditemukan binary browser headless untuk generate PDF.');
-            return null;
+        // 1. Generator Utama: Dompdf (Pure PHP, kompatibel hosting Hostinger tanpa dependensi browser)
+        if (class_exists(\Dompdf\Dompdf::class)) {
+            try {
+                $options = new \Dompdf\Options();
+                $options->set('isRemoteEnabled', true);
+                $options->set('isHtml5ParserEnabled', true);
+                $options->set('defaultFont', 'Times-Roman');
+
+                $dompdf = new \Dompdf\Dompdf($options);
+                $dompdf->loadHtml($html);
+                $dompdf->setPaper('A4', 'portrait');
+                $dompdf->render();
+
+                $pdfBytes = $dompdf->output();
+                if ($pdfBytes && strlen($pdfBytes) > 1000) {
+                    file_put_contents($targetPdf, $pdfBytes);
+                    return $targetPdf;
+                }
+            } catch (\Throwable $e) {
+                log_message('error', 'PksPdfService (Dompdf): ' . $e->getMessage());
+            }
         }
 
-        $tempDir = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'pks';
-        $tempHtml = $tempDir . DIRECTORY_SEPARATOR . 'temp_' . $userId . '_' . bin2hex(random_bytes(6)) . '.html';
+        // 2. Generator Cadangan: Headless Browser (hanya jika exec diizinkan dan binary tersedia)
+        if (function_exists('exec')) {
+            $browserBinary = $this->findBrowserBinary();
+            if ($browserBinary) {
+                $tempDir = WRITEPATH . 'uploads' . DIRECTORY_SEPARATOR . 'pks';
+                $tempHtml = $tempDir . DIRECTORY_SEPARATOR . 'temp_' . $userId . '_' . bin2hex(random_bytes(6)) . '.html';
 
-        try {
-            file_put_contents($tempHtml, $html);
+                try {
+                    file_put_contents($tempHtml, $html);
 
-            $cmd = escapeshellarg($browserBinary)
-                . ' --headless --disable-gpu --run-all-compositor-stages-before-draw --no-pdf-header-footer '
-                . escapeshellarg('--print-to-pdf=' . $targetPdf) . ' '
-                . escapeshellarg($tempHtml);
+                    $cmd = escapeshellarg($browserBinary)
+                        . ' --headless --disable-gpu --run-all-compositor-stages-before-draw --no-pdf-header-footer '
+                        . escapeshellarg('--print-to-pdf=' . $targetPdf) . ' '
+                        . escapeshellarg($tempHtml);
 
-            exec($cmd, $output, $returnCode);
+                    @exec($cmd, $output, $returnCode);
 
-            if (file_exists($tempHtml)) {
-                @unlink($tempHtml);
+                    if (file_exists($tempHtml)) {
+                        @unlink($tempHtml);
+                    }
+
+                    if ($returnCode === 0 && is_file($targetPdf) && filesize($targetPdf) > 1000) {
+                        return $targetPdf;
+                    }
+
+                    log_message('error', 'PksPdfService (Browser Fallback): Gagal mencetak PDF. Return code: ' . $returnCode);
+                } catch (\Throwable $e) {
+                    if (file_exists($tempHtml)) {
+                        @unlink($tempHtml);
+                    }
+                    log_message('error', 'PksPdfService Exception (Browser Fallback): ' . $e->getMessage());
+                }
             }
-
-            if ($returnCode === 0 && is_file($targetPdf) && filesize($targetPdf) > 1000) {
-                return $targetPdf;
-            }
-
-            log_message('error', 'PksPdfService: Gagal mencetak PDF. Return code: ' . $returnCode);
-            return null;
-        } catch (\Throwable $e) {
-            if (file_exists($tempHtml)) {
-                @unlink($tempHtml);
-            }
-            log_message('error', 'PksPdfService Exception: ' . $e->getMessage());
-            return null;
         }
+
+        log_message('error', 'PksPdfService: Seluruh metode generator PDF tidak tersedia atau gagal.');
+        return null;
     }
 }

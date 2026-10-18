@@ -335,6 +335,7 @@
             margin: 0 !important;
             box-shadow: none !important;
             border: none !important;
+            height: 282mm !important;
         }
         <?php endif; ?>
     </style>
