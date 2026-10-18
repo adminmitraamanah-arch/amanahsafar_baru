@@ -18,6 +18,7 @@ function cleanText(string $text): string {
     $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $text = preg_replace('/<[^>]*>/', ' ', $text);
     $text = preg_replace('/\s+/', ' ', $text);
+    $text = preg_replace('/\s+([.,;:!])/', '$1', $text);
     return trim($text);
 }
 
@@ -126,11 +127,11 @@ $lampiranChecks = [
     'Alur minimum pelaksanaan',
     'Pengesahan Para Pihak',
     'PIHAK PERTAMA',
-    'PT AMANAH TANGGUH MANDIRI',
-    'M. Erwin Saputra selaku Direktur Utama atau pejabat yang berwenang sebagaimana Ringkasan Kemitraan.',
+    'PT Amanah Safar',
+    'M. Erwin Saputra',
+    'Direktur Utama',
     'PIHAK KEDUA',
-    'MITRA AMANAH',
-    'Nama dan identitas Mitra sesuai Ringkasan Kemitraan yang telah diverifikasi serta disetujui.',
+    'Mitra Amanah',
 ];
 
 foreach ($lampiranChecks as $lc) {
@@ -160,25 +161,34 @@ $agreementContent = file_get_contents($agreementViewPath);
 $cleanAgreement = cleanText($agreementContent);
 
 $agreementPassed = true;
-// Periksa 19 pasal di agreement view
-for ($pasal = 1; $pasal <= 19; $pasal++) {
-    $pasalHeading = "PASAL $pasal";
-    if (strpos($cleanAgreement, $pasalHeading) !== false) {
-        echo "  [OK] agreement.php: $pasalHeading terverifikasi.\n";
-    } else {
-        echo "  [FAIL] agreement.php: $pasalHeading TIDAK DITEMUKAN!\n";
-        $agreementPassed = false;
-    }
+
+// Validasi Tombol Tunggal Buka PKS Lengkap
+if (strpos($agreementContent, 'id="btnOpenPdfModal"') !== false &&
+    strpos($agreementContent, 'Buka PKS Lengkap') !== false &&
+    strpos($agreementContent, 'fa-file-pdf') !== false) {
+    echo "  [OK] agreement.php: Tombol Tunggal 'Buka PKS Lengkap' terverifikasi.\n";
+} else {
+    echo "  [FAIL] agreement.php: Tombol 'Buka PKS Lengkap' tidak ditemukan!\n";
+    $agreementPassed = false;
 }
 
-// Periksa Lampiran 1 & 2 di agreement view
-foreach ($lampiranChecks as $lc) {
-    if (strpos($cleanAgreement, cleanText($lc)) !== false) {
-        echo "  [OK] agreement.php: $lc terverifikasi.\n";
-    } else {
-        echo "  [FAIL] agreement.php: $lc TIDAK DITEMUKAN!\n";
-        $agreementPassed = false;
-    }
+// Validasi Penghapusan Scrollbar Teks Internal
+if (strpos($agreementContent, 'pks-document-scroll') === false &&
+    strpos($agreementContent, 'Salinan Teks Perjanjian') === false) {
+    echo "  [OK] agreement.php: Area pembukaan bersih dari scrollbar pratinjau teks internal.\n";
+} else {
+    echo "  [FAIL] agreement.php: Masih terdapat scrollbar teks internal / salinan teks!\n";
+    $agreementPassed = false;
+}
+
+// Validasi Modal PDF Viewer & Iframe Streaming
+if (strpos($agreementContent, 'id="pksPdfModal"') !== false &&
+    strpos($agreementContent, 'id="pksPdfIframe"') !== false &&
+    strpos($agreementContent, '/agreement/pdf') !== false) {
+    echo "  [OK] agreement.php: Modal PDF Viewer & Iframe streaming terverifikasi.\n";
+} else {
+    echo "  [FAIL] agreement.php: Modal PDF Viewer tidak lengkap!\n";
+    $agreementPassed = false;
 }
 
 // Periksa 3 checkbox persetujuan elektronik (Pasal 18 Ayat 2)
@@ -191,11 +201,20 @@ if (strpos($agreementContent, 'name="agree_klausul"') !== false &&
     $agreementPassed = false;
 }
 
+// Validasi Tombol Submit disabled sampai checkbox dicentang
+if (strpos($agreementContent, 'id="btnSubmitAgreement"') !== false &&
+    strpos($agreementContent, 'disabled') !== false) {
+    echo "  [OK] agreement.php: Tombol submit terlindungi (disabled secara default).\n";
+} else {
+    echo "  [FAIL] agreement.php: Tombol submit tidak terlindungi!\n";
+    $agreementPassed = false;
+}
+
 if (!$agreementPassed) {
     echo "STATUS AGREEMENT.PHP: GAGAL!\n";
     exit(1);
 }
-echo "STATUS AGREEMENT.PHP: SEMUA LENGKAP & VERBATIM LULUS!\n";
+echo "STATUS AGREEMENT.PHP: SEMUA LENGKAP & UI STREAMLINED LULUS!\n";
 
 // 5. Validasi Fisik Berkas PDF Hasil Generate (Tepat 14 Halaman)
 echo "\n=== MEMERIKSA GENERATE PDF FISIK VIA HEADLESS BROWSER ===\n";

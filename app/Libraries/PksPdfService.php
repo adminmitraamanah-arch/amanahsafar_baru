@@ -37,7 +37,17 @@ class PksPdfService
     public function hasPdf(int $userId): bool
     {
         $path = $this->getPdfPath($userId);
-        return is_file($path) && filesize($path) > 1000;
+        if (!is_file($path) || filesize($path) < 1000) {
+            return false;
+        }
+
+        // Jika template cetak lebih baru dari berkas PDF, otomatis trigger generate ulang
+        $templatePath = APPPATH . 'Views/superadmin/verification_pks_print.php';
+        if (is_file($templatePath) && filemtime($templatePath) > filemtime($path)) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -92,14 +102,19 @@ class PksPdfService
     /**
      * Menghasilkan dokumen PDF PKS untuk pengguna
      *
-     * @param int $userId ID pengguna yang telah menyetujui PKS
+     * @param int $userId ID pengguna yang telah menyetujui PKS atau sedang di tahap persetujuan
      * @param bool $force Jika true, generate ulang meskipun berkas sudah ada
+     * @param bool $allowDraft Jika true, mengizinkan generate naskah pratinjau sebelum agreement_accepted_at terisi
      * @return string|null Path berkas PDF yang dihasilkan, atau null jika gagal
      */
-    public function generate(int $userId, bool $force = false): ?string
+    public function generate(int $userId, bool $force = false, bool $allowDraft = false): ?string
     {
         $user = $this->userModel->find($userId);
-        if (!$user || empty($user['agreement_accepted_at'])) {
+        if (!$user) {
+            return null;
+        }
+
+        if (empty($user['agreement_accepted_at']) && !$allowDraft) {
             return null;
         }
 

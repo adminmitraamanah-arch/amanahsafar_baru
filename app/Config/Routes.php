@@ -20,6 +20,8 @@ $routes->get('/verify', 'Auth::verify', ['filter' => 'portalMaintenance']);
 $routes->post('/verify', 'Auth::verify', ['filter' => 'portalMaintenance']);
 $routes->get('/agreement', 'Auth::agreement', ['filter' => 'portalMaintenance']);
 $routes->post('/agreement', 'Auth::agreement', ['filter' => 'portalMaintenance']);
+$routes->get('/agreement/pdf', 'Auth::agreementPdf', ['filter' => 'portalMaintenance']);
+$routes->get('/agreement/pdf/download', 'Auth::agreementPdfDownload', ['filter' => 'portalMaintenance']);
 
 // Partners Flow (New)
 $routes->get('/partners/login', 'Partners::login', ['filter' => 'portalMaintenance']);

@@ -292,20 +292,26 @@
         }
         .sig-col .sig-party-name {
             font-weight: 700;
-            text-transform: uppercase;
             margin-bottom: 4px;
             font-size: 10pt;
+            text-align: left;
         }
         .sig-box {
-            height: 68px;
+            height: 52px;
             margin: 4px 0;
         }
-        .sig-desc {
+        .sig-person {
+            font-size: 10pt;
+            font-weight: 700;
+            text-align: left;
+            color: #000000;
+        }
+        .sig-title {
             font-size: 9.5pt;
             font-weight: 400;
-            line-height: 1.35;
-            max-width: 68mm;
             text-align: left;
+            margin-top: 2px;
+            color: #000000;
         }
 
         /* ===== Print ===== */
@@ -352,6 +358,10 @@
     </div>
     <?php endif; ?>
 
+    <?php
+    $pihakKeduaNama = !empty($user['nama_lengkap']) ? strtoupper(trim($user['nama_lengkap'])) : '-';
+    $pihakKeduaNik  = !empty($verification['nik']) ? trim($verification['nik']) : '-';
+    ?>
     <div class="pks-document">
 
         <!-- HALAMAN 1 DARI 14 -->
@@ -364,7 +374,7 @@
 
                 <p class="pks-p">Perjanjian ini dibuat oleh dan antara para pihak berikut.</p>
                 <div class="pks-item"><span class="num">1.</span>PT AMANAH TANGGUH MANDIRI, dengan merek AMANAH SAFAR, berkedudukan di Gedung Graha Pool Lt. 3 Unit 303-304, Jl. Merdeka No. 110, Ciwaringin, Bogor Tengah, Kota Bogor, Jawa Barat, diwakili oleh M. Erwin Saputra selaku Direktur Utama atau pejabat yang memperoleh kewenangan sah darinya, selanjutnya disebut Perusahaan atau Pusat.</div>
-                <div class="pks-item"><span class="num">2.</span>Orang perseorangan yang nama, NIK, alamat lengkap, dan kontaknya telah diverifikasi serta ditampilkan dalam Ringkasan Kemitraan yang disetujui bersamaan dengan Perjanjian ini, bertindak untuk diri sendiri, selanjutnya disebut Mitra.</div>
+                <div class="pks-item"><span class="num">2.</span>Orang perseorangan yang bernama <strong><?= esc($user['nama_lengkap'] ?? '-') ?></strong>, dengan NIK <strong><?= esc($verification['nik'] ?? '-') ?></strong>, beralamat di <strong><?= esc($user['domisili'] ?? '-') ?></strong>, dan dapat dihubungi melalui <strong><?= esc($user['no_wa'] ?? '-') ?></strong>, yang identitasnya telah diverifikasi serta ditampilkan dalam Ringkasan Kemitraan yang disetujui bersamaan dengan Perjanjian ini, bertindak untuk diri sendiri, selanjutnya disebut <strong>Mitra</strong>.</div>
 
                 <p class="pks-p">Perusahaan dan Mitra selanjutnya disebut Para Pihak. Perusahaan menyediakan produk sesuai perizinan berusaha yang berlaku. Mitra bermaksud membantu pemasaran melalui Program Mitra Amanah. Para Pihak sepakat mengikatkan diri pada ketentuan berikut.</p>
 
@@ -702,29 +712,6 @@
                 <div class="pks-item"><span class="num">5.</span>Persetujuan Konfirmasi Komisi dicatat dengan identitas, tanggal, versi, dan isi yang disetujui. Tidak ada tarif yang dianggap disetujui hanya karena tersimpan di halaman yang dapat diubah sepihak. Perusahaan menyimpan riwayat untuk referral yang telah diterima.</div>
                 <div class="pks-item"><span class="num">6.</span>Tagihan Resmi kepada jamaah memuat ID pemesanan, nama jamaah, produk, total harga, setoran yang ditagihkan, sisa kewajiban, jatuh tempo, bank dan nomor tujuan, nama pemilik tujuan, serta peruntukan setoran. Dana umrah dan setoran haji khusus mengikuti Pasal 6; perubahan tujuan diverifikasi Pusat dan diberitahukan langsung kepada jamaah.</div>
                 <div class="pks-item"><span class="num">7.</span>Tanpa identitas dan persetujuan Para Pihak yang dapat dibuktikan, dokumen tidak boleh diberi status telah disepakati. Tanpa kejelasan komisi produk, Perusahaan tidak boleh meminta Mitra memasarkan produk tersebut dengan janji komisi yang belum ditetapkan.</div>
-
-                <?php
-                $pihakKeduaNama = !empty($user['nama_lengkap']) ? strtoupper(trim($user['nama_lengkap'])) : 'BELUM DIISI';
-                $pihakKeduaNik = !empty($verification['nik']) ? trim($verification['nik']) : 'BELUM DIISI';
-                $pihakKeduaAlamat = !empty($user['domisili']) ? strtoupper(trim($user['domisili'])) : 'BELUM DIISI';
-                $pihakKeduaHp = !empty($user['no_wa']) ? trim($user['no_wa']) : 'BELUM DIISI';
-                ?>
-                <div style="margin-top: 16px; padding: 10px 14px; border: 1px solid #cbd5e1; background: #f8fafc; font-size: 9pt; line-height: 1.45;">
-                    <div style="font-weight: 700; text-transform: uppercase; margin-bottom: 6px; color: #000000; border-bottom: 1px solid #cbd5e1; padding-bottom: 3px;">
-                        Ringkasan Kemitraan — Identitas Terverifikasi Para Pihak:
-                    </div>
-                    <div style="margin-bottom: 6px;">
-                        <div><strong>PIHAK PERTAMA:</strong> PT AMANAH TANGGUH MANDIRI (M. Erwin Saputra &bull; Direktur Utama)</div>
-                        <div>Nomor PKS: <strong><?= esc($pksNumber ?? 'PKS/AS') ?></strong> &bull; Versi Naskah: <strong><?= esc($pksVersion ?? '1.0') ?></strong></div>
-                    </div>
-                    <div>
-                        <div style="font-weight: 700; margin-bottom: 2px;">PIHAK KEDUA (MITRA AMANAH):</div>
-                        <div>Nama: <strong><?= esc($pihakKeduaNama) ?></strong></div>
-                        <div>NIK: <strong><?= esc($pihakKeduaNik) ?></strong></div>
-                        <div>Alamat: <strong><?= esc($pihakKeduaAlamat) ?></strong></div>
-                        <div>Kontak: <strong><?= esc($pihakKeduaHp) ?></strong></div>
-                    </div>
-                </div>
             </div>
             <div class="pks-running-footer">
                 <span class="footer-left">PKS Mitra Amanah</span>
@@ -826,20 +813,18 @@
 
                     <div class="sig-col">
                         <div class="sig-party-role">PIHAK PERTAMA</div>
-                        <div class="sig-party-name">PT AMANAH TANGGUH MANDIRI</div>
+                        <div class="sig-party-name">PT Amanah Safar</div>
                         <div class="sig-box"></div>
-                        <div class="sig-desc">
-                            M. Erwin Saputra selaku Direktur Utama atau pejabat yang berwenang sebagaimana Ringkasan Kemitraan.
-                        </div>
+                        <div class="sig-person"><u><strong>M. Erwin Saputra</strong></u></div>
+                        <div class="sig-title">Direktur Utama</div>
                     </div>
 
                     <div class="sig-col">
                         <div class="sig-party-role">PIHAK KEDUA</div>
-                        <div class="sig-party-name">MITRA AMANAH</div>
+                        <div class="sig-party-name">Mitra Amanah</div>
                         <div class="sig-box"></div>
-                        <div class="sig-desc">
-                            Nama dan identitas Mitra sesuai Ringkasan Kemitraan yang telah diverifikasi serta disetujui.
-                        </div>
+                        <div class="sig-person"><u><strong><?= esc($pihakKeduaNama ?? $user['nama_lengkap'] ?? '-') ?></strong></u></div>
+                        <div class="sig-title"><strong>NIK: <?= esc($pihakKeduaNik ?? $verification['nik'] ?? '-') ?></strong></div>
                     </div>
                 </div>
             </div>
