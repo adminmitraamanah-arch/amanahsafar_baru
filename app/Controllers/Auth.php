@@ -465,7 +465,7 @@ class Auth extends BaseController
                 'logged_in' => true
             ]);
 
-            return redirect()->to('/dashboard')->with('success', 'Selamat! Perjanjian Kerja Sama telah disetujui. Akun kemitraan Anda telah aktif.');
+            return redirect()->to('/registration/confirmation')->with('success', 'Selamat! Perjanjian Kerja Sama telah disetujui. Akun kemitraan Anda telah aktif.');
         }
 
         $user = $this->userModel->find(session('user_id'));

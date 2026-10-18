@@ -55,6 +55,10 @@
                 </div>
             </div>
 
+            <a href="<?= base_url('/registration/confirmation') ?>" class="inline-flex items-center gap-2 px-4 py-3 text-sm font-semibold text-[#5e0078] underline">
+                <i class="fab fa-whatsapp" aria-hidden="true"></i> Konfirmasi Pendaftaran via WhatsApp
+            </a>
+
             <!-- Tindakan Unduh PDF -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
                 <div class="text-xs text-slate-600 flex items-start gap-2 max-w-xl">
