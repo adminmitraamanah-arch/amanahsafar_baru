@@ -350,6 +350,11 @@
         line-height: 1.55;
         color: #334155;
     }
+    .agreement-check-text .required-mark {
+        color: #f43f5e;
+        font-weight: 700;
+        margin-right: 0.25rem;
+    }
     .agreement-check-text .check-title {
         font-weight: 700;
         color: #0f172a;
@@ -656,21 +661,21 @@
                             <label class="agreement-check-item">
                                 <input type="checkbox" name="agree_klausul" id="agreeKlausul" value="1" required class="mt-0.5 agreement-check-input">
                                 <span class="agreement-check-text">
-                                    <strong class="check-title">Identitas dan persetujuan PKS.</strong> Saya menyatakan identitas saya benar dan saya cakap membuat perjanjian. Saya telah membaca, memahami, dan menyetujui PKS Nomor <?= esc($pksNumber) ?>, versi <?= esc($pksVersion) ?>, beserta seluruh lampirannya, termasuk komisi dan SOP, serta secara sadar tanpa paksaan menyetujui penandatanganannya secara elektronik.
+                                    <span class="required-mark text-rose-500 font-bold mr-1">*</span><strong class="check-title">Identitas dan persetujuan PKS.</strong> Saya menyatakan identitas saya benar dan saya cakap membuat perjanjian. Saya telah membaca, memahami, dan menyetujui PKS Nomor <?= esc($pksNumber) ?>, versi <?= esc($pksVersion) ?>, beserta seluruh lampirannya, termasuk komisi dan SOP, serta secara sadar tanpa paksaan menyetujui penandatanganannya secara elektronik.
                                 </span>
                             </label>
 
                             <label class="agreement-check-item">
                                 <input type="checkbox" name="agree_larangan_dana" id="agreeLaranganDana" value="1" required class="mt-0.5 agreement-check-input">
                                 <span class="agreement-check-text">
-                                    <strong class="check-title">Larangan menerima uang jamaah.</strong> Saya tidak akan menerima, menampung, menggunakan, atau mengalihkan dana jamaah dalam bentuk apa pun, termasuk melalui pihak lain, meskipun jamaah meminta menitipkan uang. Seluruh pembayaran harus langsung menuju tujuan resmi yang diverifikasi pusat. Saya tidak boleh memotong komisi dari dana jamaah.
+                                    <span class="required-mark text-rose-500 font-bold mr-1">*</span><strong class="check-title">Larangan menerima uang jamaah.</strong> Saya tidak akan menerima, menampung, menggunakan, atau mengalihkan dana jamaah dalam bentuk apa pun, termasuk melalui pihak lain, meskipun jamaah meminta menitipkan uang. Seluruh pembayaran harus langsung menuju tujuan resmi yang diverifikasi pusat. Saya tidak boleh memotong komisi dari dana jamaah.
                                 </span>
                             </label>
 
                             <label class="agreement-check-item">
                                 <input type="checkbox" name="agree" id="agreeKewajiban" value="1" required class="mt-0.5 agreement-check-input">
                                 <span class="agreement-check-text">
-                                    <strong class="check-title">Kewajiban dan pertanggungjawaban mitra.</strong> Saya wajib mematuhi batas kewenangan, ketentuan promosi, penggunaan merek, dokumen dan perlengkapan, komunikasi langsung pusat dengan jamaah, serta pelindungan data. Saya menyetujui pengawasan, pembekuan akses, sanksi, dan penggantian kerugian yang terbukti akibat pelanggaran saya sesuai PKS dan hukum.
+                                    <span class="required-mark text-rose-500 font-bold mr-1">*</span><strong class="check-title">Kewajiban dan pertanggungjawaban mitra.</strong> Saya wajib mematuhi batas kewenangan, ketentuan promosi, penggunaan merek, dokumen dan perlengkapan, komunikasi langsung pusat dengan jamaah, serta pelindungan data. Saya menyetujui pengawasan, pembekuan akses, sanksi, dan penggantian kerugian yang terbukti akibat pelanggaran saya sesuai PKS dan hukum.
                                 </span>
                             </label>
                         </div>
