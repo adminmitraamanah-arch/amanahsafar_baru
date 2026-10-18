@@ -504,10 +504,9 @@
             <!-- Panel Kiri: Identitas Ungu Amanah Safar & Stepper -->
             <div class="auth-left-panel">
                 <div class="relative z-10">
-                    <!-- Logo Resmi Amanah Safar Putih & Identitas -->
+                    <!-- Logo Resmi Amanah Safar Putih -->
                     <div class="mb-8" style="margin-bottom: 2rem;">
-                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="block h-11 sm:h-12 w-auto object-contain mb-1.5 drop-shadow-sm">
-                        <span class="block text-[11px] font-semibold text-[#ca82e6] tracking-wider uppercase">Onboarding Mitra</span>
+                        <img src="<?= base_url('assets/images/logo-white.png') ?>" alt="Amanah Safar" class="block h-11 sm:h-12 w-auto object-contain drop-shadow-sm">
                     </div>
 
                     <!-- Step Progress Indicator -->
