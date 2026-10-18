@@ -491,19 +491,23 @@
                     $pihakKeduaHp = !empty($user['no_wa']) ? trim($user['no_wa']) : 'Belum diisi';
                     ?>
 
-                    <!-- Ringkasan Para Pihak -->
+                    <!-- Ringkasan Kemitraan (Para Pihak) -->
                     <div class="mt-4 bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 text-xs">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Para Pihak yang Bersepakat:</div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Ringkasan Kemitraan (Para Pihak yang Bersepakat):</div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700">
                             <div class="border-l-2 border-[#6b008a] pl-2.5">
-                                <span class="font-bold text-slate-900 block text-[11px]">PIHAK PERTAMA</span>
+                                <span class="font-bold text-slate-900 block text-[11px] mb-1">PIHAK PERTAMA</span>
                                 <span class="text-xs font-semibold block text-slate-800">PT AMANAH TANGGUH MANDIRI (AMANAH SAFAR)</span>
                                 <span class="text-[11px] text-slate-500">M. Erwin Saputra &bull; Direktur Utama</span>
                             </div>
                             <div class="border-l-2 border-amber-500 pl-2.5">
-                                <span class="font-bold text-slate-900 block text-[11px]">PIHAK KEDUA (MITRA AMANAH)</span>
-                                <span class="text-xs font-semibold block text-slate-800"><?= esc($pihakKeduaNama) ?></span>
-                                <span class="text-[11px] text-slate-500">NIK: <?= esc($pihakKeduaNik) ?> &bull; Alamat: <?= esc($pihakKeduaAlamat) ?> &bull; No. HP: <?= esc($pihakKeduaHp) ?></span>
+                                <span class="font-bold text-slate-900 block text-[11px] mb-1">PIHAK KEDUA (MITRA AMANAH)</span>
+                                <div class="text-xs text-slate-700 space-y-0.5">
+                                    <div>Nama: <strong class="text-slate-900 font-bold"><?= esc($pihakKeduaNama) ?></strong></div>
+                                    <div>NIK: <strong class="text-slate-900 font-bold"><?= esc($pihakKeduaNik) ?></strong></div>
+                                    <div>Alamat: <strong class="text-slate-900 font-bold"><?= esc($pihakKeduaAlamat) ?></strong></div>
+                                    <div>Kontak: <strong class="text-slate-900 font-bold"><?= esc($pihakKeduaHp) ?></strong></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -513,7 +517,7 @@
                         <div class="text-center pb-2.5 border-b border-slate-200">
                             <strong class="text-xs text-slate-900 block font-black uppercase tracking-wide">PERJANJIAN KERJA SAMA MITRA AMANAH</strong>
                             <strong class="text-[11px] text-[#6b008a] block font-bold">PT Amanah Tangguh Mandiri dengan merek Amanah Safar</strong>
-                            <span class="text-[10px] text-slate-500">Nomor: PKS/AS/<?= date('Ym') ?>/<?= str_pad((string)($user['id'] ?? 1), 4, '0', STR_PAD_LEFT) ?></span>
+                            <span class="text-[10px] text-slate-500">Nomor: <?= esc($pksNumber) ?> &bull; Versi: <?= esc($pksVersion) ?></span>
                         </div>
 
                         <p class="text-slate-800">
@@ -848,36 +852,41 @@
                     </div>
 
                     <!-- Form Persetujuan Elektronik Sesuai Pasal 18 Ayat (2) -->
-                    <form method="POST" action="<?= base_url('/agreement') ?>" class="mt-4">
+                    <form method="POST" action="<?= base_url('/agreement') ?>" class="mt-4" id="agreementForm">
                         <?= csrf_field() ?>
+
+                        <div id="agreementValidationAlert" class="hidden mb-3 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2.5">
+                            <i class="fas fa-circle-exclamation text-rose-500 text-sm shrink-0"></i>
+                            <span id="agreementValidationMessage">Seluruh pernyataan persetujuan (Pernyataan 1, 2, dan 3) wajib disetujui untuk melanjutkan.</span>
+                        </div>
 
                         <!-- 3 Pernyataan Centang Terpisah (Pasal 18 Ayat 2) -->
                         <div class="space-y-2.5 pt-1 mb-4">
                             <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer select-none">
-                                <input type="checkbox" name="agree_klausul" value="1" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
+                                <input type="checkbox" name="agree_klausul" id="agreeKlausul" value="1" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
                                 <span class="text-xs text-slate-700 leading-snug">
-                                    <strong>Pernyataan 1:</strong> Saya telah membaca, memahami, dan menyetujui seluruh klausul Perjanjian Kerja Sama Mitra Amanah yang terdiri dari Pasal 1 sampai dengan Pasal 19 beserta Lampiran 1 dan Lampiran 2 secara utuh tanpa paksaan.
+                                    <strong>Identitas dan persetujuan PKS.</strong> Saya menyatakan identitas saya benar dan saya cakap membuat perjanjian. Saya telah membaca, memahami, dan menyetujui PKS Nomor <?= esc($pksNumber) ?>, versi <?= esc($pksVersion) ?>, beserta seluruh lampirannya, termasuk komisi dan SOP, serta secara sadar tanpa paksaan menyetujui penandatanganannya secara elektronik.
                                 </span>
                             </label>
 
                             <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer select-none">
-                                <input type="checkbox" name="agree_larangan_dana" value="1" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
+                                <input type="checkbox" name="agree_larangan_dana" id="agreeLaranganDana" value="1" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
                                 <span class="text-xs text-slate-700 leading-snug">
-                                    <strong>Pernyataan 2:</strong> Saya memahami dan menyetujui larangan menerima, menampung, atau mengalihkan dana jamaah dalam bentuk apa pun, serta wajib mengarahkan seluruh pembayaran langsung ke Rekening Resmi PT Amanah Tangguh Mandiri sesuai Tagihan Resmi.
+                                    <strong>Larangan menerima uang jamaah.</strong> Saya tidak akan menerima, menampung, menggunakan, atau mengalihkan dana jamaah dalam bentuk apa pun, termasuk melalui pihak lain, meskipun jamaah meminta menitipkan uang. Seluruh pembayaran harus langsung menuju tujuan resmi yang diverifikasi pusat. Saya tidak boleh memotong komisi dari dana jamaah.
                                 </span>
                             </label>
 
                             <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition cursor-pointer select-none">
-                                <input type="checkbox" name="agree" value="1" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
+                                <input type="checkbox" name="agree" id="agreeKewajiban" value="1" required class="mt-0.5 w-4 h-4 rounded border-slate-300 text-[#6b008a] focus:ring-[#6b008a]">
                                 <span class="text-xs text-slate-700 leading-snug">
-                                    <strong>Pernyataan 3:</strong> Saya menyetujui bahwa persetujuan elektronik ini sah, berkekuatan hukum, dan mengikat diri saya secara hukum dengan PT Amanah Tangguh Mandiri sejak tanggal disetujui.
+                                    <strong>Kewajiban dan pertanggungjawaban mitra.</strong> Saya wajib mematuhi batas kewenangan, ketentuan promosi, penggunaan merek, dokumen dan perlengkapan, komunikasi langsung pusat dengan jamaah, serta pelindungan data. Saya menyetujui pengawasan, pembekuan akses, sanksi, dan penggantian kerugian yang terbukti akibat pelanggaran saya sesuai PKS dan hukum.
                                 </span>
                             </label>
                         </div>
 
                         <!-- Tombol Submit -->
                         <div class="auth-submit-wrap">
-                            <button type="submit" class="btn-brand-primary">
+                            <button type="submit" id="btnSubmitAgreement" class="btn-brand-primary" disabled style="opacity: 0.6; cursor: not-allowed;">
                                 <span>Setuju dan Lanjutkan</span>
                                 <i class="fas fa-arrow-right text-xs"></i>
                             </button>
@@ -903,4 +912,56 @@
     </footer>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('agreementForm');
+    const chk1 = document.getElementById('agreeKlausul');
+    const chk2 = document.getElementById('agreeLaranganDana');
+    const chk3 = document.getElementById('agreeKewajiban');
+    const btn = document.getElementById('btnSubmitAgreement');
+    const alertBox = document.getElementById('agreementValidationAlert');
+
+    // 1. Pada awal proses, ketiga checkbox dalam keadaan belum dicentang
+    if (chk1) chk1.checked = false;
+    if (chk2) chk2.checked = false;
+    if (chk3) chk3.checked = false;
+
+    function updateSubmitState() {
+        const allChecked = chk1 && chk2 && chk3 && chk1.checked && chk2.checked && chk3.checked;
+        if (btn) {
+            btn.disabled = !allChecked;
+            if (allChecked) {
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+                if (alertBox) alertBox.classList.add('hidden');
+            } else {
+                btn.style.opacity = '0.6';
+                btn.style.cursor = 'not-allowed';
+            }
+        }
+    }
+
+    [chk1, chk2, chk3].forEach(function(chk) {
+        if (chk) {
+            chk.addEventListener('change', updateSubmitState);
+        }
+    });
+
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const allChecked = chk1 && chk2 && chk3 && chk1.checked && chk2.checked && chk3.checked;
+            if (!allChecked) {
+                e.preventDefault();
+                if (alertBox) {
+                    alertBox.classList.remove('hidden');
+                }
+                alert('Seluruh pernyataan persetujuan (Pernyataan 1, 2, dan 3) wajib disetujui untuk melanjutkan.');
+                return false;
+            }
+        });
+    }
+
+    updateSubmitState();
+});
+</script>
 <?= $this->endSection() ?>

@@ -420,6 +420,22 @@ class Auth extends BaseController
 
         if ($this->request->is('post')) {
             $user_id = session('user_id');
+            $user = $this->userModel->find($user_id);
+            $verification = $this->verificationModel->where('user_id', $user_id)->first() ?? [];
+
+            // 1. Validasi kelengkapan data identitas pendaftar (Nama, NIK, Alamat, Kontak)
+            if (empty($user['nama_lengkap']) || empty($verification['nik']) || empty($user['domisili']) || empty($user['no_wa'])) {
+                return redirect()->to('/verify')->with('error', 'Data identitas pendaftar belum lengkap. Harap lengkapi verifikasi identitas (KTP) dan data kontak terlebih dahulu sebelum menyetujui PKS.');
+            }
+
+            // 2. Validasi Server-Side Wajib untuk ketiga checkbox persetujuan
+            $agreeKlausul      = $this->request->getPost('agree_klausul');
+            $agreeLaranganDana = $this->request->getPost('agree_larangan_dana');
+            $agreeKewajiban    = $this->request->getPost('agree');
+
+            if (empty($agreeKlausul) || empty($agreeLaranganDana) || empty($agreeKewajiban)) {
+                return redirect()->back()->with('error', 'Seluruh pernyataan persetujuan (Pernyataan 1, 2, dan 3) wajib disetujui untuk melanjutkan.')->withInput();
+            }
 
             $this->userModel->update($user_id, [
                 'agreement_accepted_at' => date('Y-m-d H:i:s'),
@@ -453,10 +469,22 @@ class Auth extends BaseController
         }
 
         $user = $this->userModel->find(session('user_id'));
-        $verification = $this->verificationModel->where('user_id', $user['id'])->first();
+        $verification = $this->verificationModel->where('user_id', $user['id'])->first() ?? [];
+
+        // Cegah tampilan jika data identitas belum lengkap
+        if (empty($user['nama_lengkap']) || empty($verification['nik']) || empty($user['domisili']) || empty($user['no_wa'])) {
+            return redirect()->to('/verify')->with('warning', 'Data identitas pendaftar belum lengkap. Harap lengkapi verifikasi identitas (KTP) dan data kontak terlebih dahulu.');
+        }
+
+        $rawDate = $user['agreement_accepted_at'] ?? $verification['created_at'] ?? date('Y-m-d H:i:s');
+        $pksNumber = 'PKS/AS/' . date('Ym', strtotime($rawDate)) . '/' . str_pad((string)$user['id'], 4, '0', STR_PAD_LEFT);
+        $pksVersion = '1.0';
+
         return view('auth/agreement', [
             'user'         => $user,
             'verification' => $verification,
+            'pksNumber'    => $pksNumber,
+            'pksVersion'   => $pksVersion,
         ]);
     }
 
