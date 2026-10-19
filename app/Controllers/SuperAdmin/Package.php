@@ -21,6 +21,12 @@ class Package extends BaseController
         }
 
         $packages = $this->packageModel->findAll();
+        if (class_exists(\App\Libraries\CatalogCommission::class)) {
+            foreach ($packages as &$package) {
+                $package['commission_distribution'] = \App\Libraries\CatalogCommission::distributionForRole($package, (string)session('role'));
+            }
+            unset($package);
+        }
         $data = [
             'title' => 'Katalog Paket',
             'packages' => $packages,
@@ -53,9 +59,42 @@ class Package extends BaseController
 
         $gambarName = null;
         $fileGambar = $this->request->getFile('gambar');
-        if ($fileGambar && $fileGambar->isValid() && !$fileGambar->hasMoved()) {
-            $gambarName = $fileGambar->getRandomName();
-            $fileGambar->move(FCPATH . 'uploads/packages', $gambarName);
+        $hasNewUpload = $fileGambar && $fileGambar->getError() !== UPLOAD_ERR_NO_FILE;
+
+        if ($hasNewUpload) {
+            $validationRules = [
+                'gambar' => [
+                    'label' => 'Gambar Paket',
+                    'rules' => [
+                        'uploaded[gambar]',
+                        'is_image[gambar]',
+                        'mime_in[gambar,image/jpg,image/jpeg,image/png,image/webp]',
+                        'ext_in[gambar,jpg,jpeg,png,webp]',
+                        'max_size[gambar,2048]',
+                    ],
+                    'errors' => [
+                        'is_image' => 'File yang diunggah harus berupa gambar yang valid.',
+                        'mime_in'  => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
+                        'ext_in'   => 'Ekstensi file harus .jpg, .jpeg, .png, atau .webp.',
+                        'max_size' => 'Ukuran gambar maksimal adalah 2MB.',
+                    ],
+                ],
+            ];
+
+            if (!$this->validate($validationRules)) {
+                return redirect()->back()->withInput()->with('error', $this->validator->getError('gambar'));
+            }
+
+            if ($fileGambar->isValid() && !$fileGambar->hasMoved()) {
+                $gambarName = $fileGambar->getRandomName();
+                try {
+                    $fileGambar->move(FCPATH . 'uploads/packages', $gambarName);
+                } catch (\Throwable $e) {
+                    return redirect()->back()->withInput()->with('error', 'Gagal memindahkan file gambar paket ke direktori penyimpanan.');
+                }
+            } else {
+                return redirect()->back()->withInput()->with('error', 'File gambar tidak valid atau gagal diunggah.');
+            }
         }
 
         // Process includes array
@@ -125,6 +164,13 @@ class Package extends BaseController
             'status' => $this->request->getPost('status') ?: 'aktif',
             'created_by' => session('user_id')
         ]);
+
+        if (!$packageId) {
+            if ($gambarName && file_exists(FCPATH . 'uploads/packages/' . $gambarName)) {
+                @unlink(FCPATH . 'uploads/packages/' . $gambarName);
+            }
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan data paket ke database.');
+        }
 
         // Simpan Model A Aturan DP Rentang Tanggal
         $dpRuleModel = new \App\Models\PackageDpRuleModel();
@@ -256,19 +302,60 @@ class Package extends BaseController
             'status' => $this->request->getPost('status') ?: ($package['status'] ?? 'aktif'),
         ];
 
+        $newGambarName = null;
         $fileGambar = $this->request->getFile('gambar');
-        if ($fileGambar && $fileGambar->isValid() && !$fileGambar->hasMoved()) {
-            $gambarName = $fileGambar->getRandomName();
-            $fileGambar->move(FCPATH . 'uploads/packages', $gambarName);
-            $dataUpdate['gambar'] = $gambarName;
+        $hasNewUpload = $fileGambar && $fileGambar->getError() !== UPLOAD_ERR_NO_FILE;
 
-            // Hapus gambar lama jika ada
-            if (!empty($package['gambar']) && file_exists(FCPATH . 'uploads/packages/' . $package['gambar'])) {
-                @unlink(FCPATH . 'uploads/packages/' . $package['gambar']);
+        if ($hasNewUpload) {
+            $validationRules = [
+                'gambar' => [
+                    'label' => 'Gambar Paket',
+                    'rules' => [
+                        'uploaded[gambar]',
+                        'is_image[gambar]',
+                        'mime_in[gambar,image/jpg,image/jpeg,image/png,image/webp]',
+                        'ext_in[gambar,jpg,jpeg,png,webp]',
+                        'max_size[gambar,2048]',
+                    ],
+                    'errors' => [
+                        'is_image' => 'File yang diunggah harus berupa gambar yang valid.',
+                        'mime_in'  => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
+                        'ext_in'   => 'Ekstensi file harus .jpg, .jpeg, .png, atau .webp.',
+                        'max_size' => 'Ukuran gambar maksimal adalah 2MB.',
+                    ],
+                ],
+            ];
+
+            if (!$this->validate($validationRules)) {
+                return redirect()->back()->withInput()->with('error', $this->validator->getError('gambar'));
+            }
+
+            if ($fileGambar->isValid() && !$fileGambar->hasMoved()) {
+                $newGambarName = $fileGambar->getRandomName();
+                try {
+                    $fileGambar->move(FCPATH . 'uploads/packages', $newGambarName);
+                    $dataUpdate['gambar'] = $newGambarName;
+                } catch (\Throwable $e) {
+                    return redirect()->back()->withInput()->with('error', 'Gagal memindahkan file gambar baru ke direktori penyimpanan.');
+                }
+            } else {
+                return redirect()->back()->withInput()->with('error', 'File gambar baru tidak valid atau gagal diunggah.');
             }
         }
 
-        $this->packageModel->update($id, $dataUpdate);
+        $updateSuccess = $this->packageModel->update($id, $dataUpdate);
+
+        if (!$updateSuccess) {
+            if ($newGambarName && file_exists(FCPATH . 'uploads/packages/' . $newGambarName)) {
+                @unlink(FCPATH . 'uploads/packages/' . $newGambarName);
+            }
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui data paket di database.');
+        }
+
+        // Hapus gambar lama hanya setelah pembaruan database berhasil
+        if ($newGambarName && !empty($package['gambar']) && $package['gambar'] !== $newGambarName && file_exists(FCPATH . 'uploads/packages/' . $package['gambar'])) {
+            @unlink(FCPATH . 'uploads/packages/' . $package['gambar']);
+        }
 
         // Update Model A Aturan DP Rentang Tanggal
         $dpRuleModel = new \App\Models\PackageDpRuleModel();
